@@ -1,0 +1,29 @@
+{
+	"bench": {
+		"density": 45.254833995939,
+		"file": "assets/structures/bench-v1.png",
+		"origin": [
+			30.0,
+			66.0
+		],
+		"source": "scripts/content/structure_models.gd"
+	},
+	"hedge": {
+		"density": 45.254833995939,
+		"file": "assets/structures/hedge-v1.png",
+		"origin": [
+			33.0,
+			52.0
+		],
+		"source": "scripts/content/structure_models.gd"
+	},
+	"volleyball": {
+		"density": 45.254833995939,
+		"file": "assets/structures/volleyball-v1.png",
+		"origin": [
+			146.0,
+			28.0
+		],
+		"source": "scripts/content/structure_models.gd"
+	}
+}

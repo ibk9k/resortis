@@ -1,0 +1,66 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_ddlgk"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_ljs0d"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-0.png" id="3_umera"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-1.png" id="4_ih3o7"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-2.png" id="5_eed5p"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-3.png" id="6_1xk87"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kkvs8"]
+atlas = ExtResource("2_ljs0d")
+region = Rect2(44, 71, 455, 421)
+filter_clip = true
+
+[node name="Cabin0" type="Node2D" unique_id=1572671324]
+y_sort_enabled = true
+script = ExtResource("1_ddlgk")
+object_id = 1
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1594271563]
+visible = false
+texture_filter = 1
+position = Vector2(-92.009415, -113.849014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = SubResource("AtlasTexture_kkvs8")
+centered = false
+
+[node name="FloorAndRearWalls" type="Node2D" parent="." unique_id=2142062600]
+position = Vector2(0, -63.68)
+
+[node name="Art" type="Sprite2D" parent="FloorAndRearWalls" unique_id=386807918]
+texture_filter = 1
+position = Vector2(-92.009415, -50.169014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("3_umera")
+centered = false
+
+[node name="Bed" type="Node2D" parent="." unique_id=1816716029]
+position = Vector2(-28.8, 1.5999985)
+
+[node name="Art" type="Sprite2D" parent="Bed" unique_id=1368532370]
+texture_filter = 1
+position = Vector2(-63.209415, -115.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("4_ih3o7")
+centered = false
+
+[node name="Desk" type="Node2D" parent="." unique_id=170778160]
+position = Vector2(57.600002, 9.599998)
+
+[node name="Art" type="Sprite2D" parent="Desk" unique_id=1841163639]
+texture_filter = 1
+position = Vector2(-149.60942, -123.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("5_eed5p")
+centered = false
+
+[node name="FrontEdge" type="Node2D" parent="." unique_id=1408248171]
+position = Vector2(0, 62.4)
+
+[node name="Art" type="Sprite2D" parent="FrontEdge" unique_id=108067170]
+texture_filter = 1
+position = Vector2(-92.009415, -176.24902)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("6_1xk87")
+centered = false

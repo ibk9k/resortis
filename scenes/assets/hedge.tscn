@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_r6bpt"]
+[ext_resource type="Texture2D" path="res://assets/structures/hedge-v1.png" id="2_wi300"]
+
+[node name="Hedge" type="Node2D" unique_id=503820950]
+script = ExtResource("1_r6bpt")
+object_id = 1
+kind = "hedge"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1164911474]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("2_wi300")
+centered = false

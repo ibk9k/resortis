@@ -1,0 +1,2991 @@
+{
+	"guest_stay": {},
+	"live_resort": {
+		"cleanliness": {
+			"clock": 135.6,
+			"mess": [
+				{
+					"claimed_by": 0,
+					"created_at": 73.3,
+					"facility_id": 10,
+					"id": 1,
+					"kind": "litter",
+					"position": [
+						17.0,
+						28.0
+					],
+					"style": 3
+				},
+				{
+					"claimed_by": 0,
+					"created_at": 94.5,
+					"facility_id": 10,
+					"id": 2,
+					"kind": "litter",
+					"position": [
+						19.0,
+						28.0
+					],
+					"style": 3
+				},
+				{
+					"claimed_by": 0,
+					"created_at": 115.7,
+					"facility_id": 10,
+					"id": 3,
+					"kind": "litter",
+					"position": [
+						21.0,
+						27.0
+					],
+					"style": 2
+				}
+			],
+			"next_mess_id": 4,
+			"next_staff_id": 1,
+			"pending_events": [],
+			"pending_time": 0.0,
+			"recent_visits": [
+				"1/10/sunbathe/73.3",
+				"1/10/sunbathe/94.5",
+				"1/10/sunbathe/115.7",
+				"5/10/sunbathe/131.9"
+			],
+			"rng_seed": "194731",
+			"rng_state": "-8535457362194157753",
+			"staff": [],
+			"total_wages": 0,
+			"version": 1,
+			"wage_day": 0
+		},
+		"facilities": {
+			"clock": 135.6,
+			"next_sequence": 10,
+			"tickets": [
+				{
+					"active_at": 128.7,
+					"activity": "meal",
+					"admitted": true,
+					"arrived": true,
+					"arrived_at": 128.7,
+					"claim_held": true,
+					"expired_at": 0.0,
+					"facility_id": 6,
+					"match_id": "",
+					"partner_id": 0,
+					"party_id": 2,
+					"person_id": 4,
+					"preferred_partner_id": 0,
+					"queue_position": [
+						32.0,
+						17.0
+					],
+					"reason": "",
+					"requested_at": 99.7,
+					"reserved_at": 99.7,
+					"sequence": 6,
+					"slot": 0,
+					"status": "active"
+				},
+				{
+					"active_at": 118.9,
+					"activity": "sunbathe",
+					"admitted": true,
+					"arrived": true,
+					"arrived_at": 118.9,
+					"claim_held": true,
+					"expired_at": 0.0,
+					"facility_id": 10,
+					"match_id": "",
+					"partner_id": 0,
+					"party_id": 1,
+					"person_id": 1,
+					"preferred_partner_id": 0,
+					"queue_position": [
+						18.0,
+						28.0
+					],
+					"reason": "",
+					"requested_at": 117.433333333333,
+					"reserved_at": 117.433333333333,
+					"sequence": 7,
+					"slot": 0,
+					"status": "active"
+				},
+				{
+					"active_at": 0.0,
+					"activity": "sunbathe",
+					"admitted": false,
+					"arrived": false,
+					"arrived_at": 0.0,
+					"claim_held": true,
+					"expired_at": 0.0,
+					"facility_id": 10,
+					"match_id": "",
+					"partner_id": 0,
+					"party_id": 4,
+					"person_id": 6,
+					"preferred_partner_id": 0,
+					"queue_position": [
+						19.0,
+						27.0
+					],
+					"reason": "",
+					"requested_at": 117.8,
+					"reserved_at": 133.6,
+					"sequence": 8,
+					"slot": 1,
+					"status": "reserved"
+				},
+				{
+					"active_at": 0.0,
+					"activity": "sunbathe",
+					"admitted": false,
+					"arrived": false,
+					"arrived_at": 0.0,
+					"claim_held": false,
+					"expired_at": 0.0,
+					"facility_id": 10,
+					"match_id": "",
+					"partner_id": 0,
+					"party_id": 3,
+					"person_id": 5,
+					"preferred_partner_id": 0,
+					"queue_position": [
+						17.0,
+						27.0
+					],
+					"reason": "",
+					"requested_at": 133.9,
+					"reserved_at": 0.0,
+					"sequence": 9,
+					"slot": -1,
+					"status": "queued"
+				}
+			],
+			"version": 1
+		},
+		"ledger": {
+			"events": [
+				{
+					"amount": 60,
+					"id": "resort:room:1:1",
+					"kind": "room",
+					"party_id": 1,
+					"time": 25.7
+				},
+				{
+					"amount": 60,
+					"id": "resort:room:2:1",
+					"kind": "room",
+					"party_id": 2,
+					"time": 53.5666666666667
+				},
+				{
+					"amount": 8,
+					"id": "resort:activity:1:1",
+					"kind": "sunbathe",
+					"party_id": 1,
+					"person_id": 1,
+					"time": 55.3
+				},
+				{
+					"amount": 8,
+					"id": "resort:activity:1:2",
+					"kind": "sunbathe",
+					"party_id": 1,
+					"person_id": 1,
+					"time": 76.5
+				},
+				{
+					"amount": 60,
+					"id": "resort:room:3:1",
+					"kind": "room",
+					"party_id": 3,
+					"time": 78.1333333333333
+				},
+				{
+					"amount": 8,
+					"id": "resort:activity:1:3",
+					"kind": "sunbathe",
+					"party_id": 1,
+					"person_id": 1,
+					"time": 97.7
+				},
+				{
+					"amount": 60,
+					"id": "resort:room:4:1",
+					"kind": "room",
+					"party_id": 4,
+					"time": 106.3
+				},
+				{
+					"amount": 8,
+					"id": "resort:activity:5:1",
+					"kind": "sunbathe",
+					"party_id": 3,
+					"person_id": 5,
+					"time": 113.9
+				},
+				{
+					"amount": 8,
+					"id": "resort:activity:1:4",
+					"kind": "sunbathe",
+					"party_id": 1,
+					"person_id": 1,
+					"time": 118.9
+				},
+				{
+					"amount": 12,
+					"id": "resort:activity:4:1",
+					"kind": "meal",
+					"party_id": 2,
+					"person_id": 4,
+					"time": 128.7
+				}
+			],
+			"income_total": 292,
+			"journal_hash": "8136b4c2f218f77f5c8f5063c73c5ade776c4142b458115c2117a2d8e0a21aa2",
+			"net_total": 292,
+			"version": 1,
+			"wages_total": 0
+		},
+		"simulation": {
+			"arrivals_enabled": true,
+			"bookings": {
+				"reservations": [
+					{
+						"cabin_id": 4,
+						"nights": 2,
+						"party_id": 1,
+						"rate": 60
+					},
+					{
+						"cabin_id": 2,
+						"nights": 2,
+						"party_id": 2,
+						"rate": 60
+					},
+					{
+						"cabin_id": 3,
+						"nights": 2,
+						"party_id": 3,
+						"rate": 60
+					},
+					{
+						"cabin_id": 1,
+						"nights": 2,
+						"party_id": 4,
+						"rate": 60
+					}
+				],
+				"version": 1
+			},
+			"clock": 135.6,
+			"clock_origin": 0.0,
+			"event_sequence": 10,
+			"local_tickets": [],
+			"next_arrival": 144.101473999023,
+			"next_party_id": 7,
+			"next_person_id": 9,
+			"parties": [
+				{
+					"activity_spent": 32,
+					"budget": 388,
+					"cabin_id": 4,
+					"checkout_requested": false,
+					"created_at": 0.0,
+					"departure_reason": "",
+					"history": [
+						"Arrived for 2 nights with $480 shared room-and-activity money.",
+						"Reserved Cabin 4 at $60 per cabin per night.",
+						"Paid $60 for night 1 of 2, once for the shared cabin."
+					],
+					"id": 1,
+					"initial_budget": 480,
+					"legacy": false,
+					"member_ids": [
+						1,
+						2
+					],
+					"next_night": 205.7,
+					"nights": 2,
+					"paid_nights": 1,
+					"rate": 60,
+					"receipts": [
+						{
+							"amount": 8,
+							"id": "resort:activity:1:1",
+							"kind": "sunbathe",
+							"party_id": 1,
+							"person_id": 1,
+							"time": 55.3
+						},
+						{
+							"amount": 8,
+							"id": "resort:activity:1:2",
+							"kind": "sunbathe",
+							"party_id": 1,
+							"person_id": 1,
+							"time": 76.5
+						},
+						{
+							"amount": 8,
+							"id": "resort:activity:1:3",
+							"kind": "sunbathe",
+							"party_id": 1,
+							"person_id": 1,
+							"time": 97.7
+						},
+						{
+							"amount": 8,
+							"id": "resort:activity:1:4",
+							"kind": "sunbathe",
+							"party_id": 1,
+							"person_id": 1,
+							"time": 118.9
+						}
+					],
+					"room_spent": 60,
+					"state": "active"
+				},
+				{
+					"activity_spent": 12,
+					"budget": 206,
+					"cabin_id": 2,
+					"checkout_requested": false,
+					"created_at": 22.0,
+					"departure_reason": "",
+					"history": [
+						"Arrived for 2 nights with $278 shared room-and-activity money.",
+						"Reserved Cabin 2 at $60 per cabin per night.",
+						"Paid $60 for night 1 of 2, once for the shared cabin."
+					],
+					"id": 2,
+					"initial_budget": 278,
+					"legacy": false,
+					"member_ids": [
+						3,
+						4
+					],
+					"next_night": 233.566666666667,
+					"nights": 2,
+					"paid_nights": 1,
+					"rate": 60,
+					"receipts": [
+						{
+							"amount": 12,
+							"id": "resort:activity:4:1",
+							"kind": "meal",
+							"party_id": 2,
+							"person_id": 4,
+							"time": 128.7
+						}
+					],
+					"room_spent": 60,
+					"state": "active"
+				},
+				{
+					"activity_spent": 8,
+					"budget": 202,
+					"cabin_id": 3,
+					"checkout_requested": false,
+					"created_at": 46.5666666666667,
+					"departure_reason": "",
+					"history": [
+						"Arrived for 2 nights with $270 shared room-and-activity money.",
+						"Reserved Cabin 3 at $60 per cabin per night.",
+						"Paid $60 for night 1 of 2, once for the shared cabin."
+					],
+					"id": 3,
+					"initial_budget": 270,
+					"legacy": false,
+					"member_ids": [
+						5
+					],
+					"next_night": 258.133333333333,
+					"nights": 2,
+					"paid_nights": 1,
+					"rate": 60,
+					"receipts": [
+						{
+							"amount": 8,
+							"id": "resort:activity:5:1",
+							"kind": "sunbathe",
+							"party_id": 3,
+							"person_id": 5,
+							"time": 113.9
+						}
+					],
+					"room_spent": 60,
+					"state": "active"
+				},
+				{
+					"activity_spent": 0,
+					"budget": 196,
+					"cabin_id": 1,
+					"checkout_requested": false,
+					"created_at": 68.9666666666667,
+					"departure_reason": "",
+					"history": [
+						"Arrived for 2 nights with $256 shared room-and-activity money.",
+						"Reserved Cabin 1 at $60 per cabin per night.",
+						"Paid $60 for night 1 of 2, once for the shared cabin."
+					],
+					"id": 4,
+					"initial_budget": 256,
+					"legacy": false,
+					"member_ids": [
+						6
+					],
+					"next_night": 286.3,
+					"nights": 2,
+					"paid_nights": 1,
+					"rate": 60,
+					"receipts": [],
+					"room_spent": 60,
+					"state": "active"
+				},
+				{
+					"activity_spent": 0,
+					"budget": 390,
+					"cabin_id": -1,
+					"checkout_requested": false,
+					"created_at": 97.6666666666667,
+					"departure_reason": "No affordable connected cabin became available during the wait.",
+					"history": [
+						"Arrived for 3 nights with $390 shared room-and-activity money.",
+						"No affordable connected cabin became available during the wait."
+					],
+					"id": 5,
+					"initial_budget": 390,
+					"legacy": false,
+					"member_ids": [
+						7
+					],
+					"next_night": 0.0,
+					"nights": 3,
+					"paid_nights": 0,
+					"rate": 60,
+					"receipts": [],
+					"room_spent": 0,
+					"state": "departed"
+				},
+				{
+					"activity_spent": 0,
+					"budget": 116,
+					"cabin_id": -1,
+					"checkout_requested": false,
+					"created_at": 122.2,
+					"departure_reason": "",
+					"history": [
+						"Arrived for 1 night with $116 shared room-and-activity money."
+					],
+					"id": 6,
+					"initial_budget": 116,
+					"legacy": false,
+					"member_ids": [
+						8
+					],
+					"next_night": 0.0,
+					"nights": 1,
+					"paid_nights": 0,
+					"rate": 60,
+					"receipts": [],
+					"room_spent": 0,
+					"state": "waiting_room"
+				}
+			],
+			"pending_events": [],
+			"pending_time": 0.0,
+			"people": [
+				{
+					"activity": "sunbathe",
+					"activity_elapsed": 16.7,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [
+						[
+							18.0,
+							26.0
+						],
+						[
+							17.3878002166748,
+							24.4349117279053
+						]
+					],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": 10,
+					"history": [
+						"Sunbathing is a favourite; heading for a lounger.",
+						"Paid $8 after reaching the reserved sunbathe place.",
+						"Sunbathing is a favourite; heading for a lounger.",
+						"Paid $8 after reaching the reserved sunbathe place.",
+						"Sunbathing is a favourite; heading for a lounger.",
+						"Paid $8 after reaching the reserved sunbathe place.",
+						"Sunbathing is a favourite; heading for a lounger.",
+						"Paid $8 after reaching the reserved sunbathe place."
+					],
+					"id": 1,
+					"last_activity": "sunbathe",
+					"last_facility_id": 10,
+					"mood": 74.5823719525219,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							-0.36385053396225,
+							-0.931457340717316
+						],
+						"distance": 66.4005243985161,
+						"index": 0,
+						"moving": false,
+						"position": [
+							17.3878002166748,
+							24.4349117279053
+						],
+						"route": []
+					},
+					"needs": {
+						"enjoyment": 100.0,
+						"hunger": 47.233999999997,
+						"rest": 100.0
+					},
+					"outdoor_target": [
+						18.0,
+						26.0
+					],
+					"party_id": 1,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 57.0,
+							"hunger": 72.0,
+							"rest": 65.0
+						},
+						"interests": [
+							"sunbathe",
+							"meal"
+						],
+						"name": "Maya",
+						"variant": "female"
+					},
+					"queue_started": 117.433333333333,
+					"reason": "Relaxing on a reserved lounger.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": true,
+					"sleep_until": 33.7,
+					"slot": 0,
+					"state": "lying",
+					"timer": 1.29999999999995,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 4,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "stroll",
+					"activity_elapsed": 10.9,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 4,
+					"facility_id": -1,
+					"facility_retry_at": 151.433333333333,
+					"failed_facility_id": 13,
+					"history": [
+						"Ready for a game; volleyball is a favourite."
+					],
+					"id": 2,
+					"last_activity": "volleyball",
+					"last_facility_id": 13,
+					"mood": 70.3574666666631,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							-1.0,
+							0.0
+						],
+						"distance": 107.208020107901,
+						"index": 13,
+						"moving": true,
+						"position": [
+							8.27987003326416,
+							26.0
+						],
+						"route": [
+							[
+								15.0,
+								32.0
+							],
+							[
+								15.0,
+								31.0
+							],
+							[
+								15.0,
+								30.0
+							],
+							[
+								14.0,
+								30.0
+							],
+							[
+								13.0,
+								30.0
+							],
+							[
+								12.0,
+								30.0
+							],
+							[
+								11.0,
+								30.0
+							],
+							[
+								11.0,
+								29.0
+							],
+							[
+								11.0,
+								28.0
+							],
+							[
+								10.0,
+								28.0
+							],
+							[
+								9.0,
+								28.0
+							],
+							[
+								9.0,
+								27.0
+							],
+							[
+								9.0,
+								26.0
+							],
+							[
+								8.0,
+								26.0
+							],
+							[
+								7.0,
+								26.0
+							],
+							[
+								6.0,
+								26.0
+							],
+							[
+								6.0,
+								25.0
+							],
+							[
+								6.0,
+								24.0
+							],
+							[
+								5.0,
+								24.0
+							],
+							[
+								5.0,
+								23.0
+							],
+							[
+								4.0,
+								23.0
+							],
+							[
+								4.0,
+								22.0
+							],
+							[
+								3.0,
+								22.0
+							],
+							[
+								3.0,
+								21.0
+							]
+						]
+					},
+					"needs": {
+						"enjoyment": 93.2893333333357,
+						"hunger": 55.5386666666637,
+						"rest": 70.9133333333249
+					},
+					"outdoor_target": [],
+					"party_id": 1,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 42.0,
+							"hunger": 84.0,
+							"rest": 68.0
+						},
+						"interests": [
+							"volleyball",
+							"stroll"
+						],
+						"name": "Leo",
+						"variant": "male"
+					},
+					"queue_started": 59.2666666666667,
+					"reason": "Enjoying a free walk along the beach.",
+					"return_requested": false,
+					"role": 1,
+					"session_paid": false,
+					"sleep_until": 33.7,
+					"slot": -1,
+					"state": "strolling",
+					"timer": 7.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 1,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "stroll",
+					"activity_elapsed": 5.33333333333332,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": -1,
+					"history": [],
+					"id": 3,
+					"last_activity": "",
+					"last_facility_id": -1,
+					"mood": 71.6666333333255,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							-1.0,
+							0.0
+						],
+						"distance": 108.83198535659,
+						"index": 7,
+						"moving": true,
+						"position": [
+							23.9598617553711,
+							22.0
+						],
+						"route": [
+							[
+								29.0,
+								21.0
+							],
+							[
+								28.0,
+								21.0
+							],
+							[
+								27.0,
+								21.0
+							],
+							[
+								26.0,
+								21.0
+							],
+							[
+								26.0,
+								22.0
+							],
+							[
+								25.0,
+								22.0
+							],
+							[
+								24.0,
+								22.0
+							],
+							[
+								23.0,
+								22.0
+							],
+							[
+								22.0,
+								22.0
+							],
+							[
+								21.0,
+								22.0
+							],
+							[
+								20.0,
+								22.0
+							],
+							[
+								19.0,
+								22.0
+							],
+							[
+								18.0,
+								22.0
+							],
+							[
+								17.0,
+								22.0
+							],
+							[
+								16.0,
+								22.0
+							],
+							[
+								15.0,
+								22.0
+							],
+							[
+								14.0,
+								22.0
+							],
+							[
+								13.0,
+								22.0
+							],
+							[
+								12.0,
+								22.0
+							],
+							[
+								11.0,
+								22.0
+							],
+							[
+								11.0,
+								23.0
+							]
+						]
+					},
+					"needs": {
+						"enjoyment": 100.0,
+						"hunger": 61.8186666666598,
+						"rest": 62.6833333333189
+					},
+					"outdoor_target": [],
+					"party_id": 2,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 57.0,
+							"hunger": 86.0,
+							"rest": 60.0
+						},
+						"interests": [
+							"Sunbathing",
+							"Beach walks",
+							"Quiet time"
+						],
+						"name": "Leila",
+						"variant": "female"
+					},
+					"queue_started": 0.0,
+					"reason": "Enjoying a free walk along the beach.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": false,
+					"sleep_until": 61.5666666666667,
+					"slot": -1,
+					"state": "strolling",
+					"timer": 7.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 0,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "meal",
+					"activity_elapsed": 3.9,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [
+						[
+							34.0,
+							17.0
+						],
+						[
+							33.2068519592285,
+							15.3930788040161
+						]
+					],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": 6,
+					"history": [
+						"Hungry; heading to the café for a meal.",
+						"Paid $12 after reaching the reserved meal place."
+					],
+					"id": 4,
+					"last_activity": "",
+					"last_facility_id": -1,
+					"mood": 62.4171833333347,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							-0.442679792642593,
+							-0.896679818630219
+						],
+						"distance": 108.009801232411,
+						"index": 0,
+						"moving": false,
+						"position": [
+							33.2068519592285,
+							15.3930788040161
+						],
+						"route": []
+					},
+					"needs": {
+						"enjoyment": 84.8390000000039,
+						"hunger": 36.3873333333343,
+						"rest": 76.15
+					},
+					"outdoor_target": [
+						34.0,
+						17.0
+					],
+					"party_id": 2,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 53.0,
+							"hunger": 42.0,
+							"rest": 70.0
+						},
+						"interests": [
+							"Sunbathing",
+							"Beach walks"
+						],
+						"name": "Omar",
+						"variant": "male"
+					},
+					"queue_started": 99.7,
+					"reason": "Eating at the café.",
+					"return_requested": false,
+					"role": 1,
+					"session_paid": true,
+					"sleep_until": 61.5666666666667,
+					"slot": 0,
+					"state": "eating",
+					"timer": 8.10000000000001,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 1,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "sunbathe",
+					"activity_elapsed": 0.0333333333333333,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": 10,
+					"history": [
+						"Sunbathing is a favourite; heading for a lounger.",
+						"Paid $8 after reaching the reserved sunbathe place.",
+						"Sunbathing is a favourite; heading for a lounger."
+					],
+					"id": 5,
+					"last_activity": "sunbathe",
+					"last_facility_id": 10,
+					"mood": 54.8139199839062,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							-1.0,
+							0.0
+						],
+						"distance": 74.8053482122352,
+						"index": 0,
+						"moving": false,
+						"position": [
+							17.0,
+							27.0
+						],
+						"route": []
+					},
+					"needs": {
+						"enjoyment": 92.880333333339,
+						"hunger": 58.2979999999957,
+						"rest": 72.7590000000008
+					},
+					"outdoor_target": [
+						17.0,
+						27.0
+					],
+					"party_id": 3,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 49.0,
+							"hunger": 76.0,
+							"rest": 54.0
+						},
+						"interests": [
+							"Good food",
+							"Quiet time",
+							"Sunbathing"
+						],
+						"name": "Aisha",
+						"variant": "female"
+					},
+					"queue_started": 135.566666666667,
+					"reason": "Waiting in the facility's visible queue.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": false,
+					"sleep_until": 86.1333333333333,
+					"slot": -1,
+					"state": "queueing",
+					"timer": 0.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 2,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "sunbathe",
+					"activity_elapsed": 18.1000000000001,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": 10,
+					"history": [
+						"Sunbathing is a favourite; heading for a lounger."
+					],
+					"id": 6,
+					"last_activity": "",
+					"last_facility_id": -1,
+					"mood": 58.4862166666659,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							0.0,
+							1.0
+						],
+						"distance": 69.9973129202423,
+						"index": 22,
+						"moving": true,
+						"position": [
+							21.0,
+							18.3601531982422
+						],
+						"route": [
+							[
+								11.0,
+								7.0
+							],
+							[
+								11.0,
+								8.0
+							],
+							[
+								11.0,
+								9.0
+							],
+							[
+								11.0,
+								10.0
+							],
+							[
+								11.0,
+								11.0
+							],
+							[
+								12.0,
+								11.0
+							],
+							[
+								13.0,
+								11.0
+							],
+							[
+								14.0,
+								11.0
+							],
+							[
+								15.0,
+								11.0
+							],
+							[
+								16.0,
+								11.0
+							],
+							[
+								17.0,
+								11.0
+							],
+							[
+								18.0,
+								11.0
+							],
+							[
+								19.0,
+								11.0
+							],
+							[
+								20.0,
+								11.0
+							],
+							[
+								21.0,
+								11.0
+							],
+							[
+								21.0,
+								12.0
+							],
+							[
+								21.0,
+								13.0
+							],
+							[
+								21.0,
+								14.0
+							],
+							[
+								21.0,
+								15.0
+							],
+							[
+								21.0,
+								16.0
+							],
+							[
+								21.0,
+								17.0
+							],
+							[
+								21.0,
+								18.0
+							],
+							[
+								21.0,
+								19.0
+							],
+							[
+								21.0,
+								20.0
+							],
+							[
+								22.0,
+								20.0
+							],
+							[
+								22.0,
+								21.0
+							],
+							[
+								22.0,
+								22.0
+							],
+							[
+								22.0,
+								23.0
+							],
+							[
+								22.0,
+								24.0
+							],
+							[
+								21.0,
+								24.0
+							],
+							[
+								21.0,
+								25.0
+							],
+							[
+								20.0,
+								25.0
+							],
+							[
+								20.0,
+								26.0
+							],
+							[
+								19.0,
+								26.0
+							],
+							[
+								19.0,
+								27.0
+							]
+						]
+					},
+					"needs": {
+						"enjoyment": 59.9493333333384,
+						"hunger": 54.1393333333306,
+						"rest": 62.4089999999973
+					},
+					"outdoor_target": [
+						19.0,
+						27.0
+					],
+					"party_id": 4,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 66.0,
+							"hunger": 68.0,
+							"rest": 52.0
+						},
+						"interests": [
+							"Sunbathing",
+							"Good food"
+						],
+						"name": "Hana",
+						"variant": "female"
+					},
+					"queue_started": 117.8,
+					"reason": "Sunbathing is a favourite; heading for a lounger.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": false,
+					"sleep_until": 114.3,
+					"slot": -1,
+					"state": "to_facility",
+					"timer": 0.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 1,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "",
+					"activity_elapsed": 0.0,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 130.466666666667,
+					"exit_prefix": 0,
+					"facility_id": -1,
+					"history": [
+						"Left the resort. No affordable connected cabin became available during the wait."
+					],
+					"id": 7,
+					"last_activity": "",
+					"last_facility_id": -1,
+					"mood": 66.5580833333348,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							0.0,
+							-1.0
+						],
+						"distance": 0.99997802734375,
+						"index": 0,
+						"moving": false,
+						"position": [
+							39.0,
+							19.0
+						],
+						"route": []
+					},
+					"needs": {
+						"enjoyment": 65.9166666666604,
+						"hunger": 74.4166666666724,
+						"rest": 58.0350000000021
+					},
+					"outdoor_target": [],
+					"party_id": 5,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 74.0,
+							"hunger": 81.0,
+							"rest": 62.0
+						},
+						"interests": [
+							"Good food",
+							"Sunbathing"
+						],
+						"name": "Arjun",
+						"variant": "male"
+					},
+					"queue_started": 0.0,
+					"reason": "No affordable connected cabin became available during the wait.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": false,
+					"sleep_until": 0.0,
+					"slot": -1,
+					"state": "departed",
+					"timer": 0.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 0,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				},
+				{
+					"activity": "",
+					"activity_elapsed": 13.4333333333333,
+					"after_activity": "decide",
+					"after_exit": "decide",
+					"approach": [],
+					"decision_cooldown": 0.0,
+					"departed_at": 0.0,
+					"exit_prefix": 0,
+					"facility_id": -1,
+					"history": [],
+					"id": 8,
+					"last_activity": "",
+					"last_facility_id": -1,
+					"mood": 49.7715499999992,
+					"mood_reason": "Feeling comfortable.",
+					"motion": {
+						"delay": 0.0,
+						"direction": [
+							1.0,
+							0.0
+						],
+						"distance": 0.0,
+						"index": 0,
+						"moving": false,
+						"position": [
+							39.0,
+							19.0
+						],
+						"route": []
+					},
+					"needs": {
+						"enjoyment": 34.6416666666669,
+						"hunger": 40.3133333333329,
+						"rest": 71.387999999998
+					},
+					"party_id": 6,
+					"profile": {
+						"initial_needs": {
+							"enjoyment": 38.0,
+							"hunger": 43.0,
+							"rest": 73.0
+						},
+						"interests": [
+							"Volleyball",
+							"Quiet time",
+							"Good food"
+						],
+						"name": "Ruby",
+						"variant": "female"
+					},
+					"queue_started": 0.0,
+					"reason": "Waiting for an affordable unreserved cabin with a connected entrance.",
+					"return_requested": false,
+					"role": 0,
+					"session_paid": false,
+					"sleep_until": 0.0,
+					"slot": -1,
+					"state": "waiting_room",
+					"timer": 0.0,
+					"unhappy_elapsed": 0.0,
+					"visit_notified": false,
+					"visit_sequence": 0,
+					"want_leave": false,
+					"warning_elapsed": 0.0
+				}
+			],
+			"population_cap": 12,
+			"retired_activity_income": 0,
+			"retired_room_income": 0,
+			"rng_state": "3641200719754071864",
+			"seed": "8147",
+			"sessions_external": true,
+			"ticks": 4068,
+			"total_activity_income": 52,
+			"total_room_income": 240,
+			"version": 1
+		},
+		"version": 1
+	},
+	"next_id": 71,
+	"objects": [
+		{
+			"id": 1,
+			"kind": "cabin",
+			"orientation": 0,
+			"position": [
+				7.0,
+				5.0
+			]
+		},
+		{
+			"id": 2,
+			"kind": "cabin",
+			"orientation": 1,
+			"position": [
+				14.0,
+				5.0
+			]
+		},
+		{
+			"id": 3,
+			"kind": "cabin",
+			"orientation": 1,
+			"position": [
+				7.0,
+				12.0
+			]
+		},
+		{
+			"id": 4,
+			"kind": "cabin",
+			"orientation": 0,
+			"position": [
+				14.0,
+				12.0
+			]
+		},
+		{
+			"id": 5,
+			"kind": "reception",
+			"orientation": 0,
+			"position": [
+				24.0,
+				13.0
+			]
+		},
+		{
+			"id": 6,
+			"kind": "cafe",
+			"orientation": 0,
+			"position": [
+				32.0,
+				13.0
+			]
+		},
+		{
+			"id": 7,
+			"kind": "pool",
+			"orientation": 0,
+			"position": [
+				28.0,
+				4.0
+			]
+		},
+		{
+			"id": 8,
+			"kind": "sunbeds",
+			"orientation": 0,
+			"position": [
+				7.0,
+				23.0
+			]
+		},
+		{
+			"id": 9,
+			"kind": "sunbeds",
+			"orientation": 0,
+			"position": [
+				12.0,
+				23.0
+			]
+		},
+		{
+			"id": 10,
+			"kind": "sunbeds",
+			"orientation": 0,
+			"position": [
+				17.0,
+				23.0
+			]
+		},
+		{
+			"id": 11,
+			"kind": "sunbeds",
+			"orientation": 0,
+			"position": [
+				12.0,
+				31.0
+			]
+		},
+		{
+			"id": 12,
+			"kind": "sunbeds",
+			"orientation": 0,
+			"position": [
+				20.0,
+				31.0
+			]
+		},
+		{
+			"id": 13,
+			"kind": "volleyball",
+			"orientation": 0,
+			"position": [
+				28.0,
+				26.0
+			]
+		},
+		{
+			"id": 14,
+			"kind": "pier",
+			"orientation": 0,
+			"position": [
+				4.0,
+				36.0
+			]
+		},
+		{
+			"id": 15,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				4.0,
+				4.0
+			]
+		},
+		{
+			"id": 16,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				12.0,
+				4.0
+			]
+		},
+		{
+			"id": 17,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				20.0,
+				4.0
+			]
+		},
+		{
+			"id": 18,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				25.0,
+				4.0
+			]
+		},
+		{
+			"id": 19,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				38.0,
+				4.0
+			]
+		},
+		{
+			"id": 20,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				4.0,
+				11.0
+			]
+		},
+		{
+			"id": 21,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				19.0,
+				12.0
+			]
+		},
+		{
+			"id": 22,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				24.0,
+				9.0
+			]
+		},
+		{
+			"id": 23,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				38.0,
+				12.0
+			]
+		},
+		{
+			"id": 24,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				4.0,
+				17.0
+			]
+		},
+		{
+			"id": 25,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				24.0,
+				18.0
+			]
+		},
+		{
+			"id": 26,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				31.0,
+				18.0
+			]
+		},
+		{
+			"id": 27,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				38.0,
+				18.0
+			]
+		},
+		{
+			"id": 28,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				3.0,
+				23.0
+			]
+		},
+		{
+			"id": 29,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				23.0,
+				23.0
+			]
+		},
+		{
+			"id": 30,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				39.0,
+				25.0
+			]
+		},
+		{
+			"id": 31,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				5.0,
+				18.0
+			]
+		},
+		{
+			"id": 32,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				11.0,
+				18.0
+			]
+		},
+		{
+			"id": 33,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				18.0,
+				18.0
+			]
+		},
+		{
+			"id": 34,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				26.0,
+				18.0
+			]
+		},
+		{
+			"id": 35,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				30.0,
+				18.0
+			]
+		},
+		{
+			"id": 36,
+			"kind": "flowers",
+			"orientation": 0,
+			"position": [
+				36.0,
+				18.0
+			]
+		},
+		{
+			"id": 37,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				5.5,
+				21.0
+			]
+		},
+		{
+			"id": 38,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				11.5,
+				21.0
+			]
+		},
+		{
+			"id": 39,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				18.5,
+				21.0
+			]
+		},
+		{
+			"id": 40,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				24.5,
+				21.0
+			]
+		},
+		{
+			"id": 41,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				30.5,
+				21.0
+			]
+		},
+		{
+			"id": 42,
+			"kind": "lantern",
+			"orientation": 0,
+			"position": [
+				37.5,
+				21.0
+			]
+		},
+		{
+			"id": 43,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				5.0,
+				8.0
+			]
+		},
+		{
+			"id": 44,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				12.0,
+				8.0
+			]
+		},
+		{
+			"id": 45,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				19.0,
+				8.0
+			]
+		},
+		{
+			"id": 46,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				5.0,
+				15.0
+			]
+		},
+		{
+			"id": 47,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				12.0,
+				15.0
+			]
+		},
+		{
+			"id": 48,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				19.0,
+				15.0
+			]
+		},
+		{
+			"id": 49,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				26.0,
+				8.0
+			]
+		},
+		{
+			"id": 50,
+			"kind": "hedge",
+			"orientation": 0,
+			"position": [
+				37.0,
+				8.0
+			]
+		},
+		{
+			"id": 51,
+			"kind": "bench",
+			"orientation": 0,
+			"position": [
+				9.0,
+				21.0
+			]
+		},
+		{
+			"id": 52,
+			"kind": "bench",
+			"orientation": 0,
+			"position": [
+				20.0,
+				21.0
+			]
+		},
+		{
+			"id": 53,
+			"kind": "bench",
+			"orientation": 0,
+			"position": [
+				33.0,
+				21.0
+			]
+		},
+		{
+			"id": 54,
+			"kind": "bin",
+			"orientation": 0,
+			"position": [
+				6.0,
+				18.0
+			]
+		},
+		{
+			"id": 55,
+			"kind": "bin",
+			"orientation": 0,
+			"position": [
+				20.0,
+				18.0
+			]
+		},
+		{
+			"id": 56,
+			"kind": "bin",
+			"orientation": 0,
+			"position": [
+				33.0,
+				18.0
+			]
+		},
+		{
+			"id": 57,
+			"kind": "bin",
+			"orientation": 0,
+			"position": [
+				40.0,
+				21.0
+			]
+		},
+		{
+			"id": 58,
+			"kind": "rocks",
+			"orientation": 0,
+			"position": [
+				1.0,
+				37.0
+			]
+		},
+		{
+			"id": 59,
+			"kind": "rocks",
+			"orientation": 0,
+			"position": [
+				41.0,
+				38.0
+			]
+		},
+		{
+			"id": 60,
+			"kind": "rocks",
+			"orientation": 0,
+			"position": [
+				40.0,
+				36.0
+			]
+		},
+		{
+			"id": 61,
+			"kind": "rocks",
+			"orientation": 0,
+			"position": [
+				2.0,
+				38.0
+			]
+		},
+		{
+			"id": 62,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				7.0,
+				31.0
+			]
+		},
+		{
+			"id": 63,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				25.0,
+				33.0
+			]
+		},
+		{
+			"id": 64,
+			"kind": "palm",
+			"orientation": 0,
+			"position": [
+				39.0,
+				34.0
+			]
+		},
+		{
+			"id": 65,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				1.0,
+				7.0
+			]
+		},
+		{
+			"id": 66,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				2.0,
+				15.0
+			]
+		},
+		{
+			"id": 67,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				42.0,
+				6.0
+			]
+		},
+		{
+			"id": 68,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				42.0,
+				16.0
+			]
+		},
+		{
+			"id": 69,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				24.0,
+				1.0
+			]
+		},
+		{
+			"id": 70,
+			"kind": "small_palm",
+			"orientation": 0,
+			"position": [
+				9.0,
+				1.0
+			]
+		}
+	],
+	"paths": [
+		[
+			3,
+			19
+		],
+		[
+			3,
+			20
+		],
+		[
+			4,
+			19
+		],
+		[
+			4,
+			20
+		],
+		[
+			5,
+			19
+		],
+		[
+			5,
+			20
+		],
+		[
+			6,
+			19
+		],
+		[
+			6,
+			20
+		],
+		[
+			7,
+			19
+		],
+		[
+			7,
+			20
+		],
+		[
+			8,
+			19
+		],
+		[
+			8,
+			20
+		],
+		[
+			9,
+			19
+		],
+		[
+			9,
+			20
+		],
+		[
+			10,
+			19
+		],
+		[
+			10,
+			20
+		],
+		[
+			11,
+			19
+		],
+		[
+			11,
+			20
+		],
+		[
+			12,
+			19
+		],
+		[
+			12,
+			20
+		],
+		[
+			13,
+			19
+		],
+		[
+			13,
+			20
+		],
+		[
+			14,
+			19
+		],
+		[
+			14,
+			20
+		],
+		[
+			15,
+			19
+		],
+		[
+			15,
+			20
+		],
+		[
+			16,
+			19
+		],
+		[
+			16,
+			20
+		],
+		[
+			17,
+			19
+		],
+		[
+			17,
+			20
+		],
+		[
+			18,
+			19
+		],
+		[
+			18,
+			20
+		],
+		[
+			19,
+			19
+		],
+		[
+			19,
+			20
+		],
+		[
+			20,
+			19
+		],
+		[
+			20,
+			20
+		],
+		[
+			21,
+			19
+		],
+		[
+			21,
+			20
+		],
+		[
+			22,
+			19
+		],
+		[
+			22,
+			20
+		],
+		[
+			23,
+			19
+		],
+		[
+			23,
+			20
+		],
+		[
+			24,
+			19
+		],
+		[
+			24,
+			20
+		],
+		[
+			25,
+			19
+		],
+		[
+			25,
+			20
+		],
+		[
+			26,
+			19
+		],
+		[
+			26,
+			20
+		],
+		[
+			27,
+			19
+		],
+		[
+			27,
+			20
+		],
+		[
+			28,
+			19
+		],
+		[
+			28,
+			20
+		],
+		[
+			29,
+			19
+		],
+		[
+			29,
+			20
+		],
+		[
+			30,
+			19
+		],
+		[
+			30,
+			20
+		],
+		[
+			31,
+			19
+		],
+		[
+			31,
+			20
+		],
+		[
+			32,
+			19
+		],
+		[
+			32,
+			20
+		],
+		[
+			33,
+			19
+		],
+		[
+			33,
+			20
+		],
+		[
+			34,
+			19
+		],
+		[
+			34,
+			20
+		],
+		[
+			35,
+			19
+		],
+		[
+			35,
+			20
+		],
+		[
+			36,
+			19
+		],
+		[
+			36,
+			20
+		],
+		[
+			37,
+			19
+		],
+		[
+			37,
+			20
+		],
+		[
+			38,
+			19
+		],
+		[
+			38,
+			20
+		],
+		[
+			39,
+			19
+		],
+		[
+			39,
+			20
+		],
+		[
+			40,
+			19
+		],
+		[
+			40,
+			20
+		],
+		[
+			21,
+			4
+		],
+		[
+			21,
+			5
+		],
+		[
+			21,
+			6
+		],
+		[
+			21,
+			7
+		],
+		[
+			21,
+			8
+		],
+		[
+			21,
+			9
+		],
+		[
+			21,
+			10
+		],
+		[
+			21,
+			11
+		],
+		[
+			21,
+			12
+		],
+		[
+			21,
+			13
+		],
+		[
+			21,
+			14
+		],
+		[
+			21,
+			15
+		],
+		[
+			21,
+			16
+		],
+		[
+			21,
+			17
+		],
+		[
+			21,
+			18
+		],
+		[
+			22,
+			4
+		],
+		[
+			22,
+			5
+		],
+		[
+			22,
+			6
+		],
+		[
+			22,
+			7
+		],
+		[
+			22,
+			8
+		],
+		[
+			22,
+			9
+		],
+		[
+			22,
+			10
+		],
+		[
+			22,
+			11
+		],
+		[
+			22,
+			12
+		],
+		[
+			22,
+			13
+		],
+		[
+			22,
+			14
+		],
+		[
+			22,
+			15
+		],
+		[
+			22,
+			16
+		],
+		[
+			22,
+			17
+		],
+		[
+			22,
+			18
+		],
+		[
+			6,
+			10
+		],
+		[
+			6,
+			11
+		],
+		[
+			7,
+			10
+		],
+		[
+			7,
+			11
+		],
+		[
+			8,
+			10
+		],
+		[
+			8,
+			11
+		],
+		[
+			9,
+			10
+		],
+		[
+			9,
+			11
+		],
+		[
+			10,
+			10
+		],
+		[
+			10,
+			11
+		],
+		[
+			11,
+			10
+		],
+		[
+			11,
+			11
+		],
+		[
+			12,
+			10
+		],
+		[
+			12,
+			11
+		],
+		[
+			13,
+			10
+		],
+		[
+			13,
+			11
+		],
+		[
+			14,
+			10
+		],
+		[
+			14,
+			11
+		],
+		[
+			15,
+			10
+		],
+		[
+			15,
+			11
+		],
+		[
+			16,
+			10
+		],
+		[
+			16,
+			11
+		],
+		[
+			17,
+			10
+		],
+		[
+			17,
+			11
+		],
+		[
+			18,
+			10
+		],
+		[
+			18,
+			11
+		],
+		[
+			19,
+			10
+		],
+		[
+			19,
+			11
+		],
+		[
+			20,
+			10
+		],
+		[
+			20,
+			11
+		],
+		[
+			23,
+			10
+		],
+		[
+			23,
+			11
+		],
+		[
+			24,
+			10
+		],
+		[
+			24,
+			11
+		],
+		[
+			25,
+			10
+		],
+		[
+			25,
+			11
+		],
+		[
+			26,
+			10
+		],
+		[
+			26,
+			11
+		],
+		[
+			27,
+			10
+		],
+		[
+			27,
+			11
+		],
+		[
+			28,
+			10
+		],
+		[
+			28,
+			11
+		],
+		[
+			29,
+			10
+		],
+		[
+			29,
+			11
+		],
+		[
+			30,
+			10
+		],
+		[
+			30,
+			11
+		],
+		[
+			31,
+			10
+		],
+		[
+			31,
+			11
+		],
+		[
+			32,
+			10
+		],
+		[
+			32,
+			11
+		],
+		[
+			33,
+			10
+		],
+		[
+			33,
+			11
+		],
+		[
+			34,
+			10
+		],
+		[
+			34,
+			11
+		],
+		[
+			35,
+			10
+		],
+		[
+			35,
+			11
+		],
+		[
+			36,
+			10
+		],
+		[
+			36,
+			11
+		],
+		[
+			37,
+			10
+		],
+		[
+			37,
+			11
+		],
+		[
+			38,
+			10
+		],
+		[
+			38,
+			11
+		],
+		[
+			39,
+			10
+		],
+		[
+			39,
+			11
+		],
+		[
+			6,
+			17
+		],
+		[
+			7,
+			17
+		],
+		[
+			8,
+			17
+		],
+		[
+			9,
+			17
+		],
+		[
+			10,
+			17
+		],
+		[
+			11,
+			17
+		],
+		[
+			12,
+			17
+		],
+		[
+			13,
+			17
+		],
+		[
+			14,
+			17
+		],
+		[
+			15,
+			17
+		],
+		[
+			16,
+			17
+		],
+		[
+			17,
+			17
+		],
+		[
+			18,
+			17
+		],
+		[
+			19,
+			17
+		],
+		[
+			20,
+			17
+		],
+		[
+			23,
+			17
+		],
+		[
+			24,
+			17
+		],
+		[
+			25,
+			17
+		],
+		[
+			26,
+			17
+		],
+		[
+			27,
+			17
+		],
+		[
+			28,
+			17
+		],
+		[
+			29,
+			17
+		],
+		[
+			30,
+			17
+		],
+		[
+			31,
+			17
+		],
+		[
+			32,
+			17
+		],
+		[
+			33,
+			17
+		],
+		[
+			34,
+			17
+		],
+		[
+			35,
+			17
+		],
+		[
+			36,
+			17
+		],
+		[
+			37,
+			17
+		],
+		[
+			38,
+			17
+		],
+		[
+			39,
+			17
+		],
+		[
+			39,
+			12
+		],
+		[
+			39,
+			13
+		],
+		[
+			39,
+			14
+		],
+		[
+			39,
+			15
+		],
+		[
+			39,
+			16
+		],
+		[
+			39,
+			18
+		],
+		[
+			40,
+			10
+		],
+		[
+			40,
+			11
+		],
+		[
+			40,
+			12
+		],
+		[
+			40,
+			13
+		],
+		[
+			40,
+			14
+		],
+		[
+			40,
+			15
+		],
+		[
+			40,
+			16
+		],
+		[
+			40,
+			17
+		],
+		[
+			40,
+			18
+		],
+		[
+			9,
+			9
+		],
+		[
+			16,
+			9
+		],
+		[
+			9,
+			16
+		],
+		[
+			16,
+			16
+		],
+		[
+			11,
+			7
+		],
+		[
+			11,
+			8
+		],
+		[
+			11,
+			9
+		],
+		[
+			18,
+			7
+		],
+		[
+			18,
+			8
+		],
+		[
+			18,
+			9
+		],
+		[
+			11,
+			14
+		],
+		[
+			11,
+			15
+		],
+		[
+			11,
+			16
+		],
+		[
+			18,
+			14
+		],
+		[
+			18,
+			15
+		],
+		[
+			18,
+			16
+		]
+	],
+	"schema": 4
+}

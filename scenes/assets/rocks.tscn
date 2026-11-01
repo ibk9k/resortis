@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_gad3a"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="2_dml1u"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c4l0k"]
+atlas = ExtResource("2_dml1u")
+region = Rect2(1157, 751, 331, 189)
+filter_clip = true
+
+[node name="Rocks" type="Node2D" unique_id=1728755351]
+script = ExtResource("1_gad3a")
+object_id = 1
+kind = "rocks"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1357530421]
+texture_filter = 1
+position = Vector2(-27.316223, -23.107376)
+scale = Vector2(0.16505264, 0.16505264)
+texture = SubResource("AtlasTexture_c4l0k")
+centered = false

@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_d1qgh"]
+[ext_resource type="Texture2D" path="res://assets/atlases/pool-v3.png" id="2_2dxcb"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_are2k"]
+atlas = ExtResource("2_2dxcb")
+region = Rect2(0, 29, 1240, 1225)
+filter_clip = true
+
+[node name="Pool" type="Node2D" unique_id=1829468502]
+script = ExtResource("1_d1qgh")
+object_id = 1
+kind = "pool"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=235169063]
+texture_filter = 1
+position = Vector2(162.22922, -178.45213)
+rotation = 3.1415927
+scale = Vector2(0.25348315, -0.25348315)
+texture = SubResource("AtlasTexture_are2k")
+centered = false

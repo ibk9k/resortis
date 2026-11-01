@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_oxf63"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_lel4g"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c1hv2"]
+atlas = ExtResource("2_lel4g")
+region = Rect2(48, 530, 448, 434)
+filter_clip = true
+
+[node name="Cafe" type="Node2D" unique_id=1404947417]
+script = ExtResource("1_oxf63")
+object_id = 1
+kind = "cafe"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1305135829]
+texture_filter = 1
+position = Vector2(-96.861496, -133.94809)
+scale = Vector2(0.43631303, 0.43631303)
+texture = SubResource("AtlasTexture_c1hv2")
+centered = false

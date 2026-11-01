@@ -1,0 +1,10 @@
+Use case: stylized-concept
+Create a production sprite atlas on a transparent background for the same rich isometric tropical resort game as the existing cabin, pool and palm atlases visible in this conversation. EXACTLY TWO independent objects, side by side, in a 1536 x 1024 image. LEFT OBJECT contained completely within x=80..680,y=180..800. RIGHT OBJECT contained completely within x=850..1450,y=180..800. Wide TRANSPARENT GAP between objects. No labels, text, dividers, backdrop, or extraneous land. Full objects and tight contact shadows, no cropping.
+
+Art: detailed crisp pixel game art, warm timber, layered shading, original, consistent sunny top-left lighting. Orthographic 2:1 isometric camera, ground plane edges rise one pixel for every two horizontal pixels. Match the wood, blue fabric, stone and small pixel details of the existing building/prop assets. No vector-flat, watercolor, blur, or smooth 3D rendering.
+
+LEFT: one full empty BEACH VOLLEYBALL COURT. Its level golden sand court surface is an isometric rectangle about 560 pixels wide by 280 pixels deep, with a clean white boundary line, a woven dark net stretched across the middle between TWO honey-wood posts with blue caps, and one small blue-yellow volleyball resting beside a post. No people, spectators, palms, umbrellas, or scenery. Court net does not obscure the outer boundary. Floor sits within the left half, all contained with large transparent margins.
+
+RIGHT: one empty timber FISHING PIER. A narrow long rectangular pier in isometric perspective extending from upper-right to lower-left, about 540 pixels wide by 260 pixels deep overall, with regularly spaced honey-wood planks and pilings with dark bases. Open entry at upper-right end, low rope rails along sides, open fishing spots at lower-left end. One tidy tackle crate and a coiled rope, no people, fishing rods, water, sand, fish, huts or boats. Transparent space around and beneath the structure. All contained within right half.
+
+These are independent placeable game sprites. Their silhouettes must NEVER touch or cross the center gutter. Do not connect them into a scene.

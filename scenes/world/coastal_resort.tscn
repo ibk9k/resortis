@@ -1,0 +1,2371 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/coastal_resort.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/world/coastal_terrain.gd" id="2_d5b23"]
+[ext_resource type="Shader" path="res://assets/shaders/ground.gdshader" id="3_vykbm"]
+[ext_resource type="Texture2D" path="res://assets/atlases/terrain-v1.png" id="4_gou2v"]
+[ext_resource type="Shader" path="res://assets/shaders/surf.gdshader" id="5_jparb"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="6_rovid"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="7_lqdof"]
+[ext_resource type="Texture2D" path="res://assets/atlases/pool-v3.png" id="8_vykbm"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-0.png" id="8_x5qx5"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="9_8m2oi"]
+[ext_resource type="Texture2D" path="res://assets/atlases/beach-v2.png" id="9_gou2v"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-v1.png" id="9_rovid"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-1.png" id="9_usjhe"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-2.png" id="10_qptqg"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-3.png" id="11_pwprt"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-1-0.png" id="12_4sc63"]
+[ext_resource type="Texture2D" path="res://assets/structures/hedge-v1.png" id="12_lqdof"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-1-1.png" id="13_s8sm7"]
+[ext_resource type="Texture2D" path="res://assets/structures/bench-v1.png" id="13_x8mko"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-1-2.png" id="14_v13d2"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-1-3.png" id="15_a7ny7"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-base.png" id="17_4sc63"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-canopy.png" id="18_s8sm7"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-markings-v1.png" id="20_v13d2"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-net-v1.png" id="21_a7ny7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4sc63"]
+shader = ExtResource("3_vykbm")
+shader_parameter/terrain_atlas = ExtResource("4_gou2v")
+shader_parameter/quadrant = Vector2(0, 0)
+shader_parameter/material_tint = Color(0.81, 0.92, 0.76, 1)
+shader_parameter/repeat_cells = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_s8sm7"]
+shader = ExtResource("3_vykbm")
+shader_parameter/terrain_atlas = ExtResource("4_gou2v")
+shader_parameter/quadrant = Vector2(0.5, 0)
+shader_parameter/material_tint = Color(1, 0.97, 0.88, 1)
+shader_parameter/repeat_cells = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_v13d2"]
+shader = ExtResource("3_vykbm")
+shader_parameter/terrain_atlas = ExtResource("4_gou2v")
+shader_parameter/quadrant = Vector2(0.5, 0)
+shader_parameter/material_tint = Color(0.71, 0.81, 0.78, 1)
+shader_parameter/repeat_cells = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_a7ny7"]
+shader = ExtResource("5_jparb")
+shader_parameter/terrain_atlas = ExtResource("4_gou2v")
+shader_parameter/elapsed = null
+shader_parameter/motion = null
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tcig3"]
+shader = ExtResource("3_vykbm")
+shader_parameter/terrain_atlas = ExtResource("4_gou2v")
+shader_parameter/quadrant = Vector2(0, 0.5)
+shader_parameter/material_tint = Color(0.95, 0.98, 0.91, 1)
+shader_parameter/repeat_cells = null
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_24xmo"]
+atlas = ExtResource("7_lqdof")
+region = Rect2(44, 71, 455, 421)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kstdv"]
+atlas = ExtResource("7_lqdof")
+region = Rect2(556, 70, 455, 422)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dt56y"]
+atlas = ExtResource("7_lqdof")
+region = Rect2(1062, 59, 438, 450)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_veuvo"]
+atlas = ExtResource("7_lqdof")
+region = Rect2(48, 530, 448, 434)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mtiqp"]
+atlas = ExtResource("8_vykbm")
+region = Rect2(0, 29, 1240, 1225)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wpvbu"]
+atlas = ExtResource("7_lqdof")
+region = Rect2(1082, 579, 421, 378)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxiwq"]
+atlas = ExtResource("9_gou2v")
+region = Rect2(857, 202, 650, 588)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fxoil"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(61, 70, 361, 505)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_majhm"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(1181, 318, 318, 258)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0e111"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(559, 624, 140, 309)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_di36i"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(889, 706, 150, 229)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q0kmm"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(1157, 751, 331, 189)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wdwg2"]
+atlas = ExtResource("9_8m2oi")
+region = Rect2(471, 185, 288, 388)
+filter_clip = true
+
+[node name="Resortis" type="Node2D" unique_id=1927862708]
+script = ExtResource("1_main")
+
+[node name="Terrain" type="Node2D" parent="." unique_id=413128766]
+z_index = -100
+script = ExtResource("2_d5b23")
+
+[node name="InlandLawn" type="Polygon2D" parent="Terrain" unique_id=2084403847]
+material = SubResource("ShaderMaterial_4sc63")
+polygon = PackedVector2Array(0, -2064, 6144, 1008, 3424, 2368, -2720, -704)
+
+[node name="BroadDryBeach" type="Polygon2D" parent="Terrain" unique_id=1766722548]
+material = SubResource("ShaderMaterial_s8sm7")
+polygon = PackedVector2Array(-2720, -704, 3424, 2368, 2816, 2672, -3328, -400)
+
+[node name="WetSand" type="Polygon2D" parent="Terrain" unique_id=1784714241]
+material = SubResource("ShaderMaterial_v13d2")
+polygon = PackedVector2Array(-3254.4, -436.8, 2889.6, 2635.2, 2793.6, 2683.2, -3350.4, -388.8)
+
+[node name="AnimatedShoreAndOcean" type="Polygon2D" parent="Terrain" unique_id=1128744378]
+material = SubResource("ShaderMaterial_a7ny7")
+polygon = PackedVector2Array(-3232, -448, 2912, 2624, -288, 4224, -6432, 1152)
+
+[node name="StonePaths" type="Polygon2D" parent="Terrain" unique_id=528173913]
+material = SubResource("ShaderMaterial_tcig3")
+polygon = PackedVector2Array(-512, 336, -480, 352, -512, 368, -544, 352, -544, 352, -512, 368, -544, 384, -576, 368, -480, 352, -448, 368, -480, 384, -512, 368, -512, 368, -480, 384, -512, 400, -544, 384, -448, 368, -416, 384, -448, 400, -480, 384, -480, 384, -448, 400, -480, 416, -512, 400, -416, 384, -384, 400, -416, 416, -448, 400, -448, 400, -416, 416, -448, 432, -480, 416, -384, 400, -352, 416, -384, 432, -416, 416, -416, 416, -384, 432, -416, 448, -448, 432, -352, 416, -320, 432, -352, 448, -384, 432, -384, 432, -352, 448, -384, 464, -416, 448, -320, 432, -288, 448, -320, 464, -352, 448, -352, 448, -320, 464, -352, 480, -384, 464, -288, 448, -256, 464, -288, 480, -320, 464, -320, 464, -288, 480, -320, 496, -352, 480, -256, 464, -224, 480, -256, 496, -288, 480, -288, 480, -256, 496, -288, 512, -320, 496, -224, 480, -192, 496, -224, 512, -256, 496, -256, 496, -224, 512, -256, 528, -288, 512, -192, 496, -160, 512, -192, 528, -224, 512, -224, 512, -192, 528, -224, 544, -256, 528, -160, 512, -128, 528, -160, 544, -192, 528, -192, 528, -160, 544, -192, 560, -224, 544, -128, 528, -96, 544, -128, 560, -160, 544, -160, 544, -128, 560, -160, 576, -192, 560, -96, 544, -64, 560, -96, 576, -128, 560, -128, 560, -96, 576, -128, 592, -160, 576, -64, 560, -32, 576, -64, 592, -96, 576, -96, 576, -64, 592, -96, 608, -128, 592, -32, 576, 0, 592, -32, 608, -64, 592, -64, 592, -32, 608, -64, 624, -96, 608, 0, 592, 32, 608, 0, 624, -32, 608, -32, 608, 0, 624, -32, 640, -64, 624, 32, 608, 64, 624, 32, 640, 0, 624, 0, 624, 32, 640, 0, 656, -32, 640, 64, 624, 96, 640, 64, 656, 32, 640, 32, 640, 64, 656, 32, 672, 0, 656, 96, 640, 128, 656, 96, 672, 64, 656, 64, 656, 96, 672, 64, 688, 32, 672, 128, 656, 160, 672, 128, 688, 96, 672, 96, 672, 128, 688, 96, 704, 64, 688, 160, 672, 192, 688, 160, 704, 128, 688, 128, 688, 160, 704, 128, 720, 96, 704, 192, 688, 224, 704, 192, 720, 160, 704, 160, 704, 192, 720, 160, 736, 128, 720, 224, 704, 256, 720, 224, 736, 192, 720, 192, 720, 224, 736, 192, 752, 160, 736, 256, 720, 288, 736, 256, 752, 224, 736, 224, 736, 256, 752, 224, 768, 192, 752, 288, 736, 320, 752, 288, 768, 256, 752, 256, 752, 288, 768, 256, 784, 224, 768, 320, 752, 352, 768, 320, 784, 288, 768, 288, 768, 320, 784, 288, 800, 256, 784, 352, 768, 384, 784, 352, 800, 320, 784, 320, 784, 352, 800, 320, 816, 288, 800, 384, 784, 416, 800, 384, 816, 352, 800, 352, 800, 384, 816, 352, 832, 320, 816, 416, 800, 448, 816, 416, 832, 384, 816, 384, 816, 416, 832, 384, 848, 352, 832, 448, 816, 480, 832, 448, 848, 416, 832, 416, 832, 448, 848, 416, 864, 384, 848, 480, 832, 512, 848, 480, 864, 448, 848, 448, 848, 480, 864, 448, 880, 416, 864, 512, 848, 544, 864, 512, 880, 480, 864, 480, 864, 512, 880, 480, 896, 448, 880, 544, 864, 576, 880, 544, 896, 512, 880, 512, 880, 544, 896, 512, 912, 480, 896, 576, 880, 608, 896, 576, 912, 544, 896, 544, 896, 576, 912, 544, 928, 512, 912, 608, 896, 640, 912, 608, 928, 576, 912, 576, 912, 608, 928, 576, 944, 544, 928, 640, 912, 672, 928, 640, 944, 608, 928, 608, 928, 640, 944, 608, 960, 576, 944, 672, 928, 704, 944, 672, 960, 640, 944, 640, 944, 672, 960, 640, 976, 608, 960, 544, 384, 576, 400, 544, 416, 512, 400, 512, 400, 544, 416, 512, 432, 480, 416, 480, 416, 512, 432, 480, 448, 448, 432, 448, 432, 480, 448, 448, 464, 416, 448, 416, 448, 448, 464, 416, 480, 384, 464, 384, 464, 416, 480, 384, 496, 352, 480, 352, 480, 384, 496, 352, 512, 320, 496, 320, 496, 352, 512, 320, 528, 288, 512, 288, 512, 320, 528, 288, 544, 256, 528, 256, 528, 288, 544, 256, 560, 224, 544, 224, 544, 256, 560, 224, 576, 192, 560, 192, 560, 224, 576, 192, 592, 160, 576, 160, 576, 192, 592, 160, 608, 128, 592, 128, 592, 160, 608, 128, 624, 96, 608, 96, 608, 128, 624, 96, 640, 64, 624, 576, 400, 608, 416, 576, 432, 544, 416, 544, 416, 576, 432, 544, 448, 512, 432, 512, 432, 544, 448, 512, 464, 480, 448, 480, 448, 512, 464, 480, 480, 448, 464, 448, 464, 480, 480, 448, 496, 416, 480, 416, 480, 448, 496, 416, 512, 384, 496, 384, 496, 416, 512, 384, 528, 352, 512, 352, 512, 384, 528, 352, 544, 320, 528, 320, 528, 352, 544, 320, 560, 288, 544, 288, 544, 320, 560, 288, 576, 256, 560, 256, 560, 288, 576, 256, 592, 224, 576, 224, 576, 256, 592, 224, 608, 192, 592, 192, 592, 224, 608, 192, 624, 160, 608, 160, 608, 192, 624, 160, 640, 128, 624, 128, 624, 160, 640, 128, 656, 96, 640, -128, 240, -96, 256, -128, 272, -160, 256, -160, 256, -128, 272, -160, 288, -192, 272, -96, 256, -64, 272, -96, 288, -128, 272, -128, 272, -96, 288, -128, 304, -160, 288, -64, 272, -32, 288, -64, 304, -96, 288, -96, 288, -64, 304, -96, 320, -128, 304, -32, 288, 0, 304, -32, 320, -64, 304, -64, 304, -32, 320, -64, 336, -96, 320, 0, 304, 32, 320, 0, 336, -32, 320, -32, 320, 0, 336, -32, 352, -64, 336, 32, 320, 64, 336, 32, 352, 0, 336, 0, 336, 32, 352, 0, 368, -32, 352, 64, 336, 96, 352, 64, 368, 32, 352, 32, 352, 64, 368, 32, 384, 0, 368, 96, 352, 128, 368, 96, 384, 64, 368, 64, 368, 96, 384, 64, 400, 32, 384, 128, 368, 160, 384, 128, 400, 96, 384, 96, 384, 128, 400, 96, 416, 64, 400, 160, 384, 192, 400, 160, 416, 128, 400, 128, 400, 160, 416, 128, 432, 96, 416, 192, 400, 224, 416, 192, 432, 160, 416, 160, 416, 192, 432, 160, 448, 128, 432, 224, 416, 256, 432, 224, 448, 192, 432, 192, 432, 224, 448, 192, 464, 160, 448, 256, 432, 288, 448, 256, 464, 224, 448, 224, 448, 256, 464, 224, 480, 192, 464, 288, 448, 320, 464, 288, 480, 256, 464, 256, 464, 288, 480, 256, 496, 224, 480, 320, 464, 352, 480, 320, 496, 288, 480, 288, 480, 320, 496, 288, 512, 256, 496, 416, 512, 448, 528, 416, 544, 384, 528, 384, 528, 416, 544, 384, 560, 352, 544, 448, 528, 480, 544, 448, 560, 416, 544, 416, 544, 448, 560, 416, 576, 384, 560, 480, 544, 512, 560, 480, 576, 448, 560, 448, 560, 480, 576, 448, 592, 416, 576, 512, 560, 544, 576, 512, 592, 480, 576, 480, 576, 512, 592, 480, 608, 448, 592, 544, 576, 576, 592, 544, 608, 512, 592, 512, 592, 544, 608, 512, 624, 480, 608, 576, 592, 608, 608, 576, 624, 544, 608, 544, 608, 576, 624, 544, 640, 512, 624, 608, 608, 640, 624, 608, 640, 576, 624, 576, 624, 608, 640, 576, 656, 544, 640, 640, 624, 672, 640, 640, 656, 608, 640, 608, 640, 640, 656, 608, 672, 576, 656, 672, 640, 704, 656, 672, 672, 640, 656, 640, 656, 672, 672, 640, 688, 608, 672, 704, 656, 736, 672, 704, 688, 672, 672, 672, 672, 704, 688, 672, 704, 640, 688, 736, 672, 768, 688, 736, 704, 704, 688, 704, 688, 736, 704, 704, 720, 672, 704, 768, 688, 800, 704, 768, 720, 736, 704, 736, 704, 768, 720, 736, 736, 704, 720, 800, 704, 832, 720, 800, 736, 768, 720, 768, 720, 800, 736, 768, 752, 736, 736, 832, 720, 864, 736, 832, 752, 800, 736, 800, 736, 832, 752, 800, 768, 768, 752, 864, 736, 896, 752, 864, 768, 832, 752, 832, 752, 864, 768, 832, 784, 800, 768, 896, 752, 928, 768, 896, 784, 864, 768, 864, 768, 896, 784, 864, 800, 832, 784, 928, 768, 960, 784, 928, 800, 896, 784, 896, 784, 928, 800, 896, 816, 864, 800, -352, 352, -320, 368, -352, 384, -384, 368, -320, 368, -288, 384, -320, 400, -352, 384, -288, 384, -256, 400, -288, 416, -320, 400, -256, 400, -224, 416, -256, 432, -288, 416, -224, 416, -192, 432, -224, 448, -256, 432, -192, 432, -160, 448, -192, 464, -224, 448, -160, 448, -128, 464, -160, 480, -192, 464, -128, 464, -96, 480, -128, 496, -160, 480, -96, 480, -64, 496, -96, 512, -128, 496, -64, 496, -32, 512, -64, 528, -96, 512, -32, 512, 0, 528, -32, 544, -64, 528, 0, 528, 32, 544, 0, 560, -32, 544, 32, 544, 64, 560, 32, 576, 0, 560, 64, 560, 96, 576, 64, 592, 32, 576, 96, 576, 128, 592, 96, 608, 64, 592, 192, 624, 224, 640, 192, 656, 160, 640, 224, 640, 256, 656, 224, 672, 192, 656, 256, 656, 288, 672, 256, 688, 224, 672, 288, 672, 320, 688, 288, 704, 256, 688, 320, 688, 352, 704, 320, 720, 288, 704, 352, 704, 384, 720, 352, 736, 320, 720, 384, 720, 416, 736, 384, 752, 352, 736, 416, 736, 448, 752, 416, 768, 384, 752, 448, 752, 480, 768, 448, 784, 416, 768, 480, 768, 512, 784, 480, 800, 448, 784, 512, 784, 544, 800, 512, 816, 480, 800, 544, 800, 576, 816, 544, 832, 512, 816, 576, 816, 608, 832, 576, 848, 544, 832, 608, 832, 640, 848, 608, 864, 576, 848, 640, 848, 672, 864, 640, 880, 608, 864, 672, 864, 704, 880, 672, 896, 640, 880, 704, 880, 736, 896, 704, 912, 672, 896, 864, 800, 896, 816, 864, 832, 832, 816, 832, 816, 864, 832, 832, 848, 800, 832, 800, 832, 832, 848, 800, 864, 768, 848, 768, 848, 800, 864, 768, 880, 736, 864, 736, 864, 768, 880, 736, 896, 704, 880, 672, 896, 704, 912, 672, 928, 640, 912, 960, 784, 992, 800, 960, 816, 928, 800, 928, 800, 960, 816, 928, 832, 896, 816, 896, 816, 928, 832, 896, 848, 864, 832, 864, 832, 896, 848, 864, 864, 832, 848, 832, 848, 864, 864, 832, 880, 800, 864, 800, 864, 832, 880, 800, 896, 768, 880, 768, 880, 800, 896, 768, 912, 736, 896, 736, 896, 768, 912, 736, 928, 704, 912, 704, 912, 736, 928, 704, 944, 672, 928, 0, 272, 32, 288, 0, 304, -32, 288, 224, 384, 256, 400, 224, 416, 192, 400, -224, 384, -192, 400, -224, 416, -256, 400, 0, 496, 32, 512, 0, 528, -32, 512, 128, 272, 160, 288, 128, 304, 96, 288, 96, 288, 128, 304, 96, 320, 64, 304, 64, 304, 96, 320, 64, 336, 32, 320, 352, 384, 384, 400, 352, 416, 320, 400, 320, 400, 352, 416, 320, 432, 288, 416, 288, 416, 320, 432, 288, 448, 256, 432, -96, 384, -64, 400, -96, 416, -128, 400, -128, 400, -96, 416, -128, 432, -160, 416, -160, 416, -128, 432, -160, 448, -192, 432, 128, 496, 160, 512, 128, 528, 96, 512, 96, 512, 128, 528, 96, 544, 64, 528, 64, 528, 96, 544, 64, 560, 32, 544)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3), PackedInt32Array(4, 5, 6, 7), PackedInt32Array(8, 9, 10, 11), PackedInt32Array(12, 13, 14, 15), PackedInt32Array(16, 17, 18, 19), PackedInt32Array(20, 21, 22, 23), PackedInt32Array(24, 25, 26, 27), PackedInt32Array(28, 29, 30, 31), PackedInt32Array(32, 33, 34, 35), PackedInt32Array(36, 37, 38, 39), PackedInt32Array(40, 41, 42, 43), PackedInt32Array(44, 45, 46, 47), PackedInt32Array(48, 49, 50, 51), PackedInt32Array(52, 53, 54, 55), PackedInt32Array(56, 57, 58, 59), PackedInt32Array(60, 61, 62, 63), PackedInt32Array(64, 65, 66, 67), PackedInt32Array(68, 69, 70, 71), PackedInt32Array(72, 73, 74, 75), PackedInt32Array(76, 77, 78, 79), PackedInt32Array(80, 81, 82, 83), PackedInt32Array(84, 85, 86, 87), PackedInt32Array(88, 89, 90, 91), PackedInt32Array(92, 93, 94, 95), PackedInt32Array(96, 97, 98, 99), PackedInt32Array(100, 101, 102, 103), PackedInt32Array(104, 105, 106, 107), PackedInt32Array(108, 109, 110, 111), PackedInt32Array(112, 113, 114, 115), PackedInt32Array(116, 117, 118, 119), PackedInt32Array(120, 121, 122, 123), PackedInt32Array(124, 125, 126, 127), PackedInt32Array(128, 129, 130, 131), PackedInt32Array(132, 133, 134, 135), PackedInt32Array(136, 137, 138, 139), PackedInt32Array(140, 141, 142, 143), PackedInt32Array(144, 145, 146, 147), PackedInt32Array(148, 149, 150, 151), PackedInt32Array(152, 153, 154, 155), PackedInt32Array(156, 157, 158, 159), PackedInt32Array(160, 161, 162, 163), PackedInt32Array(164, 165, 166, 167), PackedInt32Array(168, 169, 170, 171), PackedInt32Array(172, 173, 174, 175), PackedInt32Array(176, 177, 178, 179), PackedInt32Array(180, 181, 182, 183), PackedInt32Array(184, 185, 186, 187), PackedInt32Array(188, 189, 190, 191), PackedInt32Array(192, 193, 194, 195), PackedInt32Array(196, 197, 198, 199), PackedInt32Array(200, 201, 202, 203), PackedInt32Array(204, 205, 206, 207), PackedInt32Array(208, 209, 210, 211), PackedInt32Array(212, 213, 214, 215), PackedInt32Array(216, 217, 218, 219), PackedInt32Array(220, 221, 222, 223), PackedInt32Array(224, 225, 226, 227), PackedInt32Array(228, 229, 230, 231), PackedInt32Array(232, 233, 234, 235), PackedInt32Array(236, 237, 238, 239), PackedInt32Array(240, 241, 242, 243), PackedInt32Array(244, 245, 246, 247), PackedInt32Array(248, 249, 250, 251), PackedInt32Array(252, 253, 254, 255), PackedInt32Array(256, 257, 258, 259), PackedInt32Array(260, 261, 262, 263), PackedInt32Array(264, 265, 266, 267), PackedInt32Array(268, 269, 270, 271), PackedInt32Array(272, 273, 274, 275), PackedInt32Array(276, 277, 278, 279), PackedInt32Array(280, 281, 282, 283), PackedInt32Array(284, 285, 286, 287), PackedInt32Array(288, 289, 290, 291), PackedInt32Array(292, 293, 294, 295), PackedInt32Array(296, 297, 298, 299), PackedInt32Array(300, 301, 302, 303), PackedInt32Array(304, 305, 306, 307), PackedInt32Array(308, 309, 310, 311), PackedInt32Array(312, 313, 314, 315), PackedInt32Array(316, 317, 318, 319), PackedInt32Array(320, 321, 322, 323), PackedInt32Array(324, 325, 326, 327), PackedInt32Array(328, 329, 330, 331), PackedInt32Array(332, 333, 334, 335), PackedInt32Array(336, 337, 338, 339), PackedInt32Array(340, 341, 342, 343), PackedInt32Array(344, 345, 346, 347), PackedInt32Array(348, 349, 350, 351), PackedInt32Array(352, 353, 354, 355), PackedInt32Array(356, 357, 358, 359), PackedInt32Array(360, 361, 362, 363), PackedInt32Array(364, 365, 366, 367), PackedInt32Array(368, 369, 370, 371), PackedInt32Array(372, 373, 374, 375), PackedInt32Array(376, 377, 378, 379), PackedInt32Array(380, 381, 382, 383), PackedInt32Array(384, 385, 386, 387), PackedInt32Array(388, 389, 390, 391), PackedInt32Array(392, 393, 394, 395), PackedInt32Array(396, 397, 398, 399), PackedInt32Array(400, 401, 402, 403), PackedInt32Array(404, 405, 406, 407), PackedInt32Array(408, 409, 410, 411), PackedInt32Array(412, 413, 414, 415), PackedInt32Array(416, 417, 418, 419), PackedInt32Array(420, 421, 422, 423), PackedInt32Array(424, 425, 426, 427), PackedInt32Array(428, 429, 430, 431), PackedInt32Array(432, 433, 434, 435), PackedInt32Array(436, 437, 438, 439), PackedInt32Array(440, 441, 442, 443), PackedInt32Array(444, 445, 446, 447), PackedInt32Array(448, 449, 450, 451), PackedInt32Array(452, 453, 454, 455), PackedInt32Array(456, 457, 458, 459), PackedInt32Array(460, 461, 462, 463), PackedInt32Array(464, 465, 466, 467), PackedInt32Array(468, 469, 470, 471), PackedInt32Array(472, 473, 474, 475), PackedInt32Array(476, 477, 478, 479), PackedInt32Array(480, 481, 482, 483), PackedInt32Array(484, 485, 486, 487), PackedInt32Array(488, 489, 490, 491), PackedInt32Array(492, 493, 494, 495), PackedInt32Array(496, 497, 498, 499), PackedInt32Array(500, 501, 502, 503), PackedInt32Array(504, 505, 506, 507), PackedInt32Array(508, 509, 510, 511), PackedInt32Array(512, 513, 514, 515), PackedInt32Array(516, 517, 518, 519), PackedInt32Array(520, 521, 522, 523), PackedInt32Array(524, 525, 526, 527), PackedInt32Array(528, 529, 530, 531), PackedInt32Array(532, 533, 534, 535), PackedInt32Array(536, 537, 538, 539), PackedInt32Array(540, 541, 542, 543), PackedInt32Array(544, 545, 546, 547), PackedInt32Array(548, 549, 550, 551), PackedInt32Array(552, 553, 554, 555), PackedInt32Array(556, 557, 558, 559), PackedInt32Array(560, 561, 562, 563), PackedInt32Array(564, 565, 566, 567), PackedInt32Array(568, 569, 570, 571), PackedInt32Array(572, 573, 574, 575), PackedInt32Array(576, 577, 578, 579), PackedInt32Array(580, 581, 582, 583), PackedInt32Array(584, 585, 586, 587), PackedInt32Array(588, 589, 590, 591), PackedInt32Array(592, 593, 594, 595), PackedInt32Array(596, 597, 598, 599), PackedInt32Array(600, 601, 602, 603), PackedInt32Array(604, 605, 606, 607), PackedInt32Array(608, 609, 610, 611), PackedInt32Array(612, 613, 614, 615), PackedInt32Array(616, 617, 618, 619), PackedInt32Array(620, 621, 622, 623), PackedInt32Array(624, 625, 626, 627), PackedInt32Array(628, 629, 630, 631), PackedInt32Array(632, 633, 634, 635), PackedInt32Array(636, 637, 638, 639), PackedInt32Array(640, 641, 642, 643), PackedInt32Array(644, 645, 646, 647), PackedInt32Array(648, 649, 650, 651), PackedInt32Array(652, 653, 654, 655), PackedInt32Array(656, 657, 658, 659), PackedInt32Array(660, 661, 662, 663), PackedInt32Array(664, 665, 666, 667), PackedInt32Array(668, 669, 670, 671), PackedInt32Array(672, 673, 674, 675), PackedInt32Array(676, 677, 678, 679), PackedInt32Array(680, 681, 682, 683), PackedInt32Array(684, 685, 686, 687), PackedInt32Array(688, 689, 690, 691), PackedInt32Array(692, 693, 694, 695), PackedInt32Array(696, 697, 698, 699), PackedInt32Array(700, 701, 702, 703), PackedInt32Array(704, 705, 706, 707), PackedInt32Array(708, 709, 710, 711), PackedInt32Array(712, 713, 714, 715), PackedInt32Array(716, 717, 718, 719), PackedInt32Array(720, 721, 722, 723), PackedInt32Array(724, 725, 726, 727), PackedInt32Array(728, 729, 730, 731), PackedInt32Array(732, 733, 734, 735), PackedInt32Array(736, 737, 738, 739), PackedInt32Array(740, 741, 742, 743), PackedInt32Array(744, 745, 746, 747), PackedInt32Array(748, 749, 750, 751), PackedInt32Array(752, 753, 754, 755), PackedInt32Array(756, 757, 758, 759), PackedInt32Array(760, 761, 762, 763), PackedInt32Array(764, 765, 766, 767), PackedInt32Array(768, 769, 770, 771), PackedInt32Array(772, 773, 774, 775), PackedInt32Array(776, 777, 778, 779), PackedInt32Array(780, 781, 782, 783), PackedInt32Array(784, 785, 786, 787), PackedInt32Array(788, 789, 790, 791), PackedInt32Array(792, 793, 794, 795), PackedInt32Array(796, 797, 798, 799), PackedInt32Array(800, 801, 802, 803), PackedInt32Array(804, 805, 806, 807), PackedInt32Array(808, 809, 810, 811), PackedInt32Array(812, 813, 814, 815), PackedInt32Array(816, 817, 818, 819), PackedInt32Array(820, 821, 822, 823), PackedInt32Array(824, 825, 826, 827), PackedInt32Array(828, 829, 830, 831), PackedInt32Array(832, 833, 834, 835), PackedInt32Array(836, 837, 838, 839), PackedInt32Array(840, 841, 842, 843), PackedInt32Array(844, 845, 846, 847), PackedInt32Array(848, 849, 850, 851), PackedInt32Array(852, 853, 854, 855), PackedInt32Array(856, 857, 858, 859), PackedInt32Array(860, 861, 862, 863), PackedInt32Array(864, 865, 866, 867), PackedInt32Array(868, 869, 870, 871), PackedInt32Array(872, 873, 874, 875), PackedInt32Array(876, 877, 878, 879), PackedInt32Array(880, 881, 882, 883), PackedInt32Array(884, 885, 886, 887), PackedInt32Array(888, 889, 890, 891), PackedInt32Array(892, 893, 894, 895), PackedInt32Array(896, 897, 898, 899), PackedInt32Array(900, 901, 902, 903), PackedInt32Array(904, 905, 906, 907), PackedInt32Array(908, 909, 910, 911), PackedInt32Array(912, 913, 914, 915), PackedInt32Array(916, 917, 918, 919), PackedInt32Array(920, 921, 922, 923), PackedInt32Array(924, 925, 926, 927), PackedInt32Array(928, 929, 930, 931)])
+
+[node name="ResortObjects" type="Node2D" parent="." unique_id=201070395]
+y_sort_enabled = true
+
+[node name="Cabin_001" type="Node2D" parent="ResortObjects" unique_id=1728038660]
+y_sort_enabled = true
+position = Vector2(64, 240)
+script = ExtResource("6_rovid")
+object_id = 1
+grid_position = Vector2(7, 5)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_001" unique_id=1687760296]
+visible = false
+texture_filter = 1
+position = Vector2(-92.009415, -113.849014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = SubResource("AtlasTexture_24xmo")
+centered = false
+
+[node name="FloorAndRearWalls" type="Node2D" parent="ResortObjects/Cabin_001" unique_id=1941763729]
+position = Vector2(0, -63.68)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_001/FloorAndRearWalls" unique_id=1177895866]
+texture_filter = 1
+position = Vector2(-92.009415, -50.169014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("8_x5qx5")
+centered = false
+
+[node name="Bed" type="Node2D" parent="ResortObjects/Cabin_001" unique_id=1222201435]
+position = Vector2(-28.8, 1.5999985)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_001/Bed" unique_id=1086722339]
+texture_filter = 1
+position = Vector2(-63.209415, -115.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("9_usjhe")
+centered = false
+
+[node name="Desk" type="Node2D" parent="ResortObjects/Cabin_001" unique_id=1744228098]
+position = Vector2(57.600002, 9.599998)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_001/Desk" unique_id=393583537]
+texture_filter = 1
+position = Vector2(-149.60942, -123.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("10_qptqg")
+centered = false
+
+[node name="FrontEdge" type="Node2D" parent="ResortObjects/Cabin_001" unique_id=4364232]
+position = Vector2(0, 62.4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_001/FrontEdge" unique_id=353667006]
+texture_filter = 1
+position = Vector2(-92.009415, -176.24902)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("11_pwprt")
+centered = false
+
+[node name="Cabin_002" type="Node2D" parent="ResortObjects" unique_id=2011393572]
+y_sort_enabled = true
+position = Vector2(288, 352)
+script = ExtResource("6_rovid")
+object_id = 2
+grid_position = Vector2(14, 5)
+orientation = 1
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_002" unique_id=2009659022]
+visible = false
+texture_filter = 1
+position = Vector2(-92.900116, -116.02286)
+scale = Vector2(0.4092517, 0.4092517)
+texture = SubResource("AtlasTexture_kstdv")
+centered = false
+
+[node name="FloorAndRearWalls" type="Node2D" parent="ResortObjects/Cabin_002" unique_id=1182340131]
+position = Vector2(0, -63.68)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_002/FloorAndRearWalls" unique_id=1994196754]
+texture_filter = 1
+position = Vector2(-92.900116, -52.342857)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("12_4sc63")
+centered = false
+
+[node name="Bed" type="Node2D" parent="ResortObjects/Cabin_002" unique_id=1598890632]
+position = Vector2(35.199997, 1.5999985)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_002/Bed" unique_id=65143603]
+texture_filter = 1
+position = Vector2(-128.10011, -117.622856)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("13_s8sm7")
+centered = false
+
+[node name="Desk" type="Node2D" parent="ResortObjects/Cabin_002" unique_id=1202676729]
+position = Vector2(-60.800003, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_002/Desk" unique_id=2138126424]
+texture_filter = 1
+position = Vector2(-32.100113, -124.02286)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("14_v13d2")
+centered = false
+
+[node name="FrontEdge" type="Node2D" parent="ResortObjects/Cabin_002" unique_id=1118799949]
+position = Vector2(0, 62.4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_002/FrontEdge" unique_id=923885677]
+texture_filter = 1
+position = Vector2(-92.900116, -178.42285)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("15_a7ny7")
+centered = false
+
+[node name="Cabin_003" type="Node2D" parent="ResortObjects" unique_id=766056075]
+y_sort_enabled = true
+position = Vector2(-160, 352)
+script = ExtResource("6_rovid")
+object_id = 3
+grid_position = Vector2(7, 12)
+orientation = 1
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_003" unique_id=349375220]
+visible = false
+texture_filter = 1
+position = Vector2(-92.900116, -116.02286)
+scale = Vector2(0.4092517, 0.4092517)
+texture = SubResource("AtlasTexture_kstdv")
+centered = false
+
+[node name="FloorAndRearWalls" type="Node2D" parent="ResortObjects/Cabin_003" unique_id=606783151]
+position = Vector2(0, -63.68)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_003/FloorAndRearWalls" unique_id=597035516]
+texture_filter = 1
+position = Vector2(-92.900116, -52.342857)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("12_4sc63")
+centered = false
+
+[node name="Bed" type="Node2D" parent="ResortObjects/Cabin_003" unique_id=1336320427]
+position = Vector2(35.199997, 1.5999985)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_003/Bed" unique_id=636315538]
+texture_filter = 1
+position = Vector2(-128.10011, -117.622856)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("13_s8sm7")
+centered = false
+
+[node name="Desk" type="Node2D" parent="ResortObjects/Cabin_003" unique_id=1915751785]
+position = Vector2(-60.800003, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_003/Desk" unique_id=811038244]
+texture_filter = 1
+position = Vector2(-32.100113, -124.02286)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("14_v13d2")
+centered = false
+
+[node name="FrontEdge" type="Node2D" parent="ResortObjects/Cabin_003" unique_id=549618397]
+position = Vector2(0, 62.4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_003/FrontEdge" unique_id=1204375796]
+texture_filter = 1
+position = Vector2(-92.900116, -178.42285)
+scale = Vector2(0.4092517, 0.4092517)
+texture = ExtResource("15_a7ny7")
+centered = false
+
+[node name="Cabin_004" type="Node2D" parent="ResortObjects" unique_id=461838075]
+y_sort_enabled = true
+position = Vector2(64, 464)
+script = ExtResource("6_rovid")
+object_id = 4
+grid_position = Vector2(14, 12)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_004" unique_id=1546335133]
+visible = false
+texture_filter = 1
+position = Vector2(-92.009415, -113.849014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = SubResource("AtlasTexture_24xmo")
+centered = false
+
+[node name="FloorAndRearWalls" type="Node2D" parent="ResortObjects/Cabin_004" unique_id=1010695882]
+position = Vector2(0, -63.68)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_004/FloorAndRearWalls" unique_id=74976911]
+texture_filter = 1
+position = Vector2(-92.009415, -50.169014)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("8_x5qx5")
+centered = false
+
+[node name="Bed" type="Node2D" parent="ResortObjects/Cabin_004" unique_id=716314318]
+position = Vector2(-28.8, 1.5999985)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_004/Bed" unique_id=1229584304]
+texture_filter = 1
+position = Vector2(-63.209415, -115.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("9_usjhe")
+centered = false
+
+[node name="Desk" type="Node2D" parent="ResortObjects/Cabin_004" unique_id=1347259581]
+position = Vector2(57.600002, 9.599998)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_004/Desk" unique_id=629293470]
+texture_filter = 1
+position = Vector2(-149.60942, -123.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("10_qptqg")
+centered = false
+
+[node name="FrontEdge" type="Node2D" parent="ResortObjects/Cabin_004" unique_id=1214311309]
+position = Vector2(0, 62.4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cabin_004/FrontEdge" unique_id=336926318]
+texture_filter = 1
+position = Vector2(-92.009415, -176.24902)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("11_pwprt")
+centered = false
+
+[node name="Reception_005" type="Node2D" parent="ResortObjects" unique_id=1064695740]
+position = Vector2(368, 648)
+script = ExtResource("6_rovid")
+object_id = 5
+kind = "reception"
+grid_position = Vector2(24, 13)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Reception_005" unique_id=1747655124]
+texture_filter = 1
+position = Vector2(-115.295654, -178.89337)
+scale = Vector2(0.5288791, 0.5288791)
+texture = SubResource("AtlasTexture_dt56y")
+centered = false
+
+[node name="Cafe_006" type="Node2D" parent="ResortObjects" unique_id=987260144]
+position = Vector2(608, 768)
+script = ExtResource("6_rovid")
+object_id = 6
+kind = "cafe"
+grid_position = Vector2(32, 13)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Cafe_006" unique_id=2128242015]
+texture_filter = 1
+position = Vector2(-96.861496, -133.94809)
+scale = Vector2(0.43631303, 0.43631303)
+texture = SubResource("AtlasTexture_veuvo")
+centered = false
+
+[node name="Pool_007" type="Node2D" parent="ResortObjects" unique_id=1164816103]
+position = Vector2(800, 608)
+script = ExtResource("6_rovid")
+object_id = 7
+kind = "pool"
+grid_position = Vector2(28, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Pool_007" unique_id=263542126]
+texture_filter = 1
+position = Vector2(162.22922, -178.45213)
+rotation = 3.1415927
+scale = Vector2(0.25348315, -0.25348315)
+texture = SubResource("AtlasTexture_mtiqp")
+centered = false
+
+[node name="Sunbeds_008" type="Node2D" parent="ResortObjects" unique_id=363032769]
+position = Vector2(-512, 512)
+script = ExtResource("6_rovid")
+object_id = 8
+kind = "sunbeds"
+grid_position = Vector2(7, 23)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Sunbeds_008" unique_id=424357431]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_wpvbu")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="ResortObjects/Sunbeds_008" unique_id=767187688]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("17_4sc63")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="ResortObjects/Sunbeds_008" unique_id=124354371]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("18_s8sm7")
+centered = false
+
+[node name="Sunbeds_009" type="Node2D" parent="ResortObjects" unique_id=631774535]
+position = Vector2(-352, 592)
+script = ExtResource("6_rovid")
+object_id = 9
+kind = "sunbeds"
+grid_position = Vector2(12, 23)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Sunbeds_009" unique_id=956666732]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_wpvbu")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="ResortObjects/Sunbeds_009" unique_id=1751538556]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("17_4sc63")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="ResortObjects/Sunbeds_009" unique_id=655822419]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("18_s8sm7")
+centered = false
+
+[node name="Sunbeds_010" type="Node2D" parent="ResortObjects" unique_id=197040011]
+position = Vector2(-192, 672)
+script = ExtResource("6_rovid")
+object_id = 10
+kind = "sunbeds"
+grid_position = Vector2(17, 23)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Sunbeds_010" unique_id=575859939]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_wpvbu")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="ResortObjects/Sunbeds_010" unique_id=805954453]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("17_4sc63")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="ResortObjects/Sunbeds_010" unique_id=749191463]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("18_s8sm7")
+centered = false
+
+[node name="Sunbeds_011" type="Node2D" parent="ResortObjects" unique_id=1608215454]
+position = Vector2(-608, 720)
+script = ExtResource("6_rovid")
+object_id = 11
+kind = "sunbeds"
+grid_position = Vector2(12, 31)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Sunbeds_011" unique_id=1788283811]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_wpvbu")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="ResortObjects/Sunbeds_011" unique_id=472809192]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("17_4sc63")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="ResortObjects/Sunbeds_011" unique_id=2043224034]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("18_s8sm7")
+centered = false
+
+[node name="Sunbeds_012" type="Node2D" parent="ResortObjects" unique_id=1734697872]
+position = Vector2(-352, 848)
+script = ExtResource("6_rovid")
+object_id = 12
+kind = "sunbeds"
+grid_position = Vector2(20, 31)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Sunbeds_012" unique_id=923469631]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_wpvbu")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="ResortObjects/Sunbeds_012" unique_id=268465258]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("17_4sc63")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="ResortObjects/Sunbeds_012" unique_id=934837265]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("18_s8sm7")
+centered = false
+
+[node name="Volleyball_013" type="Node2D" parent="ResortObjects" unique_id=2068807152]
+y_sort_enabled = true
+position = Vector2(112, 952)
+script = ExtResource("6_rovid")
+object_id = 13
+kind = "volleyball"
+grid_position = Vector2(28, 26)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Volleyball_013" unique_id=1706514256]
+visible = false
+texture_filter = 1
+position = Vector2(-194, -116)
+texture = ExtResource("9_rovid")
+centered = false
+
+[node name="Markings" type="Node2D" parent="ResortObjects/Volleyball_013" unique_id=515271591]
+position = Vector2(0, -200)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Volleyball_013/Markings" unique_id=764971714]
+texture_filter = 1
+position = Vector2(-194, 84)
+texture = ExtResource("20_v13d2")
+centered = false
+
+[node name="Net" type="Node2D" parent="ResortObjects/Volleyball_013" unique_id=407506996]
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Volleyball_013/Net" unique_id=785762365]
+texture_filter = 1
+position = Vector2(-194, -116)
+texture = ExtResource("21_a7ny7")
+centered = false
+
+[node name="Pier_014" type="Node2D" parent="ResortObjects" unique_id=412532539]
+position = Vector2(-1136, 712)
+script = ExtResource("6_rovid")
+object_id = 14
+kind = "pier"
+grid_position = Vector2(4, 36)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Pier_014" unique_id=46523248]
+texture_filter = 1
+position = Vector2(-66.18613, -69.097916)
+scale = Vector2(0.20255892, 0.20255892)
+texture = SubResource("AtlasTexture_xxiwq")
+centered = false
+
+[node name="Palm_015" type="Node2D" parent="ResortObjects" unique_id=1629262253]
+position = Vector2(0, 128)
+script = ExtResource("6_rovid")
+object_id = 15
+kind = "palm"
+grid_position = Vector2(4, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_015" unique_id=843368619]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_016" type="Node2D" parent="ResortObjects" unique_id=999274833]
+position = Vector2(256, 256)
+script = ExtResource("6_rovid")
+object_id = 16
+kind = "palm"
+grid_position = Vector2(12, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_016" unique_id=1787104963]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_017" type="Node2D" parent="ResortObjects" unique_id=1641997714]
+position = Vector2(512, 384)
+script = ExtResource("6_rovid")
+object_id = 17
+kind = "palm"
+grid_position = Vector2(20, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_017" unique_id=1276075313]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_018" type="Node2D" parent="ResortObjects" unique_id=812361259]
+position = Vector2(672, 464)
+script = ExtResource("6_rovid")
+object_id = 18
+kind = "palm"
+grid_position = Vector2(25, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_018" unique_id=325075358]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_019" type="Node2D" parent="ResortObjects" unique_id=231578495]
+position = Vector2(1088, 672)
+script = ExtResource("6_rovid")
+object_id = 19
+kind = "palm"
+grid_position = Vector2(38, 4)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_019" unique_id=884184732]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_020" type="Node2D" parent="ResortObjects" unique_id=465794561]
+position = Vector2(-224, 240)
+script = ExtResource("6_rovid")
+object_id = 20
+kind = "palm"
+grid_position = Vector2(4, 11)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_020" unique_id=879207692]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_021" type="Node2D" parent="ResortObjects" unique_id=967038889]
+position = Vector2(224, 496)
+script = ExtResource("6_rovid")
+object_id = 21
+kind = "palm"
+grid_position = Vector2(19, 12)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_021" unique_id=115824442]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_022" type="Node2D" parent="ResortObjects" unique_id=1151407949]
+position = Vector2(480, 528)
+script = ExtResource("6_rovid")
+object_id = 22
+kind = "palm"
+grid_position = Vector2(24, 9)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_022" unique_id=2035033826]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_023" type="Node2D" parent="ResortObjects" unique_id=962891822]
+position = Vector2(832, 800)
+script = ExtResource("6_rovid")
+object_id = 23
+kind = "palm"
+grid_position = Vector2(38, 12)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_023" unique_id=1205736100]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_024" type="Node2D" parent="ResortObjects" unique_id=569388247]
+position = Vector2(-416, 336)
+script = ExtResource("6_rovid")
+object_id = 24
+kind = "palm"
+grid_position = Vector2(4, 17)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_024" unique_id=99929502]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_025" type="Node2D" parent="ResortObjects" unique_id=1942010509]
+position = Vector2(192, 672)
+script = ExtResource("6_rovid")
+object_id = 25
+kind = "palm"
+grid_position = Vector2(24, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_025" unique_id=1027446010]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_026" type="Node2D" parent="ResortObjects" unique_id=604836842]
+position = Vector2(416, 784)
+script = ExtResource("6_rovid")
+object_id = 26
+kind = "palm"
+grid_position = Vector2(31, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_026" unique_id=202018095]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_027" type="Node2D" parent="ResortObjects" unique_id=1983325085]
+position = Vector2(640, 896)
+script = ExtResource("6_rovid")
+object_id = 27
+kind = "palm"
+grid_position = Vector2(38, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_027" unique_id=1840146620]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_028" type="Node2D" parent="ResortObjects" unique_id=1728173874]
+position = Vector2(-640, 416)
+script = ExtResource("6_rovid")
+object_id = 28
+kind = "palm"
+grid_position = Vector2(3, 23)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_028" unique_id=502550533]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_029" type="Node2D" parent="ResortObjects" unique_id=332232269]
+position = Vector2(0, 736)
+script = ExtResource("6_rovid")
+object_id = 29
+kind = "palm"
+grid_position = Vector2(23, 23)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_029" unique_id=1275766023]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_030" type="Node2D" parent="ResortObjects" unique_id=511316851]
+position = Vector2(448, 1024)
+script = ExtResource("6_rovid")
+object_id = 30
+kind = "palm"
+grid_position = Vector2(39, 25)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_030" unique_id=378038527]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Flowers_031" type="Node2D" parent="ResortObjects" unique_id=1790469623]
+position = Vector2(-416, 368)
+script = ExtResource("6_rovid")
+object_id = 31
+kind = "flowers"
+grid_position = Vector2(5, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_031" unique_id=1373938352]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Flowers_032" type="Node2D" parent="ResortObjects" unique_id=838664949]
+position = Vector2(-224, 464)
+script = ExtResource("6_rovid")
+object_id = 32
+kind = "flowers"
+grid_position = Vector2(11, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_032" unique_id=212897239]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Flowers_033" type="Node2D" parent="ResortObjects" unique_id=1137276409]
+position = Vector2(0, 576)
+script = ExtResource("6_rovid")
+object_id = 33
+kind = "flowers"
+grid_position = Vector2(18, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_033" unique_id=396853104]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Flowers_034" type="Node2D" parent="ResortObjects" unique_id=1464547656]
+position = Vector2(256, 704)
+script = ExtResource("6_rovid")
+object_id = 34
+kind = "flowers"
+grid_position = Vector2(26, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_034" unique_id=1320909734]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Flowers_035" type="Node2D" parent="ResortObjects" unique_id=1265849292]
+position = Vector2(384, 768)
+script = ExtResource("6_rovid")
+object_id = 35
+kind = "flowers"
+grid_position = Vector2(30, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_035" unique_id=845825118]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Flowers_036" type="Node2D" parent="ResortObjects" unique_id=1544302044]
+position = Vector2(576, 864)
+script = ExtResource("6_rovid")
+object_id = 36
+kind = "flowers"
+grid_position = Vector2(36, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Flowers_036" unique_id=1400295992]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_majhm")
+centered = false
+
+[node name="Lantern_037" type="Node2D" parent="ResortObjects" unique_id=1276953498]
+position = Vector2(-496, 424)
+script = ExtResource("6_rovid")
+object_id = 37
+kind = "lantern"
+grid_position = Vector2(5.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_037" unique_id=1161211788]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Lantern_038" type="Node2D" parent="ResortObjects" unique_id=2039983511]
+position = Vector2(-304, 520)
+script = ExtResource("6_rovid")
+object_id = 38
+kind = "lantern"
+grid_position = Vector2(11.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_038" unique_id=54684568]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Lantern_039" type="Node2D" parent="ResortObjects" unique_id=1640175086]
+position = Vector2(-80, 632)
+script = ExtResource("6_rovid")
+object_id = 39
+kind = "lantern"
+grid_position = Vector2(18.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_039" unique_id=627307790]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Lantern_040" type="Node2D" parent="ResortObjects" unique_id=1775601166]
+position = Vector2(112, 728)
+script = ExtResource("6_rovid")
+object_id = 40
+kind = "lantern"
+grid_position = Vector2(24.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_040" unique_id=893655480]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Lantern_041" type="Node2D" parent="ResortObjects" unique_id=60888544]
+position = Vector2(304, 824)
+script = ExtResource("6_rovid")
+object_id = 41
+kind = "lantern"
+grid_position = Vector2(30.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_041" unique_id=594973156]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Lantern_042" type="Node2D" parent="ResortObjects" unique_id=2085521557]
+position = Vector2(528, 936)
+script = ExtResource("6_rovid")
+object_id = 42
+kind = "lantern"
+grid_position = Vector2(37.5, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Lantern_042" unique_id=1001777841]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_0e111")
+centered = false
+
+[node name="Hedge_043" type="Node2D" parent="ResortObjects" unique_id=1626292345]
+position = Vector2(-80, 216)
+script = ExtResource("6_rovid")
+object_id = 43
+kind = "hedge"
+grid_position = Vector2(5, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_043" unique_id=72928280]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_044" type="Node2D" parent="ResortObjects" unique_id=1111011019]
+position = Vector2(144, 328)
+script = ExtResource("6_rovid")
+object_id = 44
+kind = "hedge"
+grid_position = Vector2(12, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_044" unique_id=1226711326]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_045" type="Node2D" parent="ResortObjects" unique_id=633030952]
+position = Vector2(368, 440)
+script = ExtResource("6_rovid")
+object_id = 45
+kind = "hedge"
+grid_position = Vector2(19, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_045" unique_id=262627793]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_046" type="Node2D" parent="ResortObjects" unique_id=1126068463]
+position = Vector2(-304, 328)
+script = ExtResource("6_rovid")
+object_id = 46
+kind = "hedge"
+grid_position = Vector2(5, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_046" unique_id=1143791285]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_047" type="Node2D" parent="ResortObjects" unique_id=232555198]
+position = Vector2(-80, 440)
+script = ExtResource("6_rovid")
+object_id = 47
+kind = "hedge"
+grid_position = Vector2(12, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_047" unique_id=773781998]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_048" type="Node2D" parent="ResortObjects" unique_id=150187730]
+position = Vector2(144, 552)
+script = ExtResource("6_rovid")
+object_id = 48
+kind = "hedge"
+grid_position = Vector2(19, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_048" unique_id=1780622742]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_049" type="Node2D" parent="ResortObjects" unique_id=1562383891]
+position = Vector2(592, 552)
+script = ExtResource("6_rovid")
+object_id = 49
+kind = "hedge"
+grid_position = Vector2(26, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_049" unique_id=229730517]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Hedge_050" type="Node2D" parent="ResortObjects" unique_id=1953939574]
+position = Vector2(944, 728)
+script = ExtResource("6_rovid")
+object_id = 50
+kind = "hedge"
+grid_position = Vector2(37, 8)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Hedge_050" unique_id=1057170931]
+texture_filter = 1
+position = Vector2(-49, -60)
+texture = ExtResource("12_lqdof")
+centered = false
+
+[node name="Bench_051" type="Node2D" parent="ResortObjects" unique_id=821325382]
+position = Vector2(-368, 488)
+script = ExtResource("6_rovid")
+object_id = 51
+kind = "bench"
+grid_position = Vector2(9, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bench_051" unique_id=225832955]
+texture_filter = 1
+position = Vector2(-46, -74)
+texture = ExtResource("13_x8mko")
+centered = false
+
+[node name="Bench_052" type="Node2D" parent="ResortObjects" unique_id=804012649]
+position = Vector2(-16, 664)
+script = ExtResource("6_rovid")
+object_id = 52
+kind = "bench"
+grid_position = Vector2(20, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bench_052" unique_id=76995143]
+texture_filter = 1
+position = Vector2(-46, -74)
+texture = ExtResource("13_x8mko")
+centered = false
+
+[node name="Bench_053" type="Node2D" parent="ResortObjects" unique_id=969875657]
+position = Vector2(400, 872)
+script = ExtResource("6_rovid")
+object_id = 53
+kind = "bench"
+grid_position = Vector2(33, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bench_053" unique_id=6258094]
+texture_filter = 1
+position = Vector2(-46, -74)
+texture = ExtResource("13_x8mko")
+centered = false
+
+[node name="Bin_054" type="Node2D" parent="ResortObjects" unique_id=1445492932]
+position = Vector2(-384, 384)
+script = ExtResource("6_rovid")
+object_id = 54
+kind = "bin"
+grid_position = Vector2(6, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bin_054" unique_id=1542571320]
+texture_filter = 1
+position = Vector2(-14.5, -36.83)
+scale = Vector2(0.19333333, 0.19333333)
+texture = SubResource("AtlasTexture_di36i")
+centered = false
+
+[node name="Bin_055" type="Node2D" parent="ResortObjects" unique_id=868630931]
+position = Vector2(64, 608)
+script = ExtResource("6_rovid")
+object_id = 55
+kind = "bin"
+grid_position = Vector2(20, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bin_055" unique_id=2054641277]
+texture_filter = 1
+position = Vector2(-14.5, -36.83)
+scale = Vector2(0.19333333, 0.19333333)
+texture = SubResource("AtlasTexture_di36i")
+centered = false
+
+[node name="Bin_056" type="Node2D" parent="ResortObjects" unique_id=1599672987]
+position = Vector2(480, 816)
+script = ExtResource("6_rovid")
+object_id = 56
+kind = "bin"
+grid_position = Vector2(33, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bin_056" unique_id=479829879]
+texture_filter = 1
+position = Vector2(-14.5, -36.83)
+scale = Vector2(0.19333333, 0.19333333)
+texture = SubResource("AtlasTexture_di36i")
+centered = false
+
+[node name="Bin_057" type="Node2D" parent="ResortObjects" unique_id=131767206]
+position = Vector2(608, 976)
+script = ExtResource("6_rovid")
+object_id = 57
+kind = "bin"
+grid_position = Vector2(40, 21)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Bin_057" unique_id=1803804609]
+texture_filter = 1
+position = Vector2(-14.5, -36.83)
+scale = Vector2(0.19333333, 0.19333333)
+texture = SubResource("AtlasTexture_di36i")
+centered = false
+
+[node name="Rocks_058" type="Node2D" parent="ResortObjects" unique_id=1652339064]
+position = Vector2(-1136, 616)
+script = ExtResource("6_rovid")
+object_id = 58
+kind = "rocks"
+grid_position = Vector2(1, 37)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Rocks_058" unique_id=2020983956]
+texture_filter = 1
+position = Vector2(-27.316223, -23.107376)
+scale = Vector2(0.16505264, 0.16505264)
+texture = SubResource("AtlasTexture_q0kmm")
+centered = false
+
+[node name="Rocks_059" type="Node2D" parent="ResortObjects" unique_id=1680680523]
+position = Vector2(112, 1272)
+script = ExtResource("6_rovid")
+object_id = 59
+kind = "rocks"
+grid_position = Vector2(41, 38)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Rocks_059" unique_id=1789252745]
+texture_filter = 1
+position = Vector2(-27.316223, -23.107376)
+scale = Vector2(0.16505264, 0.16505264)
+texture = SubResource("AtlasTexture_q0kmm")
+centered = false
+
+[node name="Rocks_060" type="Node2D" parent="ResortObjects" unique_id=754229100]
+position = Vector2(144, 1224)
+script = ExtResource("6_rovid")
+object_id = 60
+kind = "rocks"
+grid_position = Vector2(40, 36)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Rocks_060" unique_id=547655432]
+texture_filter = 1
+position = Vector2(-27.316223, -23.107376)
+scale = Vector2(0.16505264, 0.16505264)
+texture = SubResource("AtlasTexture_q0kmm")
+centered = false
+
+[node name="Rocks_061" type="Node2D" parent="ResortObjects" unique_id=977097611]
+position = Vector2(-1136, 648)
+script = ExtResource("6_rovid")
+object_id = 61
+kind = "rocks"
+grid_position = Vector2(2, 38)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Rocks_061" unique_id=810849773]
+texture_filter = 1
+position = Vector2(-27.316223, -23.107376)
+scale = Vector2(0.16505264, 0.16505264)
+texture = SubResource("AtlasTexture_q0kmm")
+centered = false
+
+[node name="Palm_062" type="Node2D" parent="ResortObjects" unique_id=1280721681]
+position = Vector2(-768, 608)
+script = ExtResource("6_rovid")
+object_id = 62
+kind = "palm"
+grid_position = Vector2(7, 31)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_062" unique_id=977524752]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_063" type="Node2D" parent="ResortObjects" unique_id=2147330833]
+position = Vector2(-256, 928)
+script = ExtResource("6_rovid")
+object_id = 63
+kind = "palm"
+grid_position = Vector2(25, 33)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_063" unique_id=147892268]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="Palm_064" type="Node2D" parent="ResortObjects" unique_id=1842350195]
+position = Vector2(160, 1168)
+script = ExtResource("6_rovid")
+object_id = 64
+kind = "palm"
+grid_position = Vector2(39, 34)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/Palm_064" unique_id=663969758]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="SmallPalm_065" type="Node2D" parent="ResortObjects" unique_id=1046147273]
+position = Vector2(-192, 128)
+script = ExtResource("6_rovid")
+object_id = 65
+kind = "small_palm"
+grid_position = Vector2(1, 7)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_065" unique_id=1372263828]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="SmallPalm_066" type="Node2D" parent="ResortObjects" unique_id=1504642226]
+position = Vector2(-416, 272)
+script = ExtResource("6_rovid")
+object_id = 66
+kind = "small_palm"
+grid_position = Vector2(2, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_066" unique_id=1614754237]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="SmallPalm_067" type="Node2D" parent="ResortObjects" unique_id=2130519243]
+position = Vector2(1152, 768)
+script = ExtResource("6_rovid")
+object_id = 67
+kind = "small_palm"
+grid_position = Vector2(42, 6)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_067" unique_id=1233169803]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="SmallPalm_068" type="Node2D" parent="ResortObjects" unique_id=1782901290]
+position = Vector2(832, 928)
+script = ExtResource("6_rovid")
+object_id = 68
+kind = "small_palm"
+grid_position = Vector2(42, 16)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_068" unique_id=933219535]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="SmallPalm_069" type="Node2D" parent="ResortObjects" unique_id=1461930343]
+position = Vector2(736, 400)
+script = ExtResource("6_rovid")
+object_id = 69
+kind = "small_palm"
+grid_position = Vector2(24, 1)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_069" unique_id=590704190]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="SmallPalm_070" type="Node2D" parent="ResortObjects" unique_id=870559893]
+position = Vector2(256, 160)
+script = ExtResource("6_rovid")
+object_id = 70
+kind = "small_palm"
+grid_position = Vector2(9, 1)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/SmallPalm_070" unique_id=750091543]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_-6_-3" type="Node2D" parent="ResortObjects" unique_id=842633154]
+position = Vector2(-101.49574, -150.202)
+script = ExtResource("6_rovid")
+object_id = 4937
+kind = "palm"
+grid_position = Vector2(-6.279683, -3.1079412)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-6_-3" unique_id=475181996]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_-6_0" type="Node2D" parent="ResortObjects" unique_id=259500021]
+position = Vector2(-183.46036, -90.8181)
+script = ExtResource("6_rovid")
+object_id = 4940
+kind = "palm"
+grid_position = Vector2(-5.7046337, 0.028502226)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-6_0" unique_id=43164480]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_-4_-3" type="Node2D" parent="ResortObjects" unique_id=531654901]
+position = Vector2(-33.946106, -100.543045)
+script = ExtResource("6_rovid")
+object_id = 4957
+kind = "palm"
+grid_position = Vector2(-3.672378, -2.6115623)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-4_-3" unique_id=186459502]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_-4_0" type="Node2D" parent="ResortObjects" unique_id=1462782227]
+position = Vector2(-135.9743, -62.946762)
+script = ExtResource("6_rovid")
+object_id = 4960
+kind = "palm"
+grid_position = Vector2(-4.091685, 0.1575121)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-4_0" unique_id=1849619365]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_-2_-3" type="Node2D" parent="ResortObjects" unique_id=110401869]
+position = Vector2(34.757324, -86.40859)
+script = ExtResource("6_rovid")
+object_id = 4977
+kind = "palm"
+grid_position = Vector2(-2.1571853, -3.2433517)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-2_-3" unique_id=220646934]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_-2_0" type="Node2D" parent="ResortObjects" unique_id=1621797730]
+position = Vector2(-55.54686, -26.085587)
+script = ExtResource("6_rovid")
+object_id = 4980
+kind = "palm"
+grid_position = Vector2(-1.6830943, 0.052745163)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_-2_0" unique_id=1293423907]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_0_-3" type="Node2D" parent="ResortObjects" unique_id=1593189581]
+position = Vector2(79.38337, -45.182484)
+script = ExtResource("6_rovid")
+object_id = 4997
+kind = "palm"
+grid_position = Vector2(-0.17158742, -2.6523178)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_0_-3" unique_id=1732685101]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_0_0" type="Node2D" parent="ResortObjects" unique_id=849526802]
+position = Vector2(3.465726, -1.8859553)
+script = ExtResource("6_rovid")
+object_id = 5000
+kind = "palm"
+grid_position = Vector2(-0.004784137, -0.11308807)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_0_0" unique_id=1151771882]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_2_-3" type="Node2D" parent="ResortObjects" unique_id=297572597]
+position = Vector2(183.00333, -16.55338)
+script = ExtResource("6_rovid")
+object_id = 5017
+kind = "palm"
+grid_position = Vector2(2.342134, -3.3767202)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_2_-3" unique_id=189359970]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_2_0" type="Node2D" parent="ResortObjects" unique_id=1281865799]
+position = Vector2(66.661865, 28.770248)
+script = ExtResource("6_rovid")
+object_id = 5020
+kind = "palm"
+grid_position = Vector2(1.9406619, -0.14252141)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_2_0" unique_id=1311033430]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_4_-3" type="Node2D" parent="ResortObjects" unique_id=1813154483]
+position = Vector2(225.239, 10.391487)
+script = ExtResource("6_rovid")
+object_id = 5037
+kind = "palm"
+grid_position = Vector2(3.8440933, -3.1946254)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_4_-3" unique_id=149463324]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_4_0" type="Node2D" parent="ResortObjects" unique_id=967993589]
+position = Vector2(132.883, 67.23721)
+script = ExtResource("6_rovid")
+object_id = 5040
+kind = "small_palm"
+grid_position = Vector2(4.1774597, 0.024866343)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_4_0" unique_id=418966282]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_6_-3" type="Node2D" parent="ResortObjects" unique_id=2145962822]
+position = Vector2(288.42947, 59.785618)
+script = ExtResource("6_rovid")
+object_id = 5057
+kind = "palm"
+grid_position = Vector2(6.375011, -2.6384099)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_6_-3" unique_id=1881546454]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_6_0" type="Node2D" parent="ResortObjects" unique_id=227649599]
+position = Vector2(204.09216, 92.095856)
+script = ExtResource("6_rovid")
+object_id = 5060
+kind = "palm"
+grid_position = Vector2(6.0669355, -0.31094435)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_6_0" unique_id=784216084]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_8_-3" type="Node2D" parent="ResortObjects" unique_id=580805982]
+position = Vector2(343.28128, 77.82626)
+script = ExtResource("6_rovid")
+object_id = 5077
+kind = "palm"
+grid_position = Vector2(7.7958407, -2.9316995)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_8_-3" unique_id=1430696292]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_8_0" type="Node2D" parent="ResortObjects" unique_id=471702543]
+position = Vector2(245.91222, 135.47775)
+script = ExtResource("6_rovid")
+object_id = 5080
+kind = "small_palm"
+grid_position = Vector2(8.076058, 0.39130148)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_8_0" unique_id=307069948]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_10_-3" type="Node2D" parent="ResortObjects" unique_id=558335303]
+position = Vector2(423.44638, 119.15129)
+script = ExtResource("6_rovid")
+object_id = 5097
+kind = "small_palm"
+grid_position = Vector2(10.339828, -2.892872)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_10_-3" unique_id=1550471757]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_10_0" type="Node2D" parent="ResortObjects" unique_id=1684190073]
+position = Vector2(330.66354, 154.2357)
+script = ExtResource("6_rovid")
+object_id = 5100
+kind = "palm"
+grid_position = Vector2(9.986484, -0.34675184)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_10_0" unique_id=768608350]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_12_-3" type="Node2D" parent="ResortObjects" unique_id=51366319]
+position = Vector2(488.46005, 144.27217)
+script = ExtResource("6_rovid")
+object_id = 5117
+kind = "small_palm"
+grid_position = Vector2(12.140694, -3.123683)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_12_-3" unique_id=1213720089]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_12_0" type="Node2D" parent="ResortObjects" unique_id=309646738]
+position = Vector2(383.18726, 197.10428)
+script = ExtResource("6_rovid")
+object_id = 5120
+kind = "small_palm"
+grid_position = Vector2(12.14681, 0.17220762)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_12_0" unique_id=1386352796]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_14_-3" type="Node2D" parent="ResortObjects" unique_id=419025257]
+position = Vector2(559.7238, 174.13013)
+script = ExtResource("6_rovid")
+object_id = 5137
+kind = "small_palm"
+grid_position = Vector2(14.187251, -3.304118)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_14_-3" unique_id=166762296]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_14_0" type="Node2D" parent="ResortObjects" unique_id=526376825]
+position = Vector2(444.08075, 225.50983)
+script = ExtResource("6_rovid")
+object_id = 5140
+kind = "palm"
+grid_position = Vector2(13.985944, 0.108419985)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_14_0" unique_id=1650022237]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_16_-3" type="Node2D" parent="ResortObjects" unique_id=1563121976]
+position = Vector2(591.6607, 207.44153)
+script = ExtResource("6_rovid")
+object_id = 5157
+kind = "palm"
+grid_position = Vector2(15.727246, -2.7621508)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_16_-3" unique_id=627473139]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_16_0" type="Node2D" parent="ResortObjects" unique_id=614437231]
+position = Vector2(511.07062, 257.71243)
+script = ExtResource("6_rovid")
+object_id = 5160
+kind = "palm"
+grid_position = Vector2(16.038992, 0.06803483)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_16_0" unique_id=886912896]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_18_-3" type="Node2D" parent="ResortObjects" unique_id=1258060445]
+position = Vector2(675.5777, 244.73412)
+script = ExtResource("6_rovid")
+object_id = 5177
+kind = "palm"
+grid_position = Vector2(18.203842, -2.9079602)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_18_-3" unique_id=1669510783]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_18_0" type="Node2D" parent="ResortObjects" unique_id=1358298683]
+position = Vector2(582.0671, 285.85452)
+script = ExtResource("6_rovid")
+object_id = 5180
+kind = "small_palm"
+grid_position = Vector2(18.027752, -0.1618446)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_18_0" unique_id=957333230]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_20_-3" type="Node2D" parent="ResortObjects" unique_id=698097982]
+position = Vector2(746.377, 272.3835)
+script = ExtResource("6_rovid")
+object_id = 5197
+kind = "palm"
+grid_position = Vector2(20.174126, -3.1501553)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_20_-3" unique_id=841241778]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_20_0" type="Node2D" parent="ResortObjects" unique_id=2055561977]
+position = Vector2(640.031, 314.3554)
+script = ExtResource("6_rovid")
+object_id = 5200
+kind = "palm"
+grid_position = Vector2(19.824091, -0.17687717)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_20_0" unique_id=1330357178]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_22_-3" type="Node2D" parent="ResortObjects" unique_id=524701052]
+position = Vector2(806.10406, 303.62076)
+script = ExtResource("6_rovid")
+object_id = 5217
+kind = "palm"
+grid_position = Vector2(22.083525, -3.1072276)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_22_-3" unique_id=1023663497]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_22_0" type="Node2D" parent="ResortObjects" unique_id=544073972]
+position = Vector2(715.1923, 359.06168)
+script = ExtResource("6_rovid")
+object_id = 5220
+kind = "small_palm"
+grid_position = Vector2(22.395557, 0.04579717)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_22_0" unique_id=1910130961]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_24_-3" type="Node2D" parent="ResortObjects" unique_id=1937413176]
+position = Vector2(865.8483, 341.58517)
+script = ExtResource("6_rovid")
+object_id = 5237
+kind = "palm"
+grid_position = Vector2(24.203417, -2.8543427)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_24_-3" unique_id=1886573517]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_24_0" type="Node2D" parent="ResortObjects" unique_id=1326181088]
+position = Vector2(753.02295, 384.17676)
+script = ExtResource("6_rovid")
+object_id = 5240
+kind = "small_palm"
+grid_position = Vector2(23.771507, 0.23954043)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_24_0" unique_id=948941690]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_26_-3" type="Node2D" parent="ResortObjects" unique_id=2063596075]
+position = Vector2(905.1755, 367.42148)
+script = ExtResource("6_rovid")
+object_id = 5257
+kind = "palm"
+grid_position = Vector2(25.625288, -2.6614456)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_26_-3" unique_id=2013677740]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_26_0" type="Node2D" parent="ResortObjects" unique_id=284003369]
+position = Vector2(841.3961, 417.92828)
+script = ExtResource("6_rovid")
+object_id = 5260
+kind = "palm"
+grid_position = Vector2(26.207073, -0.08655536)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_26_0" unique_id=531656530]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_28_-3" type="Node2D" parent="ResortObjects" unique_id=1328995420]
+position = Vector2(979.6936, 406.4331)
+script = ExtResource("6_rovid")
+object_id = 5277
+kind = "small_palm"
+grid_position = Vector2(28.008747, -2.6066778)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_28_-3" unique_id=1890288453]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_28_0" type="Node2D" parent="ResortObjects" unique_id=647873880]
+position = Vector2(891.792, 454.417)
+script = ExtResource("6_rovid")
+object_id = 5280
+kind = "small_palm"
+grid_position = Vector2(28.13478, 0.26628026)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_28_0" unique_id=471901040]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_30_-3" type="Node2D" parent="ResortObjects" unique_id=721560893]
+position = Vector2(1053.5142, 440.16443)
+script = ExtResource("6_rovid")
+object_id = 5297
+kind = "palm"
+grid_position = Vector2(30.216297, -2.7060204)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_30_-3" unique_id=516450874]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_30_0" type="Node2D" parent="ResortObjects" unique_id=651925246]
+position = Vector2(952.2288, 485.16098)
+script = ExtResource("6_rovid")
+object_id = 5300
+kind = "palm"
+grid_position = Vector2(30.039856, 0.28270593)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_30_0" unique_id=1826220669]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_32_-3" type="Node2D" parent="ResortObjects" unique_id=1402878588]
+position = Vector2(1118.6992, 454.52927)
+script = ExtResource("6_rovid")
+object_id = 5317
+kind = "palm"
+grid_position = Vector2(31.683714, -3.2756355)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_32_-3" unique_id=944780074]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_32_0" type="Node2D" parent="ResortObjects" unique_id=751344168]
+position = Vector2(1014.8769, 510.75266)
+script = ExtResource("6_rovid")
+object_id = 5320
+kind = "small_palm"
+grid_position = Vector2(31.818472, 0.103568524)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_32_0" unique_id=538155959]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_34_-3" type="Node2D" parent="ResortObjects" unique_id=604180325]
+position = Vector2(1196.66, 489.67902)
+script = ExtResource("6_rovid")
+object_id = 5337
+kind = "small_palm"
+grid_position = Vector2(34.000282, -3.3953443)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_34_-3" unique_id=777098968]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_34_0" type="Node2D" parent="ResortObjects" unique_id=701295676]
+position = Vector2(1094.1561, 535.2403)
+script = ExtResource("6_rovid")
+object_id = 5340
+kind = "small_palm"
+grid_position = Vector2(33.82245, -0.36992934)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_34_0" unique_id=1663229401]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_36_-3" type="Node2D" parent="ResortObjects" unique_id=1625826076]
+position = Vector2(1232.684, 531.8117)
+script = ExtResource("6_rovid")
+object_id = 5357
+kind = "palm"
+grid_position = Vector2(35.879803, -2.641571)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_36_-3" unique_id=335466083]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_36_0" type="Node2D" parent="ResortObjects" unique_id=630734394]
+position = Vector2(1161.2876, 581.7119)
+script = ExtResource("6_rovid")
+object_id = 5360
+kind = "palm"
+grid_position = Vector2(36.323616, 0.033379555)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_36_0" unique_id=1323492297]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_38_-3" type="Node2D" parent="ResortObjects" unique_id=721262409]
+position = Vector2(1303.8805, 552.51215)
+script = ExtResource("6_rovid")
+object_id = 5377
+kind = "palm"
+grid_position = Vector2(37.639137, -3.1071265)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_38_-3" unique_id=1087953668]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_38_0" type="Node2D" parent="ResortObjects" unique_id=1011507441]
+position = Vector2(1207.3378, 610.37225)
+script = ExtResource("6_rovid")
+object_id = 5380
+kind = "palm"
+grid_position = Vector2(37.938786, 0.20948151)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_38_0" unique_id=750339817]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_40_-3" type="Node2D" parent="ResortObjects" unique_id=449587412]
+position = Vector2(1363.9728, 595.86163)
+script = ExtResource("6_rovid")
+object_id = 5397
+kind = "small_palm"
+grid_position = Vector2(39.93275, -2.691399)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_40_-3" unique_id=418308399]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_40_0" type="Node2D" parent="ResortObjects" unique_id=1573747326]
+position = Vector2(1277.1376, 631.2122)
+script = ExtResource("6_rovid")
+object_id = 5400
+kind = "palm"
+grid_position = Vector2(39.680656, -0.22989255)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_40_0" unique_id=1901865091]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_42_-3" type="Node2D" parent="ResortObjects" unique_id=1185552152]
+position = Vector2(1438.8982, 626.40894)
+script = ExtResource("6_rovid")
+object_id = 5417
+kind = "small_palm"
+grid_position = Vector2(42.058064, -2.9075048)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_42_-3" unique_id=1707626681]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_42_0" type="Node2D" parent="ResortObjects" unique_id=1422992512]
+position = Vector2(1353.3296, 664.6992)
+script = ExtResource("6_rovid")
+object_id = 5420
+kind = "small_palm"
+grid_position = Vector2(41.917625, -0.37392566)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_42_0" unique_id=1453410615]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_44_-3" type="Node2D" parent="ResortObjects" unique_id=1695853196]
+position = Vector2(1483.4348, 654.9182)
+script = ExtResource("6_rovid")
+object_id = 5437
+kind = "small_palm"
+grid_position = Vector2(43.644863, -2.7124743)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_44_-3" unique_id=1767837345]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_44_0" type="Node2D" parent="ResortObjects" unique_id=1145661835]
+position = Vector2(1414.0762, 710.4391)
+script = ExtResource("6_rovid")
+object_id = 5440
+kind = "small_palm"
+grid_position = Vector2(44.29616, 0.106282204)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_44_0" unique_id=591538080]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_46_-3" type="Node2D" parent="ResortObjects" unique_id=1476138599]
+position = Vector2(1557.3507, 686.17487)
+script = ExtResource("6_rovid")
+object_id = 5457
+kind = "palm"
+grid_position = Vector2(45.77657, -2.89064)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_46_-3" unique_id=123352254]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_46_0" type="Node2D" parent="ResortObjects" unique_id=1494636892]
+position = Vector2(1470.1893, 743.27545)
+script = ExtResource("6_rovid")
+object_id = 5460
+kind = "palm"
+grid_position = Vector2(46.199066, 0.25564924)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_46_0" unique_id=2038925844]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_48_-3" type="Node2D" parent="ResortObjects" unique_id=90990937]
+position = Vector2(1630.8525, 713.5853)
+script = ExtResource("6_rovid")
+object_id = 5477
+kind = "palm"
+grid_position = Vector2(47.781612, -3.182531)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_48_-3" unique_id=347191353]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="RearCanopy_48_0" type="Node2D" parent="ResortObjects" unique_id=1254431764]
+position = Vector2(1535.8245, 758.37146)
+script = ExtResource("6_rovid")
+object_id = 5480
+kind = "small_palm"
+grid_position = Vector2(47.696365, -0.29814798)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_48_0" unique_id=503229380]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_50_-3" type="Node2D" parent="ResortObjects" unique_id=1804346300]
+position = Vector2(1715.8817, 749.79877)
+script = ExtResource("6_rovid")
+object_id = 5497
+kind = "small_palm"
+grid_position = Vector2(50.241863, -3.379439)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_50_-3" unique_id=553177348]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_wdwg2")
+centered = false
+
+[node name="RearCanopy_50_0" type="Node2D" parent="ResortObjects" unique_id=672577593]
+position = Vector2(1597.2302, 807.9652)
+script = ExtResource("6_rovid")
+object_id = 5500
+kind = "palm"
+grid_position = Vector2(50.205635, 0.2921913)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/RearCanopy_50_0" unique_id=1495707706]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_3" type="Node2D" parent="ResortObjects" unique_id=13461884]
+position = Vector2(-160, 16)
+script = ExtResource("6_rovid")
+object_id = 6028
+kind = "palm"
+grid_position = Vector2(-2, 3)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_3" unique_id=1227288374]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_3" type="Node2D" parent="ResortObjects" unique_id=1021004861]
+position = Vector2(1376, 784)
+script = ExtResource("6_rovid")
+object_id = 6076
+kind = "palm"
+grid_position = Vector2(46, 3)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_3" unique_id=1393305252]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_6" type="Node2D" parent="ResortObjects" unique_id=1781321640]
+position = Vector2(-256, 64)
+script = ExtResource("6_rovid")
+object_id = 6058
+kind = "palm"
+grid_position = Vector2(-2, 6)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_6" unique_id=503424618]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_6" type="Node2D" parent="ResortObjects" unique_id=1222896116]
+position = Vector2(1280, 832)
+script = ExtResource("6_rovid")
+object_id = 6106
+kind = "palm"
+grid_position = Vector2(46, 6)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_6" unique_id=1421078963]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_9" type="Node2D" parent="ResortObjects" unique_id=374883169]
+position = Vector2(-352, 112)
+script = ExtResource("6_rovid")
+object_id = 6088
+kind = "palm"
+grid_position = Vector2(-2, 9)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_9" unique_id=1705598463]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_9" type="Node2D" parent="ResortObjects" unique_id=1474504870]
+position = Vector2(1184, 880)
+script = ExtResource("6_rovid")
+object_id = 6136
+kind = "palm"
+grid_position = Vector2(46, 9)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_9" unique_id=2098827258]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_12" type="Node2D" parent="ResortObjects" unique_id=1906994029]
+position = Vector2(-448, 160)
+script = ExtResource("6_rovid")
+object_id = 6118
+kind = "palm"
+grid_position = Vector2(-2, 12)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_12" unique_id=440884106]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_12" type="Node2D" parent="ResortObjects" unique_id=1980959575]
+position = Vector2(1088, 928)
+script = ExtResource("6_rovid")
+object_id = 6166
+kind = "palm"
+grid_position = Vector2(46, 12)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_12" unique_id=715996643]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_15" type="Node2D" parent="ResortObjects" unique_id=1946947373]
+position = Vector2(-544, 208)
+script = ExtResource("6_rovid")
+object_id = 6148
+kind = "palm"
+grid_position = Vector2(-2, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_15" unique_id=888216865]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_15" type="Node2D" parent="ResortObjects" unique_id=1061358111]
+position = Vector2(992, 976)
+script = ExtResource("6_rovid")
+object_id = 6196
+kind = "palm"
+grid_position = Vector2(46, 15)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_15" unique_id=1623701475]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_-2_18" type="Node2D" parent="ResortObjects" unique_id=102147133]
+position = Vector2(-640, 256)
+script = ExtResource("6_rovid")
+object_id = 6178
+kind = "palm"
+grid_position = Vector2(-2, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_-2_18" unique_id=344600035]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false
+
+[node name="EdgeCanopy_46_18" type="Node2D" parent="ResortObjects" unique_id=1570203091]
+position = Vector2(896, 1024)
+script = ExtResource("6_rovid")
+object_id = 6226
+kind = "palm"
+grid_position = Vector2(46, 18)
+
+[node name="Art" type="Sprite2D" parent="ResortObjects/EdgeCanopy_46_18" unique_id=113622158]
+texture_filter = 1
+position = Vector2(-50.88089, -168.24376)
+scale = Vector2(0.35457063, 0.35457063)
+texture = SubResource("AtlasTexture_fxoil")
+centered = false

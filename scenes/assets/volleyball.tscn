@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_kfpoj"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-v1.png" id="2_md5p2"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-markings-v1.png" id="3_hnsfn"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-net-v1.png" id="4_ugum3"]
+
+[node name="Volleyball" type="Node2D" unique_id=1113324372]
+y_sort_enabled = true
+script = ExtResource("1_kfpoj")
+object_id = 1
+kind = "volleyball"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=2094614878]
+visible = false
+texture_filter = 1
+position = Vector2(-194, -116)
+texture = ExtResource("2_md5p2")
+centered = false
+
+[node name="Markings" type="Node2D" parent="." unique_id=442294519]
+position = Vector2(0, -200)
+
+[node name="Art" type="Sprite2D" parent="Markings" unique_id=1491604941]
+texture_filter = 1
+position = Vector2(-194, 84)
+texture = ExtResource("3_hnsfn")
+centered = false
+
+[node name="Net" type="Node2D" parent="." unique_id=1480853985]
+
+[node name="Art" type="Sprite2D" parent="Net" unique_id=1631398173]
+texture_filter = 1
+position = Vector2(-194, -116)
+texture = ExtResource("4_ugum3")
+centered = false

@@ -1,0 +1,2 @@
+# Reviewed asset hashes cover exact source bytes. Disable checkout conversion.
+* -text

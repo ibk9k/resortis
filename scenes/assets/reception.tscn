@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_4ov6v"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_uyqp0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_16pc1"]
+atlas = ExtResource("2_uyqp0")
+region = Rect2(1062, 59, 438, 450)
+filter_clip = true
+
+[node name="Reception" type="Node2D" unique_id=1259266752]
+script = ExtResource("1_4ov6v")
+object_id = 1
+kind = "reception"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=60254805]
+texture_filter = 1
+position = Vector2(-115.295654, -178.89337)
+scale = Vector2(0.5288791, 0.5288791)
+texture = SubResource("AtlasTexture_16pc1")
+centered = false

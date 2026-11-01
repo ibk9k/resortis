@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_1vs8j"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="2_7ajf0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5mdjk"]
+atlas = ExtResource("2_7ajf0")
+region = Rect2(559, 624, 140, 309)
+filter_clip = true
+
+[node name="Lantern" type="Node2D" unique_id=1349493231]
+script = ExtResource("1_1vs8j")
+object_id = 1
+kind = "lantern"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1737288753]
+texture_filter = 1
+position = Vector2(-13, -71.875)
+scale = Vector2(0.25, 0.25)
+texture = SubResource("AtlasTexture_5mdjk")
+centered = false

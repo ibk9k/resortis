@@ -1,0 +1,13 @@
+# 0012: Living resort and complete snapshots
+
+Accepted scope: user's six-worker/nine-change plan, approved 2026-11-01. Implementation follows `docs/plans/2026-11-01-living-resort-plan.md`. This extends ADRs 0010/0011 from a single stay into concurrent bookings; it preserves approved character art, the gait contract, grid and containment rules.
+
+`LivingResortRuntime` configures `ResortSimulation`, `FacilitySessions`, `CleanlinessSystem` and `OperatingLedger`. Population owns one 1/30-second clock/order and advances attached services once. Each person owns a separate unchanged `GuestMotion`; rendering and management panels observe identities, not copied state. Twelve live people is the slice cap, with room capacity honestly limiting residents. Default ambient walkers are removed; the old stay/crowd is available only through `legacy_stay_fixture` in explicit compatibility/art tests.
+
+Bookings are exclusive, one to three nights and shared by solo/couple parties. Independent needs/choices permit split leisure; nights and checkout reunite physically. Two-place facilities use safe bounded queues and held exit claims. Admission/fees require actual arrival; both court players must be affordable before either pays. Operating receipts are idempotent, room reserves protected, wages real; construction cash/pricing and maintenance remain separate future work.
+
+Schema 4 stores every live service with the layout. Restore validates service snapshots in a staged candidate, then cross-validates clocks, membership, cabins, bidirectional live facility ownership, exact income/payroll/category totals, retained activity receipts and canonical historical payer/wage identities before replacing the open state. Pruned customers and dismissed staff legitimately remain in the historical journal. Schema-3 legacy imports preserve poses/routes/deadlines/money and seed honest opening totals without replaying income or payroll.
+
+All editing paths use the complete population/staff/queue protection boundary. No player saves are used as test fixtures. Tests bind isolated paths before scene startup and prove both successful resumption and failed-load preservation. Numerical checks, real GPU/motion review and independently measured small-crowd evidence are separate acceptance requirements.
+
+New janitor art is a separate complete-painting workflow with retained alpha masters/prompts, uniform scale and shoe registration. Guest walking PNGs are protected byte-for-byte. Opposite court facings mirror complete activity drawings and their hand metadata together. Source approval follows actual render review; it never masks failed checks.

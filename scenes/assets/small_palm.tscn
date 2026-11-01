@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_vdd8o"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="2_61xeu"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7t0j8"]
+atlas = ExtResource("2_61xeu")
+region = Rect2(471, 185, 288, 388)
+filter_clip = true
+
+[node name="SmallPalm" type="Node2D" unique_id=1517275182]
+script = ExtResource("1_vdd8o")
+object_id = 1
+kind = "small_palm"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1797839035]
+texture_filter = 1
+position = Vector2(-43.54167, -119.07985)
+scale = Vector2(0.3298611, 0.3298611)
+texture = SubResource("AtlasTexture_7t0j8")
+centered = false

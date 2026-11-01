@@ -1,0 +1,24 @@
+{
+	"canvas": [
+		640,
+		640
+	],
+	"count": 640,
+	"frames": {
+		"eating": 12,
+		"lying": 4,
+		"sitting": 4,
+		"sleeping": 4,
+		"volleyball": 16
+	},
+	"root": [
+		320,
+		480
+	],
+	"schema": 1,
+	"sources": {
+		"res://scripts/actors/guest_activity_pose.gd": "847d6c7ca298017158b6c864b24da7e43b5eeefd60a1469d071b2a2b68cc6d96",
+		"res://scripts/actors/guest_appearance.gd": "16a3b7ec75eff64e4dd79ca665e32428b40932632bd5cb7407c5c3a272af43c1",
+		"res://scripts/actors/holiday_guest_model.gd": "0a4c03820c08285b35ea5e79450702e52a432ea8556007858831f975bfa93753"
+	}
+}

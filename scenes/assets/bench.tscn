@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_kbtt0"]
+[ext_resource type="Texture2D" path="res://assets/structures/bench-v1.png" id="2_13fmy"]
+
+[node name="Bench" type="Node2D" unique_id=1972267836]
+script = ExtResource("1_kbtt0")
+object_id = 1
+kind = "bench"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=535898749]
+texture_filter = 1
+position = Vector2(-46, -74)
+texture = ExtResource("2_13fmy")
+centered = false

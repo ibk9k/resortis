@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_6j5vf"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_e1o2m"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-base.png" id="3_10uhr"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-canopy.png" id="4_ic1qh"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rnqti"]
+atlas = ExtResource("2_e1o2m")
+region = Rect2(1082, 579, 421, 378)
+filter_clip = true
+
+[node name="Sunbeds" type="Node2D" unique_id=29353235]
+script = ExtResource("1_6j5vf")
+object_id = 1
+kind = "sunbeds"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=60523785]
+visible = false
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = SubResource("AtlasTexture_rnqti")
+centered = false
+
+[node name="Base" type="Sprite2D" parent="." unique_id=545048261]
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("3_10uhr")
+centered = false
+
+[node name="Canopy" type="Sprite2D" parent="." unique_id=2056327624]
+z_index = 2
+texture_filter = 1
+position = Vector2(-74.63858, -90.41728)
+scale = Vector2(0.3545776, 0.3545776)
+texture = ExtResource("4_ic1qh")
+centered = false

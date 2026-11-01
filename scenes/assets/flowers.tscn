@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_c47g2"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="2_du5l4"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_huvr2"]
+atlas = ExtResource("2_du5l4")
+region = Rect2(1181, 318, 318, 258)
+filter_clip = true
+
+[node name="Flowers" type="Node2D" unique_id=161808240]
+script = ExtResource("1_c47g2")
+object_id = 1
+kind = "flowers"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=877987725]
+texture_filter = 1
+position = Vector2(-24.645706, -29.81211)
+scale = Vector2(0.15307888, 0.15307888)
+texture = SubResource("AtlasTexture_huvr2")
+centered = false

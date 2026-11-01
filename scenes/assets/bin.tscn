@@ -1,0 +1,21 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_raev7"]
+[ext_resource type="Texture2D" path="res://assets/atlases/props-v2.png" id="2_6hxd7"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ryit0"]
+atlas = ExtResource("2_6hxd7")
+region = Rect2(889, 706, 150, 229)
+filter_clip = true
+
+[node name="Bin" type="Node2D" unique_id=166038361]
+script = ExtResource("1_raev7")
+object_id = 1
+kind = "bin"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=669918220]
+texture_filter = 1
+position = Vector2(-14.5, -36.83)
+scale = Vector2(0.19333333, 0.19333333)
+texture = SubResource("AtlasTexture_ryit0")
+centered = false
