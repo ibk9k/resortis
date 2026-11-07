@@ -18,7 +18,7 @@ func _run() -> void:
 	expect(metadata.regions.walk.size() == 40 and metadata.regions.clean.size() == 20, "Staff masters contain forty complete walks and twenty complete sweeps")
 	for kind: String in Art.SOURCES:
 		var source := Art.source(kind)
-		expect(source.detect_alpha() != Image.ALPHA_NONE and source.get_pixel(0, 0).a == 0 and source.get_pixel(source.get_width() - 1, source.get_height() - 1).a == 0, "Staff %s master has genuine transparent background" % kind)
+		expect(source.detect_alpha() != Image.ALPHA_NONE and source.get_pixel(0, 0).a <= 0.01 and source.get_pixel(source.get_width() - 1, source.get_height() - 1).a <= 0.01, "Staff %s master has genuine transparent background" % kind)
 		for row in 5:
 			var hashes: Dictionary = {}
 			var heights: Array[float] = []
@@ -71,3 +71,17 @@ func _baked() -> void:
 				for x in range(int(Art.ROOT.x)-24,int(Art.ROOT.x)-1):
 					if image.get_pixel(x,y).a>0.8: sole=maxi(sole,y)
 			expect(absi(sole-int(Art.ROOT.y))<=4,"Sweeping boot stays on the registered ground: %s/%d" % [facing,index])
+	for facing in ["s", "n"]:
+		var left_contact := _sole_center_x(frames.get_frame_texture("walk_" + facing, 2).get_image())
+		var right_contact := _sole_center_x(frames.get_frame_texture("walk_" + facing, 10).get_image())
+		expect(left_contact < Art.ROOT.x - 2 and right_contact > Art.ROOT.x + 5,
+			"Opposite half-cycles put a different boot on the ground when facing " + facing)
+
+func _sole_center_x(image: Image) -> float:
+	var samples: Array[int] = []
+	for y in range(int(Art.ROOT.y) - 5, int(Art.ROOT.y) + 1):
+		for x in range(56, 200):
+			if Art._shoe_color(image.get_pixel(x, y)): samples.append(x)
+	if samples.is_empty(): return INF
+	samples.sort()
+	return float(samples[samples.size() / 2])

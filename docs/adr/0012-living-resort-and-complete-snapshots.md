@@ -10,4 +10,6 @@ Schema 4 stores every live service with the layout. Restore validates service sn
 
 All editing paths use the complete population/staff/queue protection boundary. No player saves are used as test fixtures. Tests bind isolated paths before scene startup and prove both successful resumption and failed-load preservation. Numerical checks, real GPU/motion review and independently measured small-crowd evidence are separate acceptance requirements.
 
+Outdoor guest and janitor routes can use a diagonal grid step when both neighboring tiles are walkable. On the isometric screen this gives them straight up/down and left/right travel with the matching painted walk cycles. Outdoor save validation enforces the same corner rule and accepts existing orthogonal routes. Cabin aisles and facility approaches keep their authored waypoints.
+
 New janitor art is a separate complete-painting workflow with retained alpha masters/prompts, uniform scale and shoe registration. Guest walking PNGs are protected byte-for-byte. Opposite court facings mirror complete activity drawings and their hand metadata together. Source approval follows actual render review; it never masks failed checks.

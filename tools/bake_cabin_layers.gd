@@ -13,5 +13,5 @@ func _initialize() -> void:
 	var file := FileAccess.open("res://assets/registration/cabin-layers.json", FileAccess.WRITE)
 	file.store_string(JSON.stringify({"source": FileAccess.get_sha256("res://assets/atlases/buildings-v2.png"), "authoring": FileAccess.get_sha256("res://scripts/content/cabin_interior.gd")}, "\t"))
 	file.close()
-	print("CABIN_LAYERS_BAKED 8 exact atlas partitions")
+	print("CABIN_LAYERS_BAKED exact atlas partitions")
 	quit()

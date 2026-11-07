@@ -2,8 +2,12 @@ class_name ResortLayout
 extends RefCounted
 ## Editable map state and validation. All presentation tools use these rules.
 
-const MAP_SIZE := Vector2i(44, 48)
+const INLAND_START := -22
 const WALKABLE_END := 48
+const MAP_SIZE := Vector2i(44, WALKABLE_END - INLAND_START)
+const MAP_BOUNDS := Rect2i(0, INLAND_START, MAP_SIZE.x, MAP_SIZE.y)
+const POINT_BOUNDS := Rect2(-0.5, INLAND_START - 0.5, MAP_SIZE.x, MAP_SIZE.y)
+const BACKDROP_REAR_EDGE := -64.5
 const BEACH_START := 21
 const WET_SAND_START := 38
 const WATER_START := 40
@@ -18,6 +22,13 @@ var next_id := 1
 var revision := 0
 var guest_stay: Dictionary = {}
 var live_resort: Dictionary = {}
+var prices: Dictionary = {}
+# The playable world supplies the public approach. Standalone layout fixtures
+# can still exercise lodging without a vehicle timetable.
+var public_arrivals := false
+
+func price(service: String) -> int:
+	return prices.get(service, ResortEconomy.DEFAULT_PRICES[service])
 
 func terrain(cell: Vector2i) -> String:
 	if cell.y >= WATER_START:
@@ -29,7 +40,7 @@ func terrain(cell: Vector2i) -> String:
 	return "grass"
 
 func contains(cell: Vector2i) -> bool:
-	return Rect2i(Vector2i.ZERO, MAP_SIZE).has_point(cell)
+	return MAP_BOUNDS.has_point(cell)
 
 func is_path(cell: Vector2i) -> bool:
 	return paths.has(cell)
@@ -37,6 +48,7 @@ func is_path(cell: Vector2i) -> bool:
 func seed_default() -> void:
 	guest_stay = {}
 	live_resort = {}
+	prices.clear()
 	objects.clear()
 	paths.clear()
 	next_id = 1
@@ -218,14 +230,14 @@ func set_path(cell: Vector2i, enabled: bool) -> Dictionary:
 	revision += 1
 	return {"ok": true, "reason": "Path updated."}
 
-func navigation(ignore_id: int = -1) -> AStarGrid2D:
+func navigation(ignore_id: int = -1, allow_diagonal := false) -> AStarGrid2D:
 	var graph := AStarGrid2D.new()
-	graph.region = Rect2i(Vector2i.ZERO, Vector2i(MAP_SIZE.x, WALKABLE_END))
+	graph.region = MAP_BOUNDS
 	graph.cell_size = Vector2.ONE
-	graph.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
+	graph.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_ONLY_IF_NO_OBSTACLES if allow_diagonal else AStarGrid2D.DIAGONAL_MODE_NEVER
 	graph.update()
 	for x in MAP_SIZE.x:
-		for y in WALKABLE_END:
+		for y in range(INLAND_START, WALKABLE_END):
 			var cell := Vector2i(x, y)
 			graph.set_point_solid(cell, not (is_path(cell) or terrain(cell) == "sand"))
 	for record in objects:
@@ -233,7 +245,7 @@ func navigation(ignore_id: int = -1) -> AStarGrid2D:
 			continue
 		var rect := object_rect(record)
 		for x in range(maxi(0, int(floor(rect.position.x + 0.5))), mini(MAP_SIZE.x, int(ceil(rect.end.x + 0.5)))):
-			for y in range(maxi(0, int(floor(rect.position.y + 0.5))), mini(WALKABLE_END, int(ceil(rect.end.y + 0.5)))):
+			for y in range(maxi(INLAND_START, int(floor(rect.position.y + 0.5))), mini(WALKABLE_END, int(ceil(rect.end.y + 0.5)))):
 				graph.set_point_solid(Vector2i(x, y), not ResortCatalog.definition(record.kind).get("walkable", false))
 	return graph
 
@@ -245,24 +257,37 @@ func save_layout(path: String = SAVE_PATH) -> Error:
 	for cell in paths:
 		path_cells.append([cell.x, cell.y])
 	var data := {"schema": SCHEMA, "objects": placed, "paths": path_cells, "next_id": next_id, "guest_stay": guest_stay,"live_resort":live_resort}
-	var temp_path := path + ".tmp"
+	if not prices.is_empty(): data["prices"] = prices
+	var temp_path := "%s.%d-%d.tmp" % [path, OS.get_process_id(), Time.get_ticks_usec()]
 	var file := FileAccess.open(temp_path, FileAccess.WRITE)
 	if file == null:
 		return FileAccess.get_open_error()
 	file.store_string(JSON.stringify(data, "\t"))
 	file.close()
 	var verified := ResortLayout.new()
-	if verified.load_layout(temp_path) != OK: return ERR_INVALID_DATA
-	if FileAccess.file_exists(path):
-		var backup_error := DirAccess.copy_absolute(path, path + ".bak")
-		if backup_error != OK:
-			return backup_error
-	return DirAccess.rename_absolute(temp_path, path)
+	var result := verified.load_layout(temp_path)
+	if result == OK:
+		# A corrupt primary must not replace the last good backup.
+		if verified.load_layout(path) == OK:
+			var backup_temp := temp_path + ".bak.tmp"
+			result = DirAccess.copy_absolute(path, backup_temp)
+			if result == OK:
+				result = DirAccess.rename_absolute(backup_temp, path + ".bak")
+			if FileAccess.file_exists(backup_temp):
+				DirAccess.remove_absolute(backup_temp)
+		if result == OK:
+			result = DirAccess.rename_absolute(temp_path, path)
+	if FileAccess.file_exists(temp_path):
+		DirAccess.remove_absolute(temp_path)
+	return result
 
 func load_layout(path: String = SAVE_PATH) -> Error:
 	if not FileAccess.file_exists(path):
 		return ERR_FILE_NOT_FOUND
-	var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(path))
+	var json := JSON.new()
+	if json.parse(FileAccess.get_file_as_string(path)) != OK:
+		return ERR_FILE_UNRECOGNIZED
+	var parsed: Variant = json.data
 	if not parsed is Dictionary:
 		return ERR_FILE_UNRECOGNIZED
 	var raw_schema: Variant=parsed.get("schema",-1)
@@ -272,6 +297,11 @@ func load_layout(path: String = SAVE_PATH) -> Error:
 		return ERR_FILE_UNRECOGNIZED
 	# Decode into a temporary layout so a broken file cannot replace the visible map.
 	var candidate := ResortLayout.new()
+	var saved_prices: Variant = parsed.get("prices", {})
+	if not saved_prices is Dictionary: return ERR_INVALID_DATA
+	for key: Variant in saved_prices:
+		if not ResortEconomy.DEFAULT_PRICES.has(key) or not ResortEconomy.valid_price(saved_prices[key]): return ERR_INVALID_DATA
+		candidate.prices[key] = int(saved_prices[key])
 	var used_ids: Dictionary = {}
 	if not parsed.get("paths",[]) is Array or not parsed.get("objects",[]) is Array: return ERR_INVALID_DATA
 	for cell in parsed.get("paths", []):
@@ -316,6 +346,9 @@ func load_layout(path: String = SAVE_PATH) -> Error:
 		if not check.restore(saved_stay): return ERR_INVALID_DATA
 	var saved_resort: Variant=parsed.get("live_resort",{})
 	if not saved_resort is Dictionary: return ERR_INVALID_DATA
+	if saved_resort.is_empty():
+		for record in candidate.objects:
+			if record.kind == ResortChallenges.STATUE: return ERR_INVALID_DATA
 	if not saved_resort.is_empty():
 		var check := LivingResortRuntime.new()
 		if not check.configure(candidate,null) or not check.restore(saved_resort): return ERR_INVALID_DATA
@@ -329,5 +362,6 @@ func load_layout(path: String = SAVE_PATH) -> Error:
 	next_id = candidate.next_id
 	guest_stay = saved_stay.duplicate(true)
 	live_resort = saved_resort.duplicate(true)
+	prices = candidate.prices
 	revision += 1
 	return OK

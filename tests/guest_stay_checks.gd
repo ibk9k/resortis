@@ -143,7 +143,7 @@ func _run() -> void:
 	expect(resort.stay.clock == clock, "Pause freezes booking time")
 	resort.stay.advance(10)
 	resort.save_path = "res://artifacts/test-complete-resort.json"
-	resort._on_action("save")
+	resort._write_snapshot(resort.save_path)
 	var saved := ResortLayout.new()
 	expect(saved.load_layout(resort.save_path) == OK and saved.guest_stay.state == resort.stay.state, "Save control captures layout and live stay together")
 	var existing := saved.objects.duplicate(true)

@@ -34,7 +34,7 @@ Working implementation policy: the finance view can continue reporting simulated
 ## Open design details
 
 - Exact Creative preset values and whether temporary settings are remembered between sessions.
-- Backup retention/naming, autosave frequency, manual-slot behavior, and save compatibility.
+- Pre-Creative backup retention and naming. General autosave, manual slots and compatibility are documented in [the README](../README.md).
 - How each override affects existing needs, dirt, wear, queued jobs, and ongoing activity sessions.
 - Exact day duration, time-skip presentation, cancellation, and measured fast-forward limits.
 - Guest spawning options, removal/payment cleanup, and individual command feedback.

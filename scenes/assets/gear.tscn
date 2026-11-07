@@ -1,0 +1,107 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_1qige"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/gear.png" id="2_cvo64"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_6kekx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x56cs"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(0, 0, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bvojq"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(367, 0, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fu140"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(734, 0, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ykux7"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(0, 354, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b0yau"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(367, 354, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gash3"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(734, 354, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xlshd"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(0, 354, 367, 354)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gioct"]
+atlas = ExtResource("2_cvo64")
+region = Rect2(734, 0, 367, 354)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0800p"]
+animations = [{
+"frames": [{
+"duration": 0.68,
+"texture": SubResource("AtlasTexture_x56cs")
+}, {
+"duration": 0.38,
+"texture": SubResource("AtlasTexture_bvojq")
+}, {
+"duration": 0.36,
+"texture": SubResource("AtlasTexture_fu140")
+}, {
+"duration": 0.45,
+"texture": SubResource("AtlasTexture_ykux7")
+}, {
+"duration": 0.45,
+"texture": SubResource("AtlasTexture_b0yau")
+}, {
+"duration": 0.68,
+"texture": SubResource("AtlasTexture_gash3")
+}, {
+"duration": 0.33,
+"texture": SubResource("AtlasTexture_xlshd")
+}, {
+"duration": 0.25,
+"texture": SubResource("AtlasTexture_gioct")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="Gear" type="Node2D" unique_id=1686523353]
+script = ExtResource("1_1qige")
+object_id = 1
+kind = "gear"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1968422970]
+visible = false
+texture_filter = 1
+position = Vector2(-86.39774, -78.73378)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_x56cs")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=688643624]
+script = ExtResource("3_6kekx")
+facility_kind = "gear"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -86.39774, -78.73378)
+model_origin = Vector2(0, 56)
+plot_origin = Vector2(-16, 16)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=752974989]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-86.39774, -78.73378)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_0800p")
+animation = &"work"
+centered = false

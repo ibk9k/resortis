@@ -6,6 +6,7 @@ var assets: ResortAssets
 var actors: Dictionary={}
 var balls: Dictionary={}
 var arrival_notice: PanelContainer
+var vehicles: Dictionary = {}
 
 func configure(model: LivingResortRuntime, library: ResortAssets) -> void:
 	runtime=model
@@ -14,6 +15,7 @@ func configure(model: LivingResortRuntime, library: ResortAssets) -> void:
 	refresh()
 
 func refresh() -> void:
+	_refresh_vehicles()
 	_refresh_arrival_notice()
 	var seen: Dictionary={}
 	var rallies: Dictionary={}
@@ -30,6 +32,7 @@ func refresh() -> void:
 		var actor: ResortWalker=actors[id]
 		actor.visible=person.state!="departed"
 		actor.present(person.motion.position,person.motion.distance,person.motion.direction,person.motion.moving)
+		_present_passenger(actor, person)
 		var slot: Dictionary=runtime.simulation.call("activity_slot",id)
 		if not slot.is_empty():
 			var time := float(person.get("activity_elapsed",0))
@@ -68,6 +71,114 @@ func refresh() -> void:
 			balls[key].free()
 			balls.erase(key)
 
+func _present_passenger(actor: ResortWalker, person: Dictionary) -> void:
+	if person.state not in ["arriving", "departed"]: return
+	var simulation := runtime.simulation as ResortSimulation
+	var group := simulation.party(int(person.party_id))
+	if not group.has("arrival_bay"): return
+	var bay: int = group.arrival_bay
+	var role: int = person.role
+	var route := ArrivalTraffic.pedestrian_route(bay, role)
+	var length := ArrivalTraffic.length(route)
+	var walk_speed := length / ArrivalTraffic.walk_seconds(bay, role)
+	var distance := 0.0
+	var returning: bool = person.state == "departed"
+	if returning:
+		if bay == ArrivalTraffic.BUS: return
+		var start := float(group.get("return_walk_at", simulation.clock)) + role * 0.65
+		var elapsed := simulation.clock - start
+		if elapsed < 0.0:
+			actor.visible = true
+			return
+		distance = elapsed * walk_speed
+		if distance >= length: return
+		route.reverse()
+	else:
+		var age := simulation.clock - float(group.created_at)
+		var start := ArrivalTraffic.walk_start(bay, role)
+		if age < start:
+			var vehicle := vehicles.get(int(group.id)) as ArrivalVehicle
+			if vehicle != null: actor.position = vehicle.position
+			actor.visible = false
+			return
+		distance = (age - start) * walk_speed
+		if distance >= length: return
+	var point := ArrivalTraffic.sample(route, distance)
+	var next := ArrivalTraffic.sample(route, minf(length, distance + 0.075))
+	actor.visible = true
+	actor.present(point, distance, (next - point).normalized(), true)
+
+func _refresh_vehicles() -> void:
+	var simulation := runtime.simulation as ResortSimulation
+	var visible := {}
+	for group in simulation.parties:
+		if not group.has("arrival_bay"): continue
+		var bay: int = group.arrival_bay
+		var id: int = group.id
+		var inbound := ArrivalTraffic.arrival_route(bay)
+		var drive_in := ArrivalTraffic.arrival_seconds(bay)
+		var age := simulation.clock - float(group.created_at)
+		var path := inbound
+		var drive_time := minf(age, drive_in)
+		var duration := drive_in
+		var reverse := false
+		var door := 0.0
+		if bay == ArrivalTraffic.BUS:
+			var leave := drive_in + ArrivalTraffic.BUS_DWELL
+			if age > leave:
+				path = ArrivalTraffic.exit_route(bay)
+				duration = ArrivalTraffic.exit_seconds(bay)
+				drive_time = age - leave
+				if drive_time >= duration: continue
+			else:
+				door = _door_amount(age - drive_in, ArrivalTraffic.BUS_DWELL)
+		elif group.state == "departed":
+			var boarding := ArrivalTraffic.boarding_seconds(bay)
+			var away := simulation.clock - float(group.get("return_walk_at", simulation.departure_time(group)))
+			var out := away - boarding
+			if out >= 0.0:
+				path = ArrivalTraffic.backout_route(bay)
+				var backing_time := ArrivalTraffic.backout_seconds(bay)
+				if out < backing_time:
+					reverse = true
+					duration = backing_time
+					drive_time = out
+				else:
+					path = ArrivalTraffic.exit_route(bay)
+					duration = ArrivalTraffic.exit_seconds(bay)
+					drive_time = out - backing_time
+					if drive_time >= duration: continue
+			else:
+				door = _door_amount(away - boarding + 3.0, 3.0)
+		else:
+			door = _door_amount(age - drive_in, 2.8)
+		visible[id] = true
+		if not vehicles.has(id):
+			var vehicle := ArrivalVehicle.new()
+			vehicle.name = "ArrivalVehicle_%d" % id
+			vehicle.configure(id, bay)
+			add_child(vehicle)
+			vehicles[id] = vehicle
+		var vehicle: ArrivalVehicle = vehicles[id]
+		var length := ArrivalTraffic.length(path)
+		var phase := clampf(drive_time / duration, 0.0, 1.0)
+		var distance := length * (phase - sin(TAU * phase) * 0.105)
+		var route_point := ArrivalTraffic.sample(path, distance)
+		var position_on_path := ArrivalTraffic.roadside_point(route_point)
+		var leading := ArrivalTraffic.roadside_point(ArrivalTraffic.sample(path, minf(length, distance + 0.13)))
+		var trailing := ArrivalTraffic.roadside_point(ArrivalTraffic.sample(path, maxf(0.0, distance - 0.13)))
+		var heading := (leading - trailing).normalized()
+		var edge_distance := absf(position_on_path.y - route_point.y - (ArrivalTraffic.roadside_point(path[0]).y - path[0].y))
+		var roll := distance + edge_distance
+		vehicle.present(position_on_path, -heading if reverse else heading, -roll if reverse else roll, door)
+	for id in vehicles.keys():
+		if visible.has(id): continue
+		vehicles[id].free()
+		vehicles.erase(id)
+
+func _door_amount(elapsed: float, duration: float) -> float:
+	return smoothstep(0.0, 0.55, elapsed) * (1.0 - smoothstep(duration - 0.65, duration, elapsed))
+
 func _refresh_arrival_notice() -> void:
 	if arrival_notice == null:
 		arrival_notice = PanelContainer.new()
@@ -101,7 +212,10 @@ func _refresh_arrival_notice() -> void:
 		count += 1
 		anchor += guest.motion.position
 		var group: Dictionary = simulation.call("party", guest.party_id)
-		departure = minf(departure, float(group.created_at) + ResortSimulation.ROOM_WAIT)
+		var deadline := float(group.created_at) + ResortSimulation.ROOM_WAIT
+		if group.has("desk_started"):
+			deadline = float(group.desk_started) + ArrivalTraffic.SERVICE_SECONDS + ResortSimulation.ROOM_WAIT
+		departure = minf(departure, deadline)
 	arrival_notice.visible = count > 0
 	if count == 0: return
 	var total := 0

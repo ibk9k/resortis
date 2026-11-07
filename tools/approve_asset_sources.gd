@@ -6,7 +6,7 @@ func _initialize() -> void:
 		quit(1)
 		return
 	var sources: Dictionary = {}
-	for folder in ["res://assets/atlases","res://assets/characters/frames-v2","res://assets/structures","res://assets/interiors"]:
+	for folder in ["res://assets/atlases","res://assets/characters/frames-v2","res://assets/structures","res://assets/interiors","res://assets/facility-staff/masters","res://assets/facility-staff/frames","res://assets/staffed-venues/masters","res://assets/staffed-venues/frames"]:
 		for name in DirAccess.get_files_at(folder):
 			if name.ends_with(".png"):
 				var path: String = folder.path_join(name)
@@ -28,6 +28,10 @@ func _initialize() -> void:
 		sources[path]=FileAccess.get_sha256(path)
 	for path in ["res://scripts/content/cabin_interior.gd", "res://assets/registration/cabin-layers.json", "res://scripts/world/coastal_resort.gd", "res://scripts/ui/resort_hud.gd"]:
 		sources[path] = FileAccess.get_sha256(path)
+	for path in ["res://data/coastal_map.json", "res://scripts/simulation/arrival_geometry.gd", "res://scripts/simulation/arrival_traffic.gd", "res://scripts/world/arrival_court.gd", "res://scripts/world/arrival_vehicle.gd"]:
+		sources[path] = FileAccess.get_sha256(path)
+	for path in ["res://assets/shaders/ground.gdshader", "res://scripts/world/coastal_terrain.gd", "res://tools/bake_terrain_wang.gd"]:
+		sources[path] = FileAccess.get_sha256(path)
 	for folder in ["res://assets/staff/masters", "res://assets/staff/illustrated"]:
 		for name in DirAccess.get_files_at(folder):
 			if name.ends_with(".png"):
@@ -35,8 +39,14 @@ func _initialize() -> void:
 				sources[path] = FileAccess.get_sha256(path)
 	for path in ["res://assets/staff/janitor_art.gd", "res://assets/staff/janitor_skin.gd", "res://assets/staff/registration.json", "res://tools/bake_staff.gd", "res://scripts/world/cleanliness_view.gd", "res://scripts/world/resort_population_view.gd", "res://scripts/ui/resort_management_ui.gd"]:
 		sources[path] = FileAccess.get_sha256(path)
+	for path in ["res://mockups/facilities/concept_models.gd", "res://scripts/content/resort_services.gd", "res://tools/bake_structure_models.gd"]:
+		sources[path] = FileAccess.get_sha256(path)
+	for path in ["res://scripts/world/facility_ambience.gd", "res://assets/shaders/pool_motion.gdshader", "res://tools/bake_assets.gd", "res://scripts/content/facility_staff.gd", "res://tools/bake_illustrated_attendants.gd"]:
+		sources[path] = FileAccess.get_sha256(path)
+	for path in ["res://scripts/content/staffed_venue_art.gd", "res://tools/bake_staffed_venues.gd", "res://assets/staffed-venues/workstations.json", "res://assets/staffed-venues/baked.json"]:
+		sources[path] = FileAccess.get_sha256(path)
 	for facing in 2:
-		for part in 4:
+		for part in 5:
 			var path := "res://assets/interiors/cabin-%d-%d.png.import" % [facing,part]
 			sources[path] = FileAccess.get_sha256(path)
 	var file := FileAccess.open("res://assets/registration/reviewed-sources.json",FileAccess.WRITE)
@@ -48,7 +58,35 @@ func _initialize() -> void:
 	for name in ["volleyball-hit-preview.png","volleyball-hit-compact-preview.png","living-resort-volleyball-hit-v2-motion-00.png","living-resort-volleyball-hit-v2-motion-13.png","living-resort-volleyball-hit-v2-motion-19.png","living-resort-volleyball-hit-v2-motion-22.png"]:
 		evidence.append("artifacts/"+name)
 	evidence.append("artifacts/arrival-wait-preview.png")
-	file.store_string(JSON.stringify({"schema":1,"reviewer":"implementation assistant","reviewed":"2026-11-01","evidence":evidence,"sources":sources},"\t"))
+	for name in ["save-slots-review.png","save-slots-confirm-review.png","vertical-walk-review.png","janitor-sharpness-before-after.png"]:
+		evidence.append("artifacts/"+name)
+	for section in ["statement", "receipts", "prices"]:
+		evidence.append("artifacts/economy-%s-review.png" % section)
+	evidence.append("artifacts/challenges-board-review.png")
+	evidence.append("artifacts/challenges-statue-review.png")
+	evidence.append("artifacts/cleaner-motion-review.png")
+	evidence.append("artifacts/janitor-v2-motion-review.png")
+	evidence.append("artifacts/bed-alignment-stool-v2.png")
+	evidence.append("artifacts/bed-alignment-stool-animation.png")
+	evidence.append("artifacts/living-resort-furniture-check-closeup.png")
+	evidence.append("artifacts/bed-alignment-contact-final.png")
+	evidence.append("artifacts/living-resort-seat-contact-closeup.png")
+	evidence.append("artifacts/living-resort-lounger-contact-closeup.png")
+	evidence.append("artifacts/bed-alignment-contact-motion.png")
+	for name in ["bed-alignment-seating-unclipped.png", "bed-alignment-seating-unclipped-motion.png", "living-resort-unclipped-closeup.png"]:
+		evidence.append("artifacts/" + name)
+	evidence.append("artifacts/worker-4-staff-preview/frame-00.png")
+	for name in ["car", "shuttle", "shuttle-turn", "reception", "road-edge"]:
+		evidence.append("artifacts/arrival-court-%s.png" % name)
+	evidence.append("artifacts/expansion-overview.png")
+	evidence.append("artifacts/expansion-playable.png")
+	evidence.append("artifacts/ambience-facilities.png")
+	evidence.append("artifacts/illustrated-staff-review.png")
+	evidence.append("artifacts/staffed-venues-in-game.gif")
+	evidence.append("artifacts/ice-cream-vendor-in-game.gif")
+	for kind: String in ResortServices.EXPANSION:
+		evidence.append("artifacts/expansion-%s.png" % kind)
+	file.store_string(JSON.stringify({"schema":1,"reviewer":"implementation assistant","reviewed":Time.get_date_string_from_system(),"evidence":evidence,"sources":sources},"\t"))
 	file.close()
 	print("REVIEWED_ASSET_SOURCES ",sources.size())
 	quit()

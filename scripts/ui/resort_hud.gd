@@ -4,6 +4,7 @@ extends CanvasLayer
 signal build_requested(kind: String)
 signal category_requested(category: String)
 signal action_requested(action: String)
+signal save_slot_requested(slot: int, writing: bool)
 
 const INK := Color("fff1cf")
 const SECONDARY := Color("b9cbb4")
@@ -21,9 +22,17 @@ var detail_actions: HFlowContainer
 var inspector: PanelContainer
 var status: Label
 var motion_label: Label
+var cash_label: Label
+var _statue_unlocked := false
 var tools: Dictionary = {}
 var build_buttons: Dictionary = {}
 var category := "Resort"
+var save_window: Window
+var save_content: PanelContainer
+var save_entries: Array[Dictionary]
+var autosave_active := true
+var saving_to_exit := false
+var save_return_focus: Button
 
 func build(library: ResortAssets) -> void:
 	assets = library
@@ -113,14 +122,152 @@ func _build_top_bar() -> void:
 	row.add_child(spacer)
 	motion_label = _label("14 guests exploring", 16, SECONDARY)
 	row.add_child(motion_label)
+	cash_label = _label("", 16, GOLD)
+	cash_label.hide()
+	row.add_child(cash_label)
 	_button("Pause", "pause", row, "Pause the scene · Space")
 	for speed in [1, 2, 4]:
 		var button := _button("%d×" % speed, "speed_%d" % speed, row)
 		button.toggle_mode = true
 		button.button_pressed = speed == 1
 	_button("Guests", "guest", row, "Inspect the current solo guest or couple")
-	_button("Save resort", "save", row, "Save the layout and guest stay · Ctrl+S")
+	_button("Saves", "save", row, "Save or load your resort · Ctrl+S")
 	_button("Map guide", "guide", row)
+	_button("Main menu", "main_menu", row, "Return to the Resortis main menu")
+
+func _ensure_save_window() -> void:
+	if save_window == null:
+		save_window = Window.new()
+		save_window.name = "ResortSaves"
+		save_window.title = "Resortis"
+		save_window.visible = false
+		save_window.transient = true
+		save_window.exclusive = true
+		save_window.unresizable = true
+		root.add_child(save_window)
+		save_window.close_requested.connect(close_save_menu)
+		save_content = PanelContainer.new()
+		save_content.theme = root.theme
+		save_content.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		save_window.add_child(save_content)
+
+func show_exit_menu(entries: Array[Dictionary], unsaved: bool) -> void:
+	_ensure_save_window()
+	saving_to_exit = false
+	save_return_focus = tools.main_menu
+	var column := _save_menu_column()
+	column.add_child(_label("Return to the main menu?", 23))
+	var message := "You can save your resort before leaving."
+	if unsaved:
+		message = "You have unsaved progress. Save it before leaving or exit without saving."
+	column.add_child(_label(message, 16, SECONDARY))
+	var row := HBoxContainer.new()
+	column.add_child(row)
+	row.alignment = BoxContainer.ALIGNMENT_END
+	var cancel := _save_button(row, "Keep playing", close_save_menu)
+	_bind_save_escape(cancel)
+	_save_button(row, "Exit without saving", func() -> void: action_requested.emit("exit_to_menu"))
+	_save_button(row, "Save and exit", func() -> void: show_save_menu(entries, "", true, true))
+	_popup_save_menu(cancel)
+
+func show_save_menu(entries: Array[Dictionary], message := "", valid := true, exit_after_save := false) -> void:
+	_ensure_save_window()
+	save_entries = entries
+	saving_to_exit = exit_after_save
+	save_return_focus = tools.main_menu if saving_to_exit else tools.save
+	var column := _save_menu_column()
+	column.add_child(_label("Save and exit" if saving_to_exit else "Resort saves", 23))
+	var help := "Autosave runs every minute during play. Manual slots are separate."
+	if not autosave_active:
+		help = "Autosave is off for this session. You can still save manually."
+	if saving_to_exit:
+		help = "Choose a manual slot to save your resort before returning to the main menu."
+	column.add_child(_label(help, 15, SECONDARY))
+	if not message.is_empty():
+		column.add_child(_label(message, 15, SECONDARY if valid else Color("f9b5a5")))
+	for entry in entries:
+		if saving_to_exit and entry.slot <= 0:
+			continue
+		var row := HBoxContainer.new()
+		column.add_child(row)
+		var title := _label(entry.label)
+		title.custom_minimum_size.x = 145
+		row.add_child(title)
+		var detail := "Empty"
+		if entry.exists:
+			detail = Time.get_datetime_string_from_unix_time(entry.modified, true).left(16) + " UTC"
+			if entry.backup_only: detail += " · Backup"
+		var info := _label(detail, 15, SECONDARY)
+		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(info)
+		if entry.slot > 0:
+			var save_button := _save_button(row, "Save", func() -> void: _choose_save_slot(entry, true))
+			save_button.name = "SaveSlot%d" % entry.slot
+		if not saving_to_exit:
+			var load_button := _save_button(row, "Load", func() -> void: _choose_save_slot(entry, false))
+			load_button.name = "LoadSlot%d" % entry.slot
+			load_button.disabled = not entry.exists
+	var close := _save_button(column, "Keep playing" if saving_to_exit else "Close", close_save_menu)
+	close.name = "CloseSaves"
+	close.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_bind_save_escape(close)
+	_popup_save_menu(close)
+
+func _popup_save_menu(focus: Button) -> void:
+	var height := ceili(save_content.get_combined_minimum_size().y) + 8
+	save_window.popup_centered(Vector2i(635, height))
+	focus.grab_focus()
+
+func _save_menu_column() -> VBoxContainer:
+	for child in save_content.get_children():
+		save_content.remove_child(child)
+		child.queue_free()
+	var column := VBoxContainer.new()
+	save_content.add_child(column)
+	return column
+
+func _save_button(parent: Node, title: String, callback: Callable) -> Button:
+	var button := Button.new()
+	button.text = title
+	button.custom_minimum_size = Vector2(76, 34)
+	button.pressed.connect(callback)
+	parent.add_child(button)
+	return button
+
+func _bind_save_escape(button: Button) -> void:
+	var key := InputEventKey.new()
+	key.keycode = KEY_ESCAPE
+	var shortcut := Shortcut.new()
+	shortcut.events = [key]
+	button.shortcut = shortcut
+
+func _choose_save_slot(entry: Dictionary, writing: bool) -> void:
+	if writing and not entry.exists:
+		save_slot_requested.emit(entry.slot, true)
+		return
+	var column := _save_menu_column()
+	column.add_child(_label(("Overwrite %s?" if writing else "Load %s?") % entry.label, 23))
+	var message := "The previous valid copy is kept as a backup."
+	if not writing:
+		message = "Progress since your last save may be lost."
+	column.add_child(_label(message, 16, SECONDARY))
+	var row := HBoxContainer.new()
+	column.add_child(row)
+	row.alignment = BoxContainer.ALIGNMENT_END
+	var back := _save_button(row, "Back", func() -> void: show_save_menu(save_entries, "", true, saving_to_exit))
+	_bind_save_escape(back)
+	_save_button(row, "Overwrite" if writing else "Load resort",
+		func() -> void: save_slot_requested.emit(entry.slot, writing))
+	save_window.popup_centered(Vector2i(635, 166))
+	back.grab_focus()
+
+func save_menu_open() -> bool:
+	return is_instance_valid(save_window) and save_window.visible
+
+func close_save_menu() -> void:
+	save_window.hide()
+	saving_to_exit = false
+	save_return_focus.grab_focus()
 
 func _build_inspector() -> void:
 	inspector = _panel("Inspector", -294, 94, -18, 430, Vector4(1, 0, 1, 0))
@@ -153,6 +300,7 @@ func _build_inspector() -> void:
 	column.add_child(detail_actions)
 
 func enable_management_menu() -> void:
+	if tools.has("management"): return
 	var old: Button=tools.guest
 	var row := old.get_parent()
 	var index := old.get_index()
@@ -160,12 +308,12 @@ func enable_management_menu() -> void:
 	var menu := MenuButton.new()
 	menu.name="ManagementMenu"
 	menu.text="Manage ▾"
-	menu.tooltip_text="Guests, facilities, staff and operating results"
+	menu.tooltip_text="Guests, facilities, staff, operating results and challenges"
 	menu.custom_minimum_size.y=36
 	row.add_child(menu)
 	row.move_child(menu,index)
-	var actions := ["guest","facilities","staff","operations"]
-	for label: String in ["Guests","Facilities","Staff","Operating results"]: menu.get_popup().add_item(label)
+	var actions := ["guest","facilities","staff","operations","challenges"]
+	for label: String in ["Guests","Facilities","Staff","Operating results","Challenges"]: menu.get_popup().add_item(label)
 	menu.get_popup().id_pressed.connect(func(id: int) -> void: action_requested.emit(actions[id]))
 	tools["management"]=menu
 
@@ -191,6 +339,8 @@ func _build_tray() -> void:
 	var grid_button := _button("Grid", "grid", navigation, "Show placement grid · G")
 	grid_button.toggle_mode = true
 	_button("Home", "home", navigation, "Frame the full resort · Home")
+	_button("Inland", "inland_view", navigation, "View the inland facilities and buildable expansion")
+	_button("Arrivals", "arrivals_view", navigation, "View reception, guest parking and the shuttle stop")
 	_button("Undo", "undo", navigation, "Undo the last edit · Ctrl+Z").disabled = true
 	var scroll := ScrollContainer.new()
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
@@ -203,6 +353,11 @@ func _build_tray() -> void:
 	status = _label("Drag with the middle or right mouse button to pan · Wheel to zoom · Space to pause", 14, SECONDARY)
 	column.add_child(status)
 
+func set_statue_unlocked(unlocked: bool) -> void:
+	if unlocked == _statue_unlocked: return
+	_statue_unlocked = unlocked
+	if category == "Garden": show_category(category)
+
 func show_category(group: String) -> void:
 	category = group
 	for key in tools:
@@ -212,7 +367,7 @@ func show_category(group: String) -> void:
 		child.free()
 	build_buttons.clear()
 	if group == "Paths":
-		_button("Lay stone path", "path", tray, "Click or drag to paint paths")
+		_button("Lay stone path · $%d" % ResortEconomy.purchase("path"), "path", tray, "Click or drag to paint paths")
 		_button("Remove path", "erase_path", tray)
 		var label := _label("Paths connect cabins and services to the beach promenade.", 16, SECONDARY)
 		tray.add_child(label)
@@ -221,9 +376,13 @@ func show_category(group: String) -> void:
 		var def := ResortCatalog.definition(kind)
 		if def.category != group:
 			continue
+		if kind == ResortChallenges.STATUE and not _statue_unlocked:
+			continue
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(178, 68)
-		button.tooltip_text = def.description
+		button.tooltip_text = "%s\nPurchase $%d · Upkeep $%d/day" % [def.description, ResortEconomy.purchase(kind), ResortEconomy.upkeep(kind)]
+		if kind == ResortChallenges.STATUE:
+			button.tooltip_text = def.description + "\nFree to place"
 		button.toggle_mode = true
 		var row := HBoxContainer.new()
 		row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -232,20 +391,24 @@ func show_category(group: String) -> void:
 		row.offset_left = 8
 		row.offset_right = -8
 		var icon := TextureRect.new()
-		icon.texture = assets.texture_for(kind)
+		icon.texture = assets.display_texture_for(kind)
 		icon.custom_minimum_size = Vector2(54, 60)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 		row.add_child(icon)
-		var label := _label(def.name, 15)
+		var price := "Reward · free" if kind == ResortChallenges.STATUE else "$%d" % ResortEconomy.purchase(kind)
+		var tray_name: String = "Dolphin statue" if kind == ResortChallenges.STATUE else def.name
+		var label := _label("%s\n%s" % [tray_name, price], 15)
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		label.custom_minimum_size.x = 100
 		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		row.add_child(label)
 		button.pressed.connect(func() -> void: build_requested.emit(kind))
 		tray.add_child(button)
+		if kind == ResortChallenges.STATUE:
+			tray.move_child(button, 0)
 		build_buttons[kind] = button
 
 func highlight_build(kind: String) -> void:
@@ -263,14 +426,18 @@ func show_overview() -> void:
 	_button("Light", "lighting", detail_actions, "Cycle daylight, sunset, and night")
 	_button("Calm", "calm", detail_actions, "Toggle gentle water animation")
 
-func show_object(kind: String, orientation: int = 0, selected := false) -> void:
+func show_object(kind: String, orientation: int = 0, selected := false, moving := false) -> void:
 	_reset_inspector()
 	var def := ResortCatalog.definition(kind)
 	inspector.show()
 	detail_title.text = def.name
-	detail_image.texture = assets.texture_for(kind, orientation)
+	detail_image.texture = assets.display_texture_for(kind, orientation)
 	var size := ResortCatalog.footprint(kind, orientation)
 	detail_text.text = "%s\n\n%d × %d tiles · %s" % [def.description, size.x, size.y, "Half-tile snap" if ResortCatalog.is_decoration(kind) else "Grid snap"]
+	if selected or moving:
+		detail_text.text += "\nUpkeep $%d/day · Move free" % ResortEconomy.upkeep(kind)
+	else:
+		detail_text.text += "\nPurchase $%d · Upkeep $%d/day" % [ResortEconomy.purchase(kind), ResortEconomy.upkeep(kind)]
 	_clear_actions()
 	if selected:
 		_button("Move", "move", detail_actions)
@@ -284,6 +451,16 @@ func _clear_actions() -> void:
 	for child in detail_actions.get_children():
 		detail_actions.remove_child(child)
 		child.queue_free()
+
+func set_cash(amount: int) -> void:
+	cash_label.text = "Cash $%d" % amount if amount >= 0 else "Cash −$%d" % absi(amount)
+	cash_label.show()
+
+func set_living_status(clock: float, guests: int, paused: bool) -> void:
+	var day := floori(clock / ResortSimulation.DAY_SECONDS) + 1
+	var minutes := floori(fposmod(clock, ResortSimulation.DAY_SECONDS) * 1440.0 / ResortSimulation.DAY_SECONDS)
+	motion_label.text = "Day %d · %02d:%02d · %d guests%s" % [day, minutes / 60, minutes % 60, guests, " · Paused" if paused else ""]
+	motion_label.tooltip_text = "Resort time · one day is 180 seconds at 1× speed"
 
 func set_status(message: String, valid := true) -> void:
 	status.text = message

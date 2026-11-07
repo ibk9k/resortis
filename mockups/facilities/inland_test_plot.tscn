@@ -1,0 +1,160 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/gym.tscn" id="1_yhf4t"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/sauna.tscn" id="2_l7jxq"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/ice_cream.tscn" id="3_qpm7f"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/restaurant.tscn" id="4_1fu8r"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/yoga.tscn" id="5_ehjn4"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/massage.tscn" id="6_j0af7"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/gear.tscn" id="7_3cjys"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/splash.tscn" id="8_54lku"]
+[ext_resource type="PackedScene" path="res://mockups/facilities/models/pickleball.tscn" id="9_658wu"]
+
+[sub_resource type="Shader" id="Shader_keydw"]
+code = "shader_type spatial; render_mode unshaded, cull_front; void vertex(){ VERTEX += NORMAL * 0.008; } void fragment(){ ALBEDO=vec3(0.12,0.09,0.07); }"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jt8nj"]
+render_priority = 0
+shader = SubResource("Shader_keydw")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h6gp1"]
+next_pass = SubResource("ShaderMaterial_jt8nj")
+albedo_color = Color(0.3137255, 0.48235294, 0.28627452, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="BoxMesh_pxgj6"]
+size = Vector3(44, 0.3, 22)
+
+[sub_resource type="Shader" id="Shader_r5ia6"]
+code = "shader_type spatial; render_mode unshaded, cull_front; void vertex(){ VERTEX += NORMAL * 0.008; } void fragment(){ ALBEDO=vec3(0.12,0.09,0.07); }"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y61mg"]
+render_priority = 0
+shader = SubResource("Shader_r5ia6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ams75"]
+next_pass = SubResource("ShaderMaterial_y61mg")
+albedo_color = Color(0.77254903, 0.6862745, 0.54901963, 1)
+roughness = 0.88
+
+[sub_resource type="BoxMesh" id="BoxMesh_x3q0t"]
+size = Vector3(41, 0.012, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_lxg4f"]
+size = Vector3(41, 0.012, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_du5a7"]
+size = Vector3(41, 0.012, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kyws4"]
+size = Vector3(41, 0.012, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sbh57"]
+size = Vector3(0.92, 0.012, 20.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_iytkt"]
+size = Vector3(0.92, 0.012, 20.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r4qyq"]
+size = Vector3(0.92, 0.012, 20.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_oywls"]
+size = Vector3(0.92, 0.012, 20.8)
+
+[sub_resource type="Environment" id="Environment_7486q"]
+ambient_light_source = 2
+ambient_light_color = Color(0.8509804, 0.87058824, 0.92156863, 1)
+ambient_light_energy = 0.32
+
+[node name="InlandTestPlot" type="Node3D" unique_id=1132989420]
+
+[node name="ExpansionGround" type="MeshInstance3D" parent="." unique_id=1831358140]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, -0.16, -11)
+material_override = SubResource("StandardMaterial3D_h6gp1")
+mesh = SubResource("BoxMesh_pxgj6")
+
+[node name="Promenades" type="Node3D" parent="." unique_id=520544361]
+
+[node name="@MeshInstance3D@1618" type="MeshInstance3D" parent="Promenades" unique_id=756691100]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -21)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_x3q0t")
+
+[node name="@MeshInstance3D@1619" type="MeshInstance3D" parent="Promenades" unique_id=712538631]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -13)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_lxg4f")
+
+[node name="@MeshInstance3D@1620" type="MeshInstance3D" parent="Promenades" unique_id=894795239]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -7)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_du5a7")
+
+[node name="@MeshInstance3D@1621" type="MeshInstance3D" parent="Promenades" unique_id=816892014]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22, 0, -0.3)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_kyws4")
+
+[node name="@MeshInstance3D@1622" type="MeshInstance3D" parent="Promenades" unique_id=1459432902]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.012, -10.66)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_sbh57")
+
+[node name="@MeshInstance3D@1623" type="MeshInstance3D" parent="Promenades" unique_id=1228093629]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25, 0.012, -10.66)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_iytkt")
+
+[node name="@MeshInstance3D@1624" type="MeshInstance3D" parent="Promenades" unique_id=2077269296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26, 0.012, -10.66)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_r4qyq")
+
+[node name="@MeshInstance3D@1625" type="MeshInstance3D" parent="Promenades" unique_id=688828938]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42, 0.012, -10.66)
+material_override = SubResource("StandardMaterial3D_ams75")
+mesh = SubResource("BoxMesh_oywls")
+
+[node name="Facilities" type="Node3D" parent="." unique_id=781644788]
+
+[node name="Gym" type="Node3D" parent="Facilities" unique_id=1203528878 instance=ExtResource("1_yhf4t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0, -3.5)
+
+[node name="Sauna" type="Node3D" parent="Facilities" unique_id=175902826 instance=ExtResource("2_l7jxq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5, 0, -10)
+
+[node name="IceCream" type="Node3D" parent="Facilities" unique_id=1714449632 instance=ExtResource("3_qpm7f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.9, 0, -3.5)
+
+[node name="Restaurant" type="Node3D" parent="Facilities" unique_id=853539635 instance=ExtResource("4_1fu8r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 33.5, 0, -4.75)
+
+[node name="Yoga" type="Node3D" parent="Facilities" unique_id=675842826 instance=ExtResource("5_ehjn4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -10)
+
+[node name="Massage" type="Node3D" parent="Facilities" unique_id=1522007686 instance=ExtResource("6_j0af7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, -10)
+
+[node name="Gear" type="Node3D" parent="Facilities" unique_id=792771289 instance=ExtResource("7_3cjys")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 0, -3.5)
+
+[node name="Splash" type="Node3D" parent="Facilities" unique_id=1157822708 instance=ExtResource("8_54lku")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 0, -16.5)
+
+[node name="Pickleball" type="Node3D" parent="Facilities" unique_id=1021220877 instance=ExtResource("9_658wu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -16.5)
+
+[node name="@Camera3D@1627" type="Camera3D" parent="." unique_id=858808840]
+transform = Transform3D(0.70710677, -0.35355338, 0.6123724, 0, 0.8660254, 0.5, -0.70710677, -0.35355338, 0.6123724, 32, 8.164966, -1)
+projection = 1
+current = true
+size = 31.034483
+
+[node name="@DirectionalLight3D@1628" type="DirectionalLight3D" parent="." unique_id=424228883]
+transform = Transform3D(0.81915206, 0.46984634, -0.32898995, 0, 0.57357645, 0.81915206, 0.57357645, -0.6710101, 0.46984634, 0, 0, 0)
+light_energy = 0.85
+shadow_enabled = true
+shadow_bias = 0.025
+
+[node name="@WorldEnvironment@1629" type="WorldEnvironment" parent="." unique_id=328020670]
+environment = SubResource("Environment_7486q")

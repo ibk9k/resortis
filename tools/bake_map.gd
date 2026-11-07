@@ -5,8 +5,10 @@ func _initialize() -> void:
 	_bake.call_deferred()
 
 func _bake() -> void:
-	var scene := load("res://scenes/world/coastal_resort.tscn") as PackedScene
-	var resort := scene.instantiate() as CoastalResort
+	# Regenerate from the authoritative layout even when an old preview
+	# references art that has since been removed.
+	var resort := CoastalResort.new()
+	resort.name = "Resortis"
 	root.add_child(resort)
 	await process_frame
 	# Keep runtime controls and walking actors out of the authored editor preview.

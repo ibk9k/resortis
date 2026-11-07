@@ -16,7 +16,7 @@ const BASE := {
  "bin": [[Vector2(889,898),Vector2(963,857),Vector2(1039,899),Vector2(963,935)]],
  "rocks": [[Vector2(1157,891),Vector2(1325,834),Vector2(1488,891),Vector2(1325,940)]]
 }
-const MODELED := ["volleyball","bench","hedge"]
+const MODELED := ["volleyball","bench","hedge","dolphin_statue"] + ResortServices.EXPANSION
 const CANOPIES := ["palm","small_palm"]
 static var fitted: Dictionary = {}
 static func has_registration(kind: String, orientation: int = 0) -> bool:

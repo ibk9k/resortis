@@ -1,21 +1,29 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_433es"]
-[ext_resource type="Texture2D" path="res://assets/atlases/beach-v2.png" id="2_npsjo"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_npsjo"]
+[ext_resource type="Texture2D" path="res://assets/atlases/beach-v2.png" id="2_pr1mk"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_8j6jc"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_pr1mk"]
-atlas = ExtResource("2_npsjo")
+[sub_resource type="AtlasTexture" id="AtlasTexture_plchf"]
+atlas = ExtResource("2_pr1mk")
 region = Rect2(857, 202, 650, 588)
 filter_clip = true
 
-[node name="Pier" type="Node2D" unique_id=385612155]
-script = ExtResource("1_433es")
+[node name="Pier" type="Node2D" unique_id=521244780]
+script = ExtResource("1_npsjo")
 object_id = 1
 kind = "pier"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=1098849630]
+[node name="Art" type="Sprite2D" parent="." unique_id=700734692]
 texture_filter = 1
 position = Vector2(-66.18613, -69.097916)
 scale = Vector2(0.20255892, 0.20255892)
-texture = SubResource("AtlasTexture_pr1mk")
+texture = SubResource("AtlasTexture_plchf")
 centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=890714758]
+script = ExtResource("3_8j6jc")
+facility_kind = "pier"
+art_to_local = Transform2D(0.20255892, 0, 0, 0.20255892, -239.77911, -110.01482)
+plot_origin = Vector2(112, -72)
+phase_offset = 0.379

@@ -1,21 +1,106 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_oxf63"]
-[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_lel4g"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_lel4g"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/cafe.png" id="2_c1hv2"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_1jnjp"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_c1hv2"]
-atlas = ExtResource("2_lel4g")
-region = Rect2(48, 530, 448, 434)
+[sub_resource type="AtlasTexture" id="AtlasTexture_kwerx"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(0, 0, 414, 433)
 filter_clip = true
 
-[node name="Cafe" type="Node2D" unique_id=1404947417]
-script = ExtResource("1_oxf63")
+[sub_resource type="AtlasTexture" id="AtlasTexture_yjccw"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(414, 0, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dkbhw"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(828, 0, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_snxft"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(0, 433, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jtcvn"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(828, 0, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bnx36"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(0, 433, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5yctc"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(414, 433, 414, 433)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_21wpm"]
+atlas = ExtResource("2_c1hv2")
+region = Rect2(828, 433, 414, 433)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_yp6rx"]
+animations = [{
+"frames": [{
+"duration": 0.65,
+"texture": SubResource("AtlasTexture_kwerx")
+}, {
+"duration": 0.32,
+"texture": SubResource("AtlasTexture_yjccw")
+}, {
+"duration": 0.3,
+"texture": SubResource("AtlasTexture_dkbhw")
+}, {
+"duration": 0.35,
+"texture": SubResource("AtlasTexture_snxft")
+}, {
+"duration": 0.28,
+"texture": SubResource("AtlasTexture_jtcvn")
+}, {
+"duration": 0.3,
+"texture": SubResource("AtlasTexture_bnx36")
+}, {
+"duration": 0.7,
+"texture": SubResource("AtlasTexture_5yctc")
+}, {
+"duration": 0.42,
+"texture": SubResource("AtlasTexture_21wpm")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="Cafe" type="Node2D" unique_id=175953901]
+script = ExtResource("1_lel4g")
 object_id = 1
 kind = "cafe"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=1305135829]
+[node name="Art" type="Sprite2D" parent="." unique_id=1663566485]
+visible = false
 texture_filter = 1
-position = Vector2(-96.861496, -133.94809)
-scale = Vector2(0.43631303, 0.43631303)
-texture = SubResource("AtlasTexture_c1hv2")
+position = Vector2(-107.73551, -165.22516)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_kwerx")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=967302832]
+script = ExtResource("3_1jnjp")
+facility_kind = "cafe"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -107.73551, -165.22516)
+plot_origin = Vector2(0, -48)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=728466717]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-107.73551, -165.22516)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_yp6rx")
+animation = &"work"
 centered = false

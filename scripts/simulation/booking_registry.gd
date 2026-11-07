@@ -35,9 +35,11 @@ func reserve(party_id: int, cabin_id: int, nights: int, budget: int, rate: int =
 	return true
 
 func choose(party_id: int, nights: int, budget: int, start: Vector2i = ResortLayout.ARRIVAL) -> Dictionary:
-	if layout == null or budget < nights * NIGHTLY_RATE: return {}
+	if layout == null: return {}
 	var existing := booking(party_id)
 	if not existing.is_empty(): return existing
+	var rate := layout.price("room")
+	if budget < nights * rate: return {}
 	var graph := layout.navigation()
 	if not _open(graph, start): return {}
 	var chosen := -1
@@ -50,7 +52,7 @@ func choose(party_id: int, nights: int, budget: int, start: Vector2i = ResortLay
 		if not route.is_empty() and (route.size() < shortest or (route.size() == shortest and record.id < chosen)):
 			chosen = record.id
 			shortest = route.size()
-	if chosen < 1 or not reserve(party_id, chosen, nights, budget): return {}
+	if chosen < 1 or not reserve(party_id, chosen, nights, budget, rate): return {}
 	return booking(party_id)
 
 func release(party_id: int) -> void:

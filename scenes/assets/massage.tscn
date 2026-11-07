@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_i6ass"]
+[ext_resource type="Texture2D" path="res://assets/structures/massage-v1.png" id="2_i1tjw"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_c5fsx"]
+
+[node name="Massage" type="Node2D" unique_id=366219097]
+script = ExtResource("1_i6ass")
+object_id = 1
+kind = "massage"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1475441289]
+texture_filter = 1
+position = Vector2(-127, -98)
+texture = ExtResource("2_i1tjw")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1273284548]
+script = ExtResource("3_c5fsx")
+facility_kind = "massage"
+art_to_local = Transform2D(1, 0, 0, 1, -127, -98)
+model_origin = Vector2(0, 72)
+plot_origin = Vector2(-16, 16)
+phase_offset = 0.379

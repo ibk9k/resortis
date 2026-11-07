@@ -1,0 +1,107 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_xjj07"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/restaurant.png" id="2_e1llw"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_pcwf5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yu415"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(0, 0, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_stse1"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(730, 0, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6tx0s"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(1460, 0, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kxqv0"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(730, 0, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mj6ic"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(1460, 0, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4yrfo"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(0, 592, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_215kc"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(730, 592, 730, 592)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ppmf"]
+atlas = ExtResource("2_e1llw")
+region = Rect2(1460, 592, 730, 592)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_i5q1j"]
+animations = [{
+"frames": [{
+"duration": 0.52,
+"texture": SubResource("AtlasTexture_yu415")
+}, {
+"duration": 0.3,
+"texture": SubResource("AtlasTexture_stse1")
+}, {
+"duration": 0.34,
+"texture": SubResource("AtlasTexture_6tx0s")
+}, {
+"duration": 0.28,
+"texture": SubResource("AtlasTexture_kxqv0")
+}, {
+"duration": 0.36,
+"texture": SubResource("AtlasTexture_mj6ic")
+}, {
+"duration": 0.34,
+"texture": SubResource("AtlasTexture_4yrfo")
+}, {
+"duration": 0.44,
+"texture": SubResource("AtlasTexture_215kc")
+}, {
+"duration": 0.58,
+"texture": SubResource("AtlasTexture_4ppmf")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="Restaurant" type="Node2D" unique_id=1344650308]
+script = ExtResource("1_xjj07")
+object_id = 1
+kind = "restaurant"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1773568983]
+visible = false
+texture_filter = 1
+position = Vector2(-174.11012, -63.509888)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_yu415")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1101658190]
+script = ExtResource("3_pcwf5")
+facility_kind = "restaurant"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -174.11012, -63.509888)
+model_origin = Vector2(0, 144)
+plot_origin = Vector2(-32, 16)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=1377984687]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-174.11012, -63.509888)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_i5q1j")
+animation = &"work"
+centered = false

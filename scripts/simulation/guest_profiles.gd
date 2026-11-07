@@ -21,6 +21,8 @@ static func create_party(rng: RandomNumberGenerator, party_id: int, size: int = 
 	var shared_interest: String = INTERESTS[rng.randi_range(0, INTERESTS.size() - 1)]
 	for role in count:
 		var variant := "female" if rng.randi_range(0, 1) == 0 else "male"
+		if role == 1:
+			variant = "male" if members[0].variant == "female" else "female"
 		var names: Array = FEMALE_NAMES if variant == "female" else MALE_NAMES
 		var name_index := rng.randi_range(0, names.size() - 1)
 		var guest_name: String = names[name_index]

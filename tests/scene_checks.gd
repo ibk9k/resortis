@@ -89,8 +89,8 @@ func _run() -> void:
 	for walker in resort.walkers:
 		var cell := Vector2i(walker.logical_position.round())
 		expect(resort.graph.is_in_boundsv(cell) and not resort.graph.is_point_solid(cell), "Walking guest remains on navigable ground " + str(walker.actor_id))
-	resort._on_action("save")
-	expect(FileAccess.file_exists(resort.save_path), "Save layout control writes the current edited map")
+	resort._write_snapshot(resort.save_path)
+	expect(FileAccess.file_exists(resort.save_path), "The save writer persists the current edited map")
 	resort._on_action("guide")
 	await process_frame
 	expect(resort.hud.inspector.visible, "The guide can be reopened")

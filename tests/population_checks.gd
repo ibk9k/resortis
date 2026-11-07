@@ -62,6 +62,16 @@ func _run() -> void:
 	var map := ResortLayout.new()
 	map.seed_default()
 	var library := ResortAssets.new()
+	if "--focus-couples" in OS.get_cmdline_user_args():
+		_couple_composition_checks(map, library)
+		print("COUPLE_COMPOSITION_CHECKS ", checks, " checks; ", failures.size(), " failures")
+		quit(0 if failures.is_empty() else 1)
+		return
+	if "--focus-outdoor" in OS.get_cmdline_user_args():
+		_outdoor_walking_checks(map, library)
+		print("OUTDOOR_WALKING_CHECKS ", checks, " checks; ", failures.size(), " failures")
+		quit(0 if failures.is_empty() else 1)
+		return
 	if "--focus-resume" in OS.get_cmdline_user_args():
 		_default_precision_resume_checks(library)
 		print("POPULATION_PRECISION_CHECKS ", checks, " checks; ", failures.size(), " failures")
@@ -78,7 +88,9 @@ func _run() -> void:
 		quit(0 if failures.is_empty() else 1)
 		return
 	_booking_checks(map)
+	_couple_composition_checks(map, library)
 	_population_checks(map, library)
+	_outdoor_walking_checks(map, library)
 	_lifecycle_checks(library)
 	_resume_checks(map, library)
 	_default_precision_resume_checks(library)
@@ -93,6 +105,80 @@ func _run() -> void:
 	_legacy_checks(library)
 	print("POPULATION_CHECKS ", checks, " checks; ", failures.size(), " failures")
 	quit(0 if failures.is_empty() else 1)
+
+func _couple_composition_checks(map: ResortLayout, library: ResortAssets) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 517
+	var first_variants := {}
+	var valid_generated := true
+	for index in 200:
+		var definition := GuestProfiles.create_party(rng, index, 2)
+		first_variants[definition.members[0].variant] = true
+		valid_generated = valid_generated and definition.members[0].variant != definition.members[1].variant
+	expect(valid_generated and first_variants.size() == 2, "Generated couples have one male and one female in either order")
+	var fallback := make_sim(map, library)
+	fallback._profiles = null
+	for index in 10:
+		fallback._create_party(false)
+	for group: Dictionary in fallback.parties:
+		var members: Array = fallback._members(group)
+		if members.size() == 2:
+			expect(members[0].profile.variant != members[1].profile.variant, "Fallback generator follows the couple rule")
+	var snapshot: Dictionary = make_sim(map, library).capture()
+	var invalid_definition := {"nights": 1, "budget": 100, "members": [snapshot.people[0].profile.duplicate(true), snapshot.people[0].profile.duplicate(true)]}
+	expect(not fallback._valid_definition(invalid_definition), "The party acceptance rule rejects matching variants")
+	for variant in ["male", "female"]:
+		var old_save: Dictionary = _json(snapshot)
+		old_save.people[0].profile.variant = variant
+		old_save.people[1].profile.variant = variant
+		var original := _json(old_save)
+		var restored := make_sim(map, library)
+		expect(restored.restore(old_save), "Older %s couple save remains loadable" % variant)
+		var couple: Array = restored._members(restored.parties[0])
+		expect(couple.size() == 2 and couple[0].profile.variant != couple[1].profile.variant, "Older couple is updated on load")
+		expect(restored.parties[0].id == snapshot.parties[0].id and restored.parties[0].budget == snapshot.parties[0].budget and old_save == original, "Migration preserves booking data and the source snapshot")
+		var migrated: Dictionary = restored.capture()
+		var again := make_sim(map, library)
+		expect(again.restore(_json(migrated)) and _equivalent(again.capture(), migrated), "Updated profiles stay stable on a second load")
+
+func _outdoor_walking_checks(map: ResortLayout, library: ResortAssets) -> void:
+	var simulation := make_sim(map, library)
+	var guest: Dictionary = simulation.people[0]
+	var motion: GuestMotion = guest.motion
+	guest.state = "strolling"
+	for trip in [
+		[Vector2i(32, 33), Vector2i(35, 36), "s"],
+		[Vector2i(35, 36), Vector2i(32, 33), "n"],
+		[Vector2i(32, 36), Vector2i(35, 33), "e"],
+		[Vector2i(35, 33), Vector2i(32, 36), "w"],
+	]:
+		motion.position = Vector2(trip[0])
+		expect(simulation._set_outdoor(guest, trip[1]), "Open beach route is available")
+		var straight := true
+		var facings: Dictionary = {}
+		var axis := IsometricGrid.project(Vector2(trip[1] - trip[0])).normalized()
+		motion.advance(0.1)
+		expect(simulation._valid_motion(guest), "Save validation accepts a guest partway through the direct step")
+		for step in 150:
+			motion.advance(1.0 / 30.0)
+			if motion.moving:
+				facings[ResortWalker.facing_for(IsometricGrid.project(motion.direction))] = true
+				straight = straight and absf(IsometricGrid.project(motion.position - Vector2(trip[0])).cross(axis)) < 0.01
+		expect(straight and facings.keys() == [trip[2]] and motion.position.is_equal_approx(Vector2(trip[1])),
+			"Open beach walk stays straight and faces %s throughout (observed %s)" % [trip[2], str(facings.keys())])
+	var corner_map := ResortLayout.new()
+	corner_map.seed_default()
+	corner_map.paths.erase(Vector2i(39, 20))
+	var corner_sim := make_sim(corner_map, library)
+	var corner_guest: Dictionary = corner_sim.people[0]
+	var corner_motion: GuestMotion = corner_guest.motion
+	corner_guest.state = "strolling"
+	corner_motion.position = Vector2(39, 19)
+	expect(corner_sim._set_outdoor(corner_guest, Vector2i(38, 20)) and corner_motion.route == [
+		Vector2(39, 19), Vector2(38, 19), Vector2(38, 20),
+	], "A route turns through the open path instead of cutting a blocked corner")
+	corner_motion.set_route([Vector2(39, 19), Vector2(38, 20)])
+	expect(not corner_sim._valid_motion(corner_guest), "Save validation rejects a diagonal through a blocked corner")
 
 func _booking_checks(map: ResortLayout) -> void:
 	var registry := Registry.new()

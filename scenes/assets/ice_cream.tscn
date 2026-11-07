@@ -1,0 +1,91 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_uxdyb"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/ice_cream.png" id="2_qmn2i"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_7mbpp"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t08v8"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(0, 0, 244, 284)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cc80b"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(244, 0, 244, 284)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_krnom"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(488, 0, 244, 284)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g0cht"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(0, 284, 244, 284)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5kqqr"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(244, 284, 244, 284)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yq1eg"]
+atlas = ExtResource("2_qmn2i")
+region = Rect2(488, 284, 244, 284)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ochh1"]
+animations = [{
+"frames": [{
+"duration": 0.64,
+"texture": SubResource("AtlasTexture_t08v8")
+}, {
+"duration": 0.4,
+"texture": SubResource("AtlasTexture_cc80b")
+}, {
+"duration": 0.46,
+"texture": SubResource("AtlasTexture_krnom")
+}, {
+"duration": 0.54,
+"texture": SubResource("AtlasTexture_g0cht")
+}, {
+"duration": 0.74,
+"texture": SubResource("AtlasTexture_5kqqr")
+}, {
+"duration": 0.52,
+"texture": SubResource("AtlasTexture_yq1eg")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="IceCream" type="Node2D" unique_id=322936830]
+script = ExtResource("1_uxdyb")
+object_id = 1
+kind = "ice_cream"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1623352957]
+visible = false
+texture_filter = 1
+position = Vector2(-58.42505, -80.1095)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_t08v8")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=824043704]
+script = ExtResource("3_7mbpp")
+facility_kind = "ice_cream"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -58.42505, -80.1095)
+model_origin = Vector2(0, 40)
+plot_origin = Vector2(-16, 16)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=1085801208]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-58.42505, -80.1095)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_ochh1")
+animation = &"work"
+centered = false

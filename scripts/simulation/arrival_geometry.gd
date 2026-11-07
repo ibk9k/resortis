@@ -1,0 +1,69 @@
+class_name ArrivalGeometry
+extends RefCounted
+## The court is dimensioned in the logical grid. A unit is roughly 2.15 m
+## relative to the 4.5 m guest car. Paint, curbs and routes share these edges.
+
+const MEDIAN := 48.5
+const LANE_WIDTH := 1.70
+const SHOULDER := 0.34
+const WEST_EDGE := MEDIAN - LANE_WIDTH
+const EAST_EDGE := MEDIAN + LANE_WIDTH
+const ROAD_WEST := WEST_EDGE - SHOULDER
+const ROAD_EAST := EAST_EDGE + SHOULDER
+const ROAD_SOUTH := WALK_SOUTH
+const ROAD := Rect2(ROAD_WEST, ResortLayout.BACKDROP_REAR_EDGE, ROAD_EAST - ROAD_WEST, ROAD_SOUTH - ResortLayout.BACKDROP_REAR_EDGE)
+const INBOUND := MEDIAN - LANE_WIDTH * 0.5
+const OUTBOUND := MEDIAN + LANE_WIDTH * 0.5
+
+const WALK_NORTH := 18.35
+const WALK_SOUTH := 20.04
+const WALK_WIDTH := WALK_SOUTH - WALK_NORTH
+const WALK_CENTER := (WALK_NORTH + WALK_SOUTH) * 0.5
+const GATE := Vector2(42.20, WALK_CENTER)
+const CURB := 0.13
+
+const INNER_WALK := 0.90
+const OUTER_WALK := 0.90
+const LOT_WEST := ROAD_EAST + INNER_WALK
+const STALL_DEPTH := 2.58
+const STALL_WIDTH := 1.62
+const STALLS_PER_ROW := 6
+const AISLE_WIDTH := 3.18
+const AISLE_WEST := LOT_WEST + STALL_DEPTH
+const AISLE_EAST := AISLE_WEST + AISLE_WIDTH
+const AISLE := (AISLE_WEST + AISLE_EAST) * 0.5
+const LOT_EAST := AISLE_EAST + STALL_DEPTH
+const STALL_START := 5.68
+const STALL_END := STALL_START + STALL_WIDTH * STALLS_PER_ROW
+const ENTRY_NORTH := 2.18
+const ENTRY_Y := (ENTRY_NORTH + STALL_START) * 0.5
+const EXIT_Y := (STALL_END + WALK_NORTH) * 0.5
+const LOT := Rect2(LOT_WEST, ENTRY_NORTH, LOT_EAST - LOT_WEST, WALK_NORTH - ENTRY_NORTH)
+const ENTRY_APRON := Rect2(EAST_EDGE, ENTRY_NORTH, LOT_WEST - EAST_EDGE, STALL_START - ENTRY_NORTH)
+const EXIT_APRON := Rect2(EAST_EDGE, STALL_END, LOT_WEST - EAST_EDGE, WALK_NORTH - STALL_END)
+const EXIT_CROSSING := Rect2(ROAD_EAST, STALL_END, INNER_WALK, WALK_NORTH - STALL_END)
+const FRONT_WALK := Rect2(ROAD_EAST, WALK_NORTH, LOT_EAST + OUTER_WALK - ROAD_EAST, WALK_WIDTH)
+const GATE_WALK := Rect2(40.50, WALK_NORTH, ROAD_WEST - 40.50, WALK_WIDTH)
+const MAIN_CROSSING := Rect2(ROAD_WEST, WALK_NORTH, ROAD_EAST - ROAD_WEST, WALK_WIDTH)
+
+const BUS_WEST := 44.55
+const BUS_WALK_WEST := BUS_WEST - 1.04
+const BUS_STOP := Vector2(45.85, 12.50)
+const BUS_TAPER_IN := 6.55
+const BUS_STRAIGHT_IN := 9.55
+const BUS_TURN_Y := 14.77
+const BUS_STRAIGHT_OUT := 17.63
+const BUS_TAPER_OUT := WALK_NORTH
+const BUS_WALK := Rect2(BUS_WALK_WEST, BUS_STRAIGHT_IN, BUS_WEST - BUS_WALK_WEST, WALK_NORTH - BUS_STRAIGHT_IN)
+const SHUTTLE_SIGN := Vector2(BUS_WALK_WEST + 0.21, 11.20)
+
+static func stall_center(index: int) -> Vector2:
+	var x := LOT_WEST + STALL_DEPTH * 0.5 if index < STALLS_PER_ROW else LOT_EAST - STALL_DEPTH * 0.5
+	return Vector2(x, STALL_START + (float(index % STALLS_PER_ROW) + 0.5) * STALL_WIDTH)
+
+static func bus_pavement() -> PackedVector2Array:
+	return PackedVector2Array([
+		Vector2(WEST_EDGE, BUS_TAPER_IN), Vector2(BUS_WEST, BUS_STRAIGHT_IN),
+		Vector2(BUS_WEST, BUS_STRAIGHT_OUT), Vector2(ROAD_WEST, BUS_TAPER_OUT),
+		Vector2(WEST_EDGE, BUS_TAPER_OUT)
+	])

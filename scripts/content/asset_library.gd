@@ -59,6 +59,11 @@ func texture_for(kind: String, orientation: int = 0) -> Texture2D:
 	var index: int = variants[orientation % variants.size()]
 	return available[index] if index < available.size() else null
 
+func display_texture_for(kind: String, orientation: int = 0) -> Texture2D:
+	if kind in FacilityStaff.KINDS:
+		return StaffedVenueArt.frames(kind).get_frame_texture("work", 0)
+	return texture_for(kind, orientation)
+
 func image_for(kind: String,orientation: int) -> Image:
 	var key := "%s/%d"%[kind,orientation]
 	if not source_images.has(key): source_images[key] = texture_for(kind,orientation).get_image()

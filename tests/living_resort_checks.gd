@@ -27,6 +27,41 @@ var prepare_only := false
 var run_tag := ""
 var observations: Dictionary = {}
 
+class AdmissionAudit extends OperatingLedger:
+	var simulation: WeakRef
+	var facilities: RefCounted
+	var violations := {}
+	var admissions := {"meal": 0, "sunbathe": 0, "volleyball": 0}
+	var cross_party_matches := {}
+	var event_ids := {}
+
+	func record(event: Dictionary) -> bool:
+		if not super.record(event): return false
+		if event_ids.has(event.id): violations["Duplicate attached financial event ID"] = true
+		event_ids[event.id] = true
+		if not admissions.has(event.kind): return true
+		admissions[event.kind] += 1
+		# The ledger flushes at the end of the simulation tick. A later
+		# observation can see a legitimate rally already interrupted by checkout.
+		var sim: RefCounted = simulation.get_ref()
+		var payer: Dictionary = sim.person(int(event.get("person_id", 0)))
+		if payer.is_empty():
+			violations["New admission event has no actual guest"] = true
+			return true
+		var ticket: Dictionary = facilities.ticket(payer.id)
+		if ticket.get("status") != "active" or not facilities.ready(payer.id) or not payer.session_paid:
+			violations["Activity was charged before actual ready admission"] = true
+		var fixture: Dictionary = facilities.slot(payer.id)
+		if fixture.is_empty() or payer.motion.position.distance_to(fixture.get("position", Vector2(-999, -999))) > 0.06:
+			violations["Admission payment was collected away from the physical fixture"] = true
+		if event.kind == "volleyball":
+			var partner: Dictionary = sim.person(int(ticket.get("partner_id", 0)))
+			if partner.is_empty() or partner.state != "volleyball":
+				violations["Court admission lacks an actual rally partner"] = true
+			elif partner.party_id != payer.party_id:
+				cross_party_matches[ticket.get("match_id", "")] = true
+		return true
+
 func _initialize() -> void:
 	_run.call_deferred()
 
@@ -793,8 +828,13 @@ func _backend() -> void:
 	if model == null: return
 	var sim = model.simulation
 	expect(sim.facilities == model.facilities and sim.cleanliness == model.cleanliness and sim.ledger == model.ledger, "Population uses the actual shared service instances")
+	var audit := AdmissionAudit.new()
+	audit.simulation = weakref(sim)
+	audit.facilities = model.facilities
+	model.ledger = audit
+	sim.ledger = audit
 	expect(model.cleanliness.hire().get("ok", false), "Hire one real cleaner through the attached service")
-	var violations := {}
+	var violations := audit.violations
 	var snapshots := {}
 	var peak_live := 0
 	var peak_accommodated := 0
@@ -803,10 +843,7 @@ func _backend() -> void:
 	var max_dirt := 0
 	var completed := {}
 	var states := {}
-	var admissions := {"meal": 0, "sunbathe": 0, "volleyball": 0}
-	var event_count := 0
-	var event_ids := {}
-	var cross_party_matches := {}
+	var admissions := audit.admissions
 	var saw_cleaning := false
 	var split := false
 	var split_parties := {}
@@ -854,27 +891,6 @@ func _backend() -> void:
 		if finance.income_total != sim.total_room_income + sim.total_activity_income: violations["Attached ledger income does not reconcile with population"] = true
 		if finance.wages_total != model.cleanliness.total_wages: violations["Attached wages do not reconcile with actual payroll"] = true
 		if absf(float(clean.clock) - sim.clock) > 0.000001: violations["Cleanliness clock diverges from population"] = true
-		if finance.event_count != event_count:
-			var journal: Dictionary = model.ledger.capture()
-			for index in range(event_count, journal.events.size()):
-				var event: Dictionary = journal.events[index]
-				if event_ids.has(event.id): violations["Duplicate attached financial event ID"] = true
-				event_ids[event.id] = true
-				if not event.kind in ["meal", "sunbathe", "volleyball"]: continue
-				admissions[event.kind] += 1
-				var payer: Dictionary = sim.person(int(event.get("person_id", 0)))
-				if payer.is_empty():
-					violations["New admission event has no actual guest"] = true
-					continue
-				var ticket: Dictionary = model.facilities.ticket(payer.id)
-				if ticket.get("status") != "active" or not model.facilities.ready(payer.id) or not payer.session_paid: violations["Activity was charged before actual ready admission"] = true
-				var fixture: Dictionary = model.facilities.slot(payer.id)
-				if fixture.is_empty() or payer.motion.position.distance_to(fixture.get("position", Vector2(-999, -999))) > 0.06: violations["Admission payment was collected away from the physical fixture"] = true
-				if event.kind == "volleyball":
-					var partner: Dictionary = sim.person(int(ticket.get("partner_id", 0)))
-					if partner.is_empty() or partner.state != "volleyball": violations["Court admission lacks an actual rally partner"] = true
-					elif partner.party_id != payer.party_id: cross_party_matches[ticket.get("match_id", "")] = true
-			event_count = journal.events.size()
 	for label in violations: expect(false, label)
 	expect(violations.is_empty(), "Live attached-service invariants and physical admission charges hold throughout 1200 seconds")
 	expect(peak_bookings >= 4 and peak_accommodated >= 8 and peak_live <= 12, "Actual attached backend supports several bookings and at least eight accommodated people")
@@ -883,7 +899,7 @@ func _backend() -> void:
 	expect(max_dirt > 0 and saw_cleaning, "Real completed visits generate dirt and a janitor actually reaches cleaning")
 	expect(split and joined_after_split, "An actual couple splits activities and later reunites for overnight progression")
 	expect(model.ledger.inspect(sim.clock).wages_total == 180, "One attached janitor receives exactly six $30 global-day wages")
-	observations.backend_population = {"seconds": sim.clock, "peak_live": peak_live, "peak_accommodated": peak_accommodated, "peak_bookings": peak_bookings, "max_queued": max_queue, "max_mess": max_dirt, "completed_lengths": completed.keys(), "paid_admissions": admissions, "cross_party_matches": cross_party_matches.size(), "states": states.keys(), "snapshots": snapshots.keys()}
+	observations.backend_population = {"seconds": sim.clock, "peak_live": peak_live, "peak_accommodated": peak_accommodated, "peak_bookings": peak_bookings, "max_queued": max_queue, "max_mess": max_dirt, "completed_lengths": completed.keys(), "paid_admissions": admissions, "cross_party_matches": audit.cross_party_matches.size(), "states": states.keys(), "snapshots": snapshots.keys()}
 	for label in ["queue", "meal", "split", "cleaning", "checkout"]:
 		if snapshots.has(label): _backend_probe(map, snapshots[label], label)
 		else:
@@ -920,6 +936,11 @@ func _world_ui(resort: Variant) -> void:
 		resort._process(0.0)
 		expect(resort.following_guest and resort.selected_person_id == p.id and resort.camera.position.distance_to(resort.population_view.actor_position(p.id) + Vector2(0, -35)) < 0.001, "Follow button tracks the selected live actor " + str(p.id))
 		var actor = resort.population_view.actors[p.id]
+		if not actor.visible:
+			var vehicle: ArrivalVehicle = resort.population_view.vehicles.get(p.party_id)
+			expect(p.state == "arriving" and vehicle != null and actor.position == vehicle.position, "Follow tracks the vehicle while its passenger is aboard")
+			expect(resort.population_view.hit_test(actor.global_position) != p.id, "A passenger inside a vehicle cannot be picked as a pedestrian")
+			continue
 		var texture = actor.sprite.sprite_frames.get_frame_texture(actor.sprite.animation, actor.sprite.frame)
 		var bitmap: Image = texture.get_image()
 		var picked := false
@@ -971,7 +992,7 @@ func _world_trigger_resume(resort: Variant, label: String) -> void:
 	resort.save_path = path
 	resort._on_action("speed_1")
 	var before: Dictionary = resort.living.capture()
-	resort._on_action("save")
+	resort._write_snapshot(resort.save_path)
 	var resumed = _new_world(path)
 	expect(resumed != null and resumed.living != null and _equal(before, resumed.living.capture()), "Actual scene startup restores all services at " + label)
 	if resumed == null or resumed.living == null:
@@ -1095,7 +1116,7 @@ func _world_clock_matrix(resort: Variant) -> void:
 	while resort.living.simulation.clock < 350.0: resort._process(0.1)
 	var path := "res://artifacts/living-resort-qa-" + run_tag + "-clock.json"
 	resort.save_path = path
-	resort._on_action("save")
+	resort._write_snapshot(resort.save_path)
 	var control: Dictionary = {}
 	for fps in [30, 60, 120]:
 		for multiplier in [1, 2, 4]:
@@ -1251,7 +1272,7 @@ func _world() -> void:
 	candidate.next_id = resort.layout.next_id
 	expect(not sim.access_survives(candidate), "Removing all connected paths is rejected for live guests/services")
 	_case("WORLD-SAVE-01", "Actual Save action and scene startup round-trip the new envelope; invalid files preserve the open map")
-	resort._on_action("save")
+	resort._write_snapshot(resort.save_path)
 	expect(FileAccess.file_exists(path), "Save control writes only its isolated QA path")
 	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
 	if not data is Dictionary:

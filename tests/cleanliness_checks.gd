@@ -206,8 +206,9 @@ func _editing_and_validation() -> void:
 	var service := _service(map)
 	_visits(service, map, 10)
 	service.hire()
-	service.advance(1.0, 1.0)
+	service.advance(0.25, 0.25)
 	var stable: Dictionary = _json(service.capture())
+	expect(stable.staff[0].state == "walking", "Editing validation captures an occupied walking edge")
 	var candidate := _map()
 	candidate.paths.clear()
 	expect(not service.access_survives(candidate), "Removing all paths cannot strand staff or jobs")
@@ -230,7 +231,7 @@ func _editing_and_validation() -> void:
 			"bool_id": bad.mess[0].id = true
 			"orphan_claim": bad.mess[0].claimed_by = 999999
 			"unknown_target": bad.staff[0].target_mess_id = 999999
-			"bad_route": bad.staff[0].motion.route[bad.staff[0].motion.index] = [0, 0]
+			"bad_route": bad.staff[0].motion.route[int(bad.staff[0].motion.index)] = [0, 0]
 			"bad_elapsed": bad.staff[0].activity_elapsed = -0.5
 			"bad_rng": bad.rng_state = "9223372036854775808123"
 			"fractional_day": bad.wage_day = 0.5
@@ -290,10 +291,134 @@ func _editing_and_validation() -> void:
 		var after_edit := _service(edit_map)
 		expect(after_edit.restore(_json(reroute.capture())), "A safely replanned route can be saved and resumed")
 
+func _cleanup_trip(map: ResortLayout, start: Vector2, destination: Vector2) -> RefCounted:
+	var service := _service(map)
+	service.hire()
+	var snapshot: Dictionary = service.capture()
+	snapshot.staff[0].motion.position = [start.x, start.y]
+	snapshot.staff[0].stand_position = [start.x, start.y]
+	snapshot.next_mess_id = 2
+	snapshot.mess = [{"id": 1, "kind": "litter", "position": [destination.x, destination.y],
+		"facility_id": 1, "created_at": 0.0, "claimed_by": 0, "style": 0}]
+	expect(service.restore(snapshot), "A reachable litter fixture and hired janitor restore")
+	return service
+
+func _straight_cleanup_walks() -> void:
+	var map := _map()
+	for trip in [
+		[Vector2(32, 33), Vector2(35, 36), "s"],
+		[Vector2(35, 36), Vector2(32, 33), "n"],
+		[Vector2(32, 36), Vector2(35, 33), "e"],
+		[Vector2(35, 33), Vector2(32, 36), "w"],
+	]:
+		var service := _cleanup_trip(map, trip[0], trip[1])
+		var axis := IsometricGrid.project(trip[1] - trip[0]).normalized()
+		var straight := true
+		var facings := {}
+		for tick in range(1, 361):
+			service.advance(1.0 / 30.0, tick / 30.0)
+			var cleaner: Dictionary = service.inspect().staff[0]
+			if cleaner.moving and cleaner.state == "walking":
+				facings[ResortWalker.facing_for(IsometricGrid.project(cleaner.direction))] = true
+				straight = straight and absf(IsometricGrid.project(cleaner.position - trip[0]).cross(axis)) < 0.01
+			if tick == 35:
+				var resumed := _service(map)
+				expect(resumed.restore(_json(service.capture())) and _same(resumed.capture(), service.capture()),
+					"A janitor's in-progress cleanup walk round-trips exactly")
+			if cleaner.cleaned_count == 1: break
+		expect(straight and facings.keys() == [trip[2]], "Janitor walks straight and faces %s (observed %s)" % [trip[2], str(facings.keys())])
+		expect(service.inspect().mess.is_empty(), "Janitor reaches and removes the litter")
+	var corner_map := _map()
+	corner_map.paths.erase(Vector2i(39, 20))
+	var start := Vector2(39, 19)
+	var destination := Vector2(38, 20)
+	var corner_trip := _cleanup_trip(corner_map, start, destination)
+	corner_trip.advance(0.1, 0.1)
+	var motion: GuestMotion = corner_trip.staff[0].motion
+	expect(motion.route.size() == 3 and motion.route[1] == Vector2(38, 19),
+		"Janitor goes around a blocked corner to reach the litter")
+	var forged: Dictionary = corner_trip.capture()
+	var stand := destination - (destination - start).normalized() * 0.4
+	forged.staff[0].motion.route = [[start.x, start.y], [stand.x, stand.y]]
+	forged.staff[0].stand_position = [stand.x, stand.y]
+	expect(not _service(corner_map).restore(forged), "Restore rejects a janitor route that cuts a blocked corner")
+
+func _nearby_job_after_sweeping() -> void:
+	var map := _map()
+	# The previous sweep left the janitor on the west side of a safe edge.
+	# The next piece of litter is on the east end of that same edge.
+	var start := Vector2(32.4, 34)
+	var service := _cleanup_trip(map, start, Vector2(33, 34))
+	var previous := start.x
+	var first_step := false
+	var backtracked := false
+	for tick in range(1, 181):
+		service.advance(1.0 / 30.0, tick / 30.0)
+		var cleaner: Dictionary = service.inspect().staff[0]
+		if tick == 1: first_step = cleaner.position.x > start.x
+		backtracked = backtracked or cleaner.position.x < previous - 0.0001
+		previous = cleaner.position.x
+		if cleaner.cleaned_count == 1: break
+	expect(first_step, "A nearby cleanup job starts walking on the first simulation step")
+	expect(not backtracked and service.inspect().mess.is_empty(), "A janitor approaches adjacent litter without turning away first")
+	var cleaner_after_sweep: Dictionary = service.inspect().staff[0]
+	expect(cleaner_after_sweep.state == "returning", "A cleaner leaves the finished job for a standby point")
+	var sweep_position: Vector2 = cleaner_after_sweep.position
+	var resumed := _service(map)
+	expect(resumed.restore(_json(service.capture())), "A return to standby survives a save")
+	var now: float = service.inspect().clock
+	resumed.advance(25.0, now + 25.0)
+	var at_standby: Dictionary = resumed.inspect().staff[0]
+	expect(at_standby.state == "idle" and at_standby.position.distance_to(sweep_position) > 2.0
+		and at_standby.reason == "On standby. Waiting for litter or spills.", "The cleaner waits away from the completed cleanup")
+	var interrupted := _json(service.capture()) as Dictionary
+	interrupted.mess.append({"id": 2, "kind": "litter", "position": [34, 34], "facility_id": 1,
+		"created_at": now, "claimed_by": 0, "style": 0})
+	interrupted.next_mess_id = 3
+	expect(resumed.restore(interrupted), "New litter can appear during a return trip")
+	resumed.advance(1.0 / 30.0, now + 1.0 / 30.0)
+	var redirected: Dictionary = resumed.inspect().staff[0]
+	expect(redirected.state == "walking" and redirected.target_mess_id == 2, "A new job immediately interrupts the walk back to standby")
+	var in_reach := _cleanup_trip(map, Vector2(32.35, 34), Vector2(32, 34))
+	in_reach.advance(1.0 / 30.0, 1.0 / 30.0)
+	var cleaner: Dictionary = in_reach.inspect().staff[0]
+	expect(cleaner.state == "cleaning" and cleaner.distance == 0.0, "Litter already within broom reach needs no repositioning")
+
+func _standby_spread() -> void:
+	var map := _map()
+	var service := _service(map)
+	for index in 3: service.hire()
+	var saved := _json(service.capture()) as Dictionary
+	var old_points := [[37, 19], [38, 20], [36, 19]]
+	for index in 3:
+		saved.staff[index].motion.position = old_points[index]
+		saved.staff[index].stand_position = old_points[index]
+	expect(service.restore(saved), "Existing saves can have three cleaners at the previous arrival posts")
+	saved.staff[0].state = "returning"
+	saved.staff[0].motion.route = [[37, 19], [38, 19]]
+	saved.staff[0].stand_position = [38, 19]
+	expect(service.restore(saved), "An older save may have a cleaner still on the way to an arrival post")
+	service.advance(Service.STEP, Service.STEP)
+	expect(service.staff[0].stand_position != Vector2(38, 19), "An old return route is redirected on the first tick")
+	service.advance(120.0 - Service.STEP, 120.0)
+	var arrival := IsometricGrid.project(Vector2(ResortLayout.ARRIVAL))
+	var screen_points: Array[Vector2] = []
+	for cleaner: Dictionary in service.inspect().staff:
+		var point := IsometricGrid.project(cleaner.position)
+		expect(cleaner.state == "idle" and point.distance_to(arrival) >= 128.0,
+			"An idle cleaner waits away from the arrival crowd")
+		for prior in screen_points:
+			expect(point.distance_to(prior) >= 128.0, "Standby cleaners are visibly separated on screen")
+		screen_points.append(point)
+
 func _run() -> void:
-	_generation()
-	_jobs_and_resume()
-	_wages_and_time()
-	_editing_and_validation()
+	_straight_cleanup_walks()
+	_nearby_job_after_sweeping()
+	_standby_spread()
+	if "--focus-straight-walk" not in OS.get_cmdline_user_args():
+		_generation()
+		_jobs_and_resume()
+		_wages_and_time()
+		_editing_and_validation()
 	print("CLEANLINESS_CHECKS ", checks, " checks; ", failures.size(), " failures; no player save opened or written")
 	quit(0 if failures.is_empty() else 1)

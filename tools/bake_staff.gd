@@ -14,11 +14,11 @@ func _run() -> void:
 		quit(1)
 		return
 	var metadata := Art.metadata()
-	if "--bake" in args: await _bake(metadata)
+	if "--bake" in args: await _bake(metadata, "--walk-only" in args)
 	if "--preview-only" in args: await _preview(metadata)
 	quit()
 
-func _bake(metadata: Dictionary) -> void:
+func _bake(metadata: Dictionary, walk_only: bool) -> void:
 	DirAccess.make_dir_recursive_absolute(Art.OUTPUT)
 	var viewport := SubViewport.new()
 	viewport.size = Art.CANVAS
@@ -26,7 +26,7 @@ func _bake(metadata: Dictionary) -> void:
 	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	root.add_child(viewport)
 	for facing: String in Art.DIRS:
-		for kind in ["walk", "idle", "clean"]:
+		for kind in (["walk"] if walk_only else ["walk", "idle", "clean"]):
 			var skin := JanitorSkin.new()
 			skin.configure(facing, kind)
 			viewport.add_child(skin)
@@ -42,7 +42,7 @@ func _bake(metadata: Dictionary) -> void:
 	var file := FileAccess.open(Art.REGISTRATION, FileAccess.WRITE)
 	file.store_string(JSON.stringify(metadata, "\t"))
 	file.close()
-	print("JANITOR_BAKED 128 walking + 8 idle + 32 cleaning, guarded complete paintings")
+	print("JANITOR_BAKED 128 walking, guarded complete paintings" if walk_only else "JANITOR_BAKED 128 walking + 8 idle + 32 cleaning, guarded complete paintings")
 
 func _preview(metadata: Dictionary) -> void:
 	var folder := "res://artifacts/worker-4-staff-preview"

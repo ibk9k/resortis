@@ -1,22 +1,55 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_d1qgh"]
-[ext_resource type="Texture2D" path="res://assets/atlases/pool-v3.png" id="2_2dxcb"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_are2k"]
+[ext_resource type="Texture2D" path="res://assets/atlases/pool-v3.png" id="2_6u5mt"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_f7qs7"]
+[ext_resource type="Shader" path="res://assets/shaders/pool_motion.gdshader" id="4_n6hbv"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_are2k"]
-atlas = ExtResource("2_2dxcb")
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ueq8"]
+atlas = ExtResource("2_6u5mt")
 region = Rect2(0, 29, 1240, 1225)
 filter_clip = true
 
-[node name="Pool" type="Node2D" unique_id=1829468502]
-script = ExtResource("1_d1qgh")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xj8aj"]
+shader = ExtResource("4_n6hbv")
+shader_parameter/elapsed = null
+shader_parameter/waterfall = false
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ibmlj"]
+shader = ExtResource("4_n6hbv")
+shader_parameter/elapsed = null
+shader_parameter/waterfall = true
+
+[node name="Pool" type="Node2D" unique_id=1610844997]
+script = ExtResource("1_are2k")
 object_id = 1
 kind = "pool"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=235169063]
+[node name="Art" type="Sprite2D" parent="." unique_id=432919611]
 texture_filter = 1
 position = Vector2(162.22922, -178.45213)
 rotation = 3.1415927
 scale = Vector2(0.25348315, -0.25348315)
-texture = SubResource("AtlasTexture_are2k")
+texture = SubResource("AtlasTexture_1ueq8")
 centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=218812111]
+script = ExtResource("3_f7qs7")
+facility_kind = "pool"
+art_to_local = Transform2D(-0.25348315, -2.21602e-08, -2.21602e-08, 0.25348315, 162.22922, -185.80315)
+plot_origin = Vector2(-32, -96)
+phase_offset = 0.379
+
+[node name="Surface" type="Polygon2D" parent="Ambience" unique_id=840473369]
+texture_filter = 2
+material = SubResource("ShaderMaterial_xj8aj")
+texture = ExtResource("2_6u5mt")
+polygon = PackedVector2Array(101.13976, -9.378876, -9.378891, -58.808105, -19.011246, -53.484955, -28.136642, -58.30114, -52.97798, -44.86653, -69.20091, -40.557312, -110.51865, -16.983398, -66.4126, 5.8300934, -64.384735, -0.5069885, -61.089447, -4.5627136, -56.27327, -6.590576, -51.96405, -5.323166, -48.161804, -1.0139465, -45.12001, 5.8300934, -41.064285, 2.0278473, -36.248108, 1.5208893, -32.192368, 5.5766144, -29.657547, 12.674149, -27.122711, 26.362228, 8.871902, 44.61302)
+uv = PackedVector2Array(241, 696, 677, 501, 715, 522, 751, 503, 849, 556, 913, 573, 1076, 666, 902, 756, 894, 731, 881, 715, 862, 707, 845, 712, 830, 729, 818, 756, 802, 741, 783, 739, 767, 755, 757, 783, 747, 837, 605, 909)
+
+[node name="Waterfall" type="Polygon2D" parent="Ambience" unique_id=1122710155]
+texture_filter = 2
+material = SubResource("ShaderMaterial_ibmlj")
+texture = ExtResource("2_6u5mt")
+polygon = PackedVector2Array(-65.652145, -80.861145, -75.537994, -79.08676, -73.76361, -71.735756, -71.482254, -62.863846, -71.73575, -50.44316, -76.04495, -45.373505, -73.51012, -39.796875, -64.89169, -41.064285, -56.780243, -44.359573, -53.99193, -48.668777, -57.033722, -57.540695, -59.061584, -68.94744, -61.342926, -75.79148)
+uv = PackedVector2Array(899, 414, 938, 421, 931, 450, 922, 485, 923, 534, 940, 554, 930, 576, 896, 571, 864, 558, 853, 541, 865, 506, 873, 461, 882, 434)

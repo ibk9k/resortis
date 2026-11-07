@@ -14,7 +14,13 @@ func _run() -> void:
    item.configure({"id":1,"kind":kind,"position":Vector2.ZERO,"orientation":orientation},assets)
    root.add_child(item)
    var texture := item.sprite.texture as AtlasTexture
-   if texture:
+   if kind in FacilityStaff.KINDS:
+    var size := ResortCatalog.footprint(kind,orientation)
+    for point: Array in StaffedVenueArt.record(kind).floor:
+     var ground := IsometricGrid.unproject(Vector2(point[0], point[1]))
+     if ground.x < -0.5 or ground.y < -0.5 or ground.x > size.x-0.5 or ground.y > size.y-0.5:
+      failures.append("Staffed base spills outside reservation: "+kind)
+   elif texture:
     var size := ResortCatalog.footprint(kind,orientation)
     for point in GroundRegistration.source_floor(kind,orientation):
      var ground := IsometricGrid.unproject(item.sprite.to_global(point-texture.region.position))

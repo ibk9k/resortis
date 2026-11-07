@@ -1,0 +1,8 @@
+[gd_resource type="AtlasTexture" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/ice_cream.png" id="1_q6irm"]
+
+[resource]
+atlas = ExtResource("1_q6irm")
+region = Rect2(0, 0, 244, 284)
+filter_clip = true

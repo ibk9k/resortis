@@ -4,6 +4,9 @@ func _initialize() -> void: _run.call_deferred()
 func _run() -> void:
 	var assets := ResortAssets.new()
 	var activities := "--activities" in OS.get_cmdline_user_args()
+	var pose_time := 0.0
+	for argument in OS.get_cmdline_user_args():
+		if argument.begins_with("--time="): pose_time = argument.trim_prefix("--time=").to_float()
 	root.size=Vector2i(1200,860)
 	var stage := Node2D.new()
 	root.add_child(stage)
@@ -29,7 +32,7 @@ func _run() -> void:
 				actor.variant="female" if role==swap else "male"
 				actor.configure(role+1,Vector2i.ZERO,AStarGrid2D.new(),[],assets)
 				world.add_child(actor)
-				actor.present_activity(GuestActivitySlots.slot(record,pose,role,assets),0)
+				actor.present_activity(GuestActivitySlots.slot(record,pose,role,assets),pose_time)
 			var picture := Sprite2D.new()
 			picture.centered=false
 			picture.texture=viewport.get_texture()

@@ -12,15 +12,16 @@ const POPULATION_CAP := 12
 const DEPARTED_LIMIT := 24
 const REUNION_LEAD := 65.0
 const ROOM_WAIT := 32.0
-const STATES := ["arriving", "waiting_room", "to_cabin", "entering", "sleeping", "exiting", "deciding", "to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "leaving_activity", "strolling", "waiting_partner", "returning", "departing", "departed"]
-const FACILITY_STATES := ["to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "waiting_partner", "leaving_activity"]
-const IN_FACILITY := ["approaching_activity", "sitting", "eating", "lying", "volleyball", "waiting_partner", "leaving_activity"]
+# Every new appearance must be registered with its gender for couple matching.
+const VARIANT_GENDER := {"female": "female", "male": "male"}
+const STATES := ["arriving", "waiting_room", "to_cabin", "entering", "sleeping", "exiting", "deciding", "to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "using_facility", "leaving_activity", "strolling", "waiting_partner", "returning", "departing", "departed"]
+const FACILITY_STATES := ["to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "using_facility", "waiting_partner", "leaving_activity"]
+const IN_FACILITY := ["approaching_activity", "sitting", "eating", "lying", "volleyball", "using_facility", "waiting_partner", "leaving_activity"]
 const INTERIOR_STATES := ["entering", "sleeping", "exiting"]
 const TRAVEL_STATES := ["to_cabin", "entering", "exiting", "to_facility", "approaching_activity", "leaving_activity", "returning", "departing"]
-const ACTIVITIES := ["", "meal", "sunbathe", "volleyball", "rest", "stroll"]
-const PRICES := {"meal": 12, "sunbathe": 8, "volleyball": 10}
-const KINDS := {"meal": "cafe", "sunbathe": "sunbeds", "volleyball": "volleyball"}
-const POSES := {"meal": "eating", "sunbathe": "lying", "volleyball": "volleyball"}
+const ACTIVITIES := ["", "meal", "sunbathe", "volleyball", "rest", "stroll"] + ResortServices.EXPANSION
+const KINDS := ResortServices.KINDS
+const POSES := ResortServices.POSES
 
 var layout: ResortLayout
 var assets: ResortAssets
@@ -30,6 +31,7 @@ var parties: Array[Dictionary] = []
 var facilities: RefCounted
 var cleanliness: RefCounted
 var ledger: RefCounted
+var upkeep_enabled := false
 var bookings := Bookings.new()
 var population_cap := POPULATION_CAP
 var arrivals_enabled := true
@@ -109,15 +111,24 @@ func advance(delta: float) -> void:
 	var steps := mini(int(floor((_pending_time + 0.00000001) / STEP)), MAX_STEPS_PER_ADVANCE)
 	_pending_time = maxf(0.0, _pending_time - steps * STEP)
 	for index in steps:
+		var previous_clock := clock
 		_ticks += 1
 		clock = _clock_origin + _ticks * STEP
 		_tick()
+		if upkeep_enabled and ledger != null:
+			var day := floori(clock / DAY_SECONDS)
+			if day > floori(previous_clock / DAY_SECONDS):
+				ledger.call("record_daily_upkeep", layout.objects, day)
 	_flush_events()
 
 func _tick() -> void:
 	if arrivals_enabled and _time_reached(_next_arrival):
-		if _active_count() < population_cap: _create_party(false)
-		_next_arrival = clock + _rng.randf_range(20.0, 29.0)
+		var clear_at := _traffic_clear_at() if layout.public_arrivals else 0.0
+		if clear_at > clock:
+			_next_arrival = clear_at + 0.35
+		else:
+			if _active_count() < population_cap: _create_party(false)
+			_next_arrival = clock + _rng.randf_range(20.0, 29.0)
 	if not _sessions_external and facilities != null and _local_tickets.is_empty(): _sessions_external = true
 	if facilities != null: facilities.call("advance", STEP, clock, people)
 	if not _sessions_external: _advance_local_sessions()
@@ -154,6 +165,10 @@ func _active_count() -> int:
 func _create_party(first: bool) -> void:
 	var space := population_cap - _active_count()
 	if space < 1: return
+	var bay := -2
+	if layout.public_arrivals:
+		bay = _find_arrival_bay()
+		if bay == -2: return
 	var definition: Dictionary
 	if first:
 		definition = {"nights": 2, "budget": 480, "members": [
@@ -166,6 +181,8 @@ func _create_party(first: bool) -> void:
 		var members: Array[Dictionary] = []
 		for role in size:
 			var variant := "female" if _rng.randi_range(0, 1) == 0 else "male"
+			if role == 1:
+				variant = "male" if members[0].variant == "female" else "female"
 			var names := ["Asha", "Nora", "Iris", "Zara"] if variant == "female" else ["Eli", "Omar", "Finn", "Arlo"]
 			members.append(_profile(names[_rng.randi_range(0, 3)], variant, ["meal", "sunbathe" if role == 0 else "volleyball"], _rng.randf_range(40, 85), _rng.randf_range(45, 80), _rng.randf_range(35, 80)))
 		var nights := _rng.randi_range(1, 3)
@@ -174,16 +191,126 @@ func _create_party(first: bool) -> void:
 	var group := {"id": _next_party_id, "member_ids": [], "nights": int(definition.nights), "initial_budget": int(definition.budget), "budget": int(definition.budget), "cabin_id": -1,
 		"paid_nights": 0, "room_spent": 0, "activity_spent": 0, "created_at": clock, "next_night": 0.0, "state": "waiting_room", "history": [],
 		"rate": Bookings.NIGHTLY_RATE, "departure_reason": "", "checkout_requested": false, "receipts": [], "legacy": false}
+	if bay >= ArrivalTraffic.BUS:
+		group["arrival_bay"] = bay
 	_next_party_id += 1
 	for role in definition.members.size():
 		var motion := GuestMotion.new()
-		motion.position = _waiting_point(_next_person_id)
+		motion.position = Vector2(ResortLayout.ARRIVAL) if group.has("arrival_bay") else _waiting_point(_next_person_id)
 		var guest := _new_person(_next_person_id, group.id, role, definition.members[role], motion)
+		if group.has("arrival_bay"):
+			guest.reason = "Travelling to the resort by shuttle." if bay == ArrivalTraffic.BUS else "Driving to the resort."
 		people.append(guest)
 		group.member_ids.append(_next_person_id)
 		_next_person_id += 1
 	parties.append(group)
-	_history(group, "Arrived for %d night%s with $%d shared room-and-activity money." % [group.nights, "" if group.nights == 1 else "s", group.budget])
+	var stage := "Travelling" if group.has("arrival_bay") else "Arrived"
+	_history(group, "%s for %d night%s with $%d shared room-and-activity money." % [stage, group.nights, "" if group.nights == 1 else "s", group.budget])
+
+func departure_time(group: Dictionary) -> float:
+	var latest := 0.0
+	for guest in _members(group):
+		latest = maxf(latest, float(guest.departed_at))
+	return latest
+
+func _traffic_clear_at() -> float:
+	var clear_at := 0.0
+	for group in parties:
+		if not group.has("arrival_bay"): continue
+		var bay: int = group.arrival_bay
+		var clear_in := ArrivalTraffic.walk_end(bay, 1)
+		if bay == ArrivalTraffic.BUS:
+			clear_in = maxf(clear_in, ArrivalTraffic.arrival_seconds(bay) + ArrivalTraffic.BUS_DWELL + ArrivalTraffic.exit_seconds(bay))
+		clear_at = maxf(clear_at, float(group.created_at) + clear_in)
+		if group.has("return_walk_at"):
+			clear_at = maxf(clear_at, float(group.return_walk_at) + ArrivalTraffic.clear_seconds(bay))
+	return clear_at
+
+func _find_arrival_bay() -> int:
+	# Every fourth party travels by shuttle. A bay stays claimed until its car
+	# has cleared the court, including the walk back after checkout.
+	if _next_party_id % 4 == 0: return ArrivalTraffic.BUS
+	var occupied := {}
+	for group in parties:
+		var bay := int(group.get("arrival_bay", -2))
+		if bay < 0: continue
+		if _parking_claimed(group): occupied[bay] = true
+	# Alternate sides so parking fills from the gateway inward.
+	for row in range(5, -1, -1):
+		for bay in [row, row + 6]:
+			if not occupied.has(bay): return bay
+	return -2
+
+func _parking_claimed(group: Dictionary) -> bool:
+	var bay := int(group.get("arrival_bay", -1))
+	if bay < 0: return false
+	return group.state != "departed" or clock < float(group.get("return_walk_at", departure_time(group))) + ArrivalTraffic.clear_seconds(bay)
+
+func _reception_door() -> Vector2i:
+	var graph := _navigation()
+	var closest := ResortLayout.ARRIVAL
+	var distance := INF
+	for record in layout.objects:
+		if record.kind != "reception": continue
+		var door := _door(record)
+		if not _open(graph, door): continue
+		var route := graph.get_id_path(ResortLayout.ARRIVAL, door)
+		if not route.is_empty() and route.size() < distance:
+			closest = door
+			distance = route.size()
+	return closest
+
+func _checkin_cells(door: Vector2i) -> Array[Vector2i]:
+	var graph := _navigation()
+	var cells: Array[Vector2i] = [door]
+	var entrances := _entrance_cells()
+	entrances[ResortLayout.ARRIVAL] = true
+	for radius in range(1, 8):
+		for offset in [Vector2i(radius, 0), Vector2i(radius, 2), Vector2i(0, radius), Vector2i(-radius, 0), Vector2i(-radius, 2)]:
+			var cell: Vector2i = door + offset
+			if cell in cells or entrances.has(cell) or not _open(graph, cell): continue
+			if not graph.get_id_path(door, cell).is_empty(): cells.append(cell)
+	return cells
+
+func _advance_checkin(group: Dictionary) -> void:
+	var members := _members(group)
+	var bay: int = group.arrival_bay
+	var age := clock - float(group.created_at)
+	if _ticks % 6 != 1 or age < ArrivalTraffic.walk_end(bay, 0): return
+	var door := _reception_door()
+	var cells := _checkin_cells(door)
+	var rank := 0
+	for other in parties:
+		if other.id == group.id: break
+		if other.state == "waiting_room" and other.has("arrival_bay") and not _all_state(_members(other), ["waiting_room"]) and clock - float(other.created_at) >= ArrivalTraffic.walk_end(int(other.arrival_bay), 0):
+			rank += 1
+	var ready := true
+	for guest in members:
+		if age < ArrivalTraffic.walk_end(bay, int(guest.role)):
+			ready = false
+			continue
+		var waiting: bool = guest.state == "waiting_room"
+		var slot := rank * 2 + int(guest.role)
+		if waiting: slot = 3 + (int(group.id) % 4) * 2 + int(guest.role)
+		var target := cells[mini(slot, cells.size() - 1)]
+		var motion: GuestMotion = guest.motion
+		if not motion.position.is_equal_approx(Vector2(target)):
+			ready = false
+			if motion.route.is_empty() or motion.route[-1] != Vector2(target):
+				_set_outdoor(guest, target)
+		guest.reason = "Waiting near reception for a cabin." if waiting else "Checking in at reception." if rank == 0 else "Queuing at reception."
+	if not group.has("desk_started"):
+		if rank != 0 or not ready: return
+		group["desk_started"] = clock
+	var since_desk := clock - float(group.desk_started)
+	if since_desk >= ROOM_WAIT + ArrivalTraffic.SERVICE_SECONDS:
+		_start_unbooked_departure(group)
+	elif since_desk >= ArrivalTraffic.SERVICE_SECONDS and door != ResortLayout.ARRIVAL and (not _all_state(members, ["waiting_room"]) or _ticks % 30 == 1):
+		_try_book(group)
+	elif since_desk >= ArrivalTraffic.SERVICE_SECONDS and door == ResortLayout.ARRIVAL:
+		for guest in members:
+			guest.state = "waiting_room"
+			guest.reason = "Waiting for a connected reception."
 
 func _profile(name_value: String, variant: String, interests: Array, hunger: float, rest: float, enjoyment: float) -> Dictionary:
 	return {"name": name_value, "variant": variant, "interests": interests, "initial_needs": {"hunger": hunger, "rest": rest, "enjoyment": enjoyment}}
@@ -198,6 +325,9 @@ func _new_person(id: int, party_id: int, role: int, profile: Dictionary, motion:
 func _advance_party(group: Dictionary) -> void:
 	if group.state == "departed": return
 	if group.state == "waiting_room":
+		if group.has("arrival_bay"):
+			_advance_checkin(group)
+			return
 		if _time_reached(float(group.created_at) + ROOM_WAIT):
 			_start_unbooked_departure(group)
 		elif _ticks % 60 == 1 or _members(group)[0].state == "arriving":
@@ -264,6 +394,8 @@ func _finish_party_transitions(group: Dictionary) -> void:
 		_history(group, "Both guests checked out; the cabin reservation is released." if members.size() == 2 else "Checked out; the cabin reservation is released.")
 	if group.state == "departing" and _all_state(members, ["departed"]):
 		group.state = "departed"
+		if int(group.get("arrival_bay", -1)) >= 0:
+			group["return_walk_at"] = maxf(clock, _traffic_clear_at())
 
 func _members(group: Dictionary) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
@@ -286,7 +418,9 @@ func _charge_night(group: Dictionary) -> bool:
 	group.room_spent += group.rate
 	group.paid_nights += 1
 	total_room_income += group.rate
-	_emit({"id": "resort:room:%d:%d" % [group.id, group.paid_nights], "kind": "room", "amount": group.rate, "time": clock, "party_id": group.id})
+	var receipt := {"id": "resort:room:%d:%d" % [group.id, group.paid_nights], "kind": "room", "amount": group.rate, "time": clock, "party_id": group.id}
+	ResortEconomy.mark_custom_price(receipt)
+	_emit(receipt)
 	_history(group, "Paid $%d for night %d of %d, once for the shared cabin." % [group.rate, group.paid_nights, group.nights])
 	return true
 
@@ -305,7 +439,7 @@ func _request_reunion(group: Dictionary, checkout: bool, reason: String) -> void
 			_leave_activity(guest, "home")
 		elif guest.state == "leaving_activity":
 			guest.after_activity = "home"
-		elif guest.state in ["sitting", "eating", "lying", "volleyball", "waiting_partner"]:
+		elif guest.state in ["sitting", "eating", "lying", "volleyball", "using_facility", "waiting_partner"]:
 			_leave_activity(guest, "home")
 		else:
 			_release_ticket(guest.id)
@@ -334,7 +468,11 @@ func _advance_person(guest: Dictionary) -> void:
 		_brain.call("advance", guest, STEP, score)
 	else:
 		_fallback_needs(guest, score)
-	if guest.state in ["arriving", "waiting_room"]: return
+	if guest.state in ["arriving", "waiting_room"]:
+		if party(guest.party_id).has("arrival_bay") and not motion.route.is_empty():
+			motion.advance(STEP)
+			if motion.finished(): _arrived(guest)
+		return
 	if guest.state in FACILITY_STATES and guest.state != "leaving_activity":
 		var ticket := _ticket(guest.id)
 		if ticket.is_empty() or ticket.get("status") == "expired":
@@ -368,8 +506,8 @@ func _advance_person(guest: Dictionary) -> void:
 				guest.state = "eating"
 				guest.timer = 12.0
 				guest.activity_elapsed = 0.0
-				guest.reason = "Eating at the café."
-		"eating", "lying", "volleyball":
+				guest.reason = "Dining at the seaside bistro." if guest.activity == "restaurant" else "Eating at the café."
+		"eating", "lying", "volleyball", "using_facility":
 			if guest.timer <= 0: _leave_activity(guest, "decide")
 		"strolling":
 			if guest.timer <= 0: _decision_state(guest)
@@ -498,16 +636,16 @@ func _decide(guest: Dictionary) -> void:
 	# Shared leisure is an invitation at a safe decision point. Each partner's
 	# urgent needs still get their own choice and their own route.
 	var partner := _partner(guest)
-	if _party_coordinator != null and not partner.is_empty() and partner.activity in ["sunbathe", "volleyball"] and partner.state in ["to_facility", "queueing", "approaching_activity", "waiting_partner"]:
+	if _party_coordinator != null and not partner.is_empty() and partner.activity in (["sunbathe"] + ResortServices.PAIRED) and partner.state in ["to_facility", "queueing", "approaching_activity", "waiting_partner"]:
 		var invitation := {"activity": partner.activity, "facility_id": partner.facility_id, "reason": "Joining a partner for some shared leisure."}
 		if _party_coordinator.call("should_join", guest, partner, invitation): intent = invitation
 	guest.reason = str(intent.get("reason", "Choosing the next activity."))
 	var activity: String = str(intent.get("activity", "stroll"))
 	if activity == "rest":
 		_go_home(guest)
-	elif activity in PRICES:
+	elif KINDS.has(activity):
 		var record := layout.find_object(int(intent.get("facility_id", -1)))
-		if record.get("kind") == KINDS[activity] and _can_spend(guest, PRICES[activity]) and _visit(guest, record, activity):
+		if record.get("kind") == KINDS[activity] and _can_spend(guest, layout.price(activity)) and _visit(guest, record, activity):
 			_history(guest, guest.reason)
 			return
 		_stroll(guest, "That visit is unavailable or would spend protected room money; taking a free stroll.")
@@ -533,31 +671,32 @@ func _available(guest: Dictionary) -> Array[Dictionary]:
 	var graph := _navigation()
 	var start := Vector2i((guest.motion as GuestMotion).position.round())
 	if not _open(graph, start): return available
+	var facility_status := {}
+	if _sessions_external and facilities != null:
+		for entry: Dictionary in facilities.call("inspect"):
+			facility_status[entry.facility_id] = entry
 	for record in layout.objects:
 		if record.kind not in KINDS.values(): continue
 		var destination := _door(record)
 		if not _open(graph, destination): continue
 		var path := graph.get_id_path(start, destination)
 		if path.is_empty(): continue
-		var activity: String = {"cafe": "meal", "sunbeds": "sunbathe", "volleyball": "volleyball"}[record.kind]
+		var activity: String = KINDS.find_key(record.kind)
 		var queued := 0
 		var accepts_queue := true
 		if _sessions_external and facilities != null:
-			var facility_view: Array = facilities.call("inspect")
-			for entry in facility_view:
-				if entry.get("id", entry.get("facility_id", -1)) == record.id:
-					var count: Variant = entry.get("queue", entry.get("queue_count", 0))
-					queued = count.size() if count is Array else int(count)
-					if entry.get("available") is bool: accepts_queue = entry.available
+			var entry: Dictionary = facility_status.get(record.id, {})
+			queued = int(entry.get("queue_count", 0))
+			accepts_queue = entry.get("available", true)
 		else:
 			for ticket in _local_tickets:
 				if ticket.facility_id == record.id and ticket.status == "queued": queued += 1
 		var retry_blocked: bool = guest.get("failed_facility_id", -1) == record.id and not _time_reached(float(guest.get("facility_retry_at", 0)))
 		var waiting_players := 0
-		if activity=="volleyball":
+		if activity in ResortServices.PAIRED:
 			for other: Dictionary in people:
-				if other.id!=guest.id and other.facility_id==record.id and other.activity=="volleyball" and other.state in ["to_facility","queueing","approaching_activity","waiting_partner"] and not other.return_requested: waiting_players+=1
-		available.append({"kind": record.kind, "id": record.id, "price": PRICES[activity], "distance": float(path.size()), "available": accepts_queue and queued < 4 and not retry_blocked, "queue": queued,"waiting_players":waiting_players})
+				if other.id!=guest.id and other.facility_id==record.id and other.activity==activity and other.state in ["to_facility","queueing","approaching_activity","waiting_partner"] and not other.return_requested: waiting_players+=1
+		available.append({"kind": record.kind, "id": record.id, "price": layout.price(activity), "distance": float(path.size()), "available": accepts_queue and queued < 4 and not retry_blocked, "queue": queued,"waiting_players":waiting_players})
 	available.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.distance < b.distance if a.distance != b.distance else a.id < b.id)
 	return available
 
@@ -607,7 +746,7 @@ func _advance_queue(guest: Dictionary) -> void:
 func _approach_activity(guest: Dictionary) -> void:
 	var ticket := _ticket(guest.id)
 	guest.slot = int(ticket.get("slot", ticket.get("slot_index", -1)))
-	if guest.slot not in [0, 1]:
+	if guest.slot < 0 or guest.slot >= ResortServices.capacity(guest.activity):
 		_cancel_visit(guest, "No physical place is reserved; choosing another activity.")
 		return
 	var route: Array[Vector2] = []
@@ -624,11 +763,11 @@ func _approach_activity(guest: Dictionary) -> void:
 	_set_route(guest, route)
 
 func _start_activity(guest: Dictionary) -> void:
-	if guest.session_paid and guest.state in ["sitting", "eating", "lying", "volleyball"]: return
-	if guest.activity == "volleyball" and not guest.session_paid:
-		_start_volleyball(guest)
+	if guest.session_paid and guest.state in ["sitting", "eating", "lying", "volleyball", "using_facility"]: return
+	if guest.activity in ResortServices.PAIRED and not guest.session_paid:
+		_start_paired_sport(guest)
 		return
-	var amount: int = PRICES.get(guest.activity, 0)
+	var amount := layout.price(guest.activity) if KINDS.has(guest.activity) else 0
 	if amount <= 0 or not _ready(guest.id) or (not guest.session_paid and not _can_spend(guest, amount)):
 		guest.reason = "Keeping the remaining cabin nights paid for."
 		_leave_activity(guest, "decide")
@@ -644,18 +783,19 @@ func _charge_activity(guest: Dictionary, amount: int) -> void:
 	total_activity_income += amount
 	guest.session_paid = true
 	var event := {"id": "resort:activity:%d:%d" % [guest.id, guest.visit_sequence], "kind": guest.activity, "amount": amount, "time": clock, "party_id": group.id, "person_id": guest.id}
+	ResortEconomy.mark_custom_price(event)
 	group.receipts.append(event.duplicate(true))
 	_emit(event)
 	_history(guest, "Paid $%d after reaching the reserved %s place." % [amount, guest.activity])
 
-func _start_volleyball(guest: Dictionary) -> void:
+func _start_paired_sport(guest: Dictionary) -> void:
 	if not _ready(guest.id):
 		_wait_for_partner(guest)
 		return
 	var other := person(int(_ticket(guest.id).get("partner_id", 0)))
 	if other.is_empty():
 		for candidate in people:
-			if candidate.id != guest.id and candidate.facility_id == guest.facility_id and candidate.activity == "volleyball" and candidate.slot != guest.slot and _ready(candidate.id):
+			if candidate.id != guest.id and candidate.facility_id == guest.facility_id and candidate.activity == guest.activity and candidate.slot != guest.slot and _ready(candidate.id):
 				other = candidate
 				break
 	if other.is_empty() or other.state not in ["waiting_partner", "approaching_activity"] or not _ready(other.id) or not (other.motion as GuestMotion).finished():
@@ -665,11 +805,12 @@ func _start_volleyball(guest: Dictionary) -> void:
 	var amounts := {}
 	var protected := {}
 	var affordable: bool = not other.session_paid
+	var price := layout.price(guest.activity)
 	for player in players:
-		amounts[int(player.party_id)] = int(amounts.get(int(player.party_id), 0)) + PRICES.volleyball
+		amounts[int(player.party_id)] = int(amounts.get(int(player.party_id), 0)) + price
 		var carefree: bool = player.profile.get("carefree", false) == true or player.profile.get("spending_style", "") == "carefree"
 		if not carefree: protected[int(player.party_id)] = true
-		var slot := GuestActivitySlots.slot(layout.find_object(player.facility_id), "volleyball", player.slot, assets)
+		var slot := GuestActivitySlots.slot(layout.find_object(player.facility_id), POSES[player.activity], player.slot, assets)
 		affordable = affordable and (player.motion as GuestMotion).position.distance_to(slot.position) < 0.06
 	for id in amounts:
 		var group := party(id)
@@ -683,7 +824,7 @@ func _start_volleyball(guest: Dictionary) -> void:
 			_leave_activity(player, "home" if player.return_requested else "decide")
 		return
 	# Validate the complete two-person purchase before mutating either budget.
-	for player in players: _charge_activity(player, PRICES.volleyball)
+	for player in players: _charge_activity(player, price)
 	for player in players: _activate_activity(player)
 
 func _wait_for_partner(guest: Dictionary) -> void:
@@ -694,18 +835,24 @@ func _wait_for_partner(guest: Dictionary) -> void:
 func _activate_activity(guest: Dictionary) -> void:
 	guest.activity_elapsed = 0.0
 	match guest.activity:
-		"meal":
+		"meal", "restaurant":
 			guest.state = "sitting"
 			guest.timer = 3.0
-			guest.reason = "Seated while the café prepares a meal."
+			guest.reason = "Seated while the kitchen prepares a meal."
 		"sunbathe":
 			guest.state = "lying"
 			guest.timer = 18.0
 			guest.reason = "Relaxing on a reserved lounger."
-		"volleyball":
+		"volleyball", "pickleball":
 			guest.state = "volleyball"
 			guest.timer = 20.0
 			guest.reason = "Rallying with another admitted player on the opposite side of the net."
+		_:
+			if ResortServices.VISITS.has(guest.activity):
+				var visit: Array = ResortServices.VISITS[guest.activity]
+				guest.state = "using_facility"
+				guest.timer = visit[0]
+				guest.reason = visit[1]
 
 func _leave_activity(guest: Dictionary, after: String) -> void:
 	if guest.state == "leaving_activity":
@@ -719,13 +866,13 @@ func _leave_activity(guest: Dictionary, after: String) -> void:
 		if cleanliness != null: cleanliness.call("on_activity_finished", guest.id, guest.facility_id, guest.activity, clock)
 	guest.after_activity = after
 	guest.state = "leaving_activity"
-	if not _sessions_external and guest.activity == "volleyball" and guest.session_paid:
+	if not _sessions_external and guest.activity in ResortServices.PAIRED and guest.session_paid:
 		var ticket := _ticket(guest.id)
 		var partner := person(int(ticket.get("partner_id", 0)))
 		if not partner.is_empty() and partner.state == "volleyball": _leave_activity(partner, "home" if partner.return_requested else "decide")
 	var route: Array[Vector2] = []
 	for point in guest.approach: route.append(point)
-	if route.is_empty() and guest.slot in [0, 1]:
+	if route.is_empty() and guest.slot >= 0 and guest.slot < ResortServices.capacity(guest.activity):
 		route = GuestActivitySlots.approach(layout.find_object(guest.facility_id), POSES[guest.activity], guest.slot, assets)
 	if was_approaching and had_route: route.resize(clampi(traversed, 1, route.size()))
 	guest.exit_prefix = route.size()
@@ -789,7 +936,7 @@ func _set_outdoor_point(guest: Dictionary, destination: Vector2) -> bool:
 
 func _navigation() -> AStarGrid2D:
 	if _graph == null or _graph_revision != layout.revision:
-		_graph = layout.navigation()
+		_graph = layout.navigation(-1, true)
 		_graph_revision = layout.revision
 	return _graph
 
@@ -846,7 +993,7 @@ func _facility_waiting_cells() -> Dictionary:
 func activity_slot(person_id: int) -> Dictionary:
 	var guest := person(person_id)
 	if guest.is_empty(): return {}
-	var pose: String = {"sleeping": "sleeping", "sitting": "sitting", "eating": "eating", "lying": "lying", "volleyball": "volleyball"}.get(guest.state, "")
+	var pose: String = {"sleeping": "sleeping", "sitting": "sitting", "eating": "eating", "lying": "lying", "volleyball": "volleyball", "using_facility": POSES.get(guest.activity, "")}.get(guest.state, "")
 	if pose.is_empty(): return {}
 	if pose == "sleeping":
 		return GuestActivitySlots.slot(layout.find_object(party(guest.party_id).cabin_id), pose, guest.role, assets)
@@ -913,7 +1060,7 @@ func _request_ticket(person_id: int, party_id: int, facility_id: int, activity: 
 	if queued >= 4: return {}
 	var index := -1
 	if queued == 0:
-		for candidate in 2:
+		for candidate in ResortServices.capacity(activity):
 			if not occupied.has(candidate):
 				index = candidate
 				break
@@ -947,7 +1094,7 @@ func _confirm_arrival(person_id: int) -> bool:
 	if ticket.is_empty() or ticket.status not in ["reserved", "active"]: return false
 	ticket.arrived = true
 	ticket.arrived_at = clock
-	if ticket.activity != "volleyball":
+	if ticket.activity not in ResortServices.PAIRED:
 		ticket.status = "active"
 		ticket.admitted = true
 	else:
@@ -984,7 +1131,7 @@ func _advance_local_sessions() -> void:
 		var occupied := {}
 		for other in _local_tickets:
 			if other.facility_id == ticket.facility_id and other.status != "queued": occupied[int(other.slot)] = true
-		for index in 2:
+		for index in ResortServices.capacity(ticket.activity):
 			if not occupied.has(index):
 				ticket.slot = index
 				ticket.status = "reserved"
@@ -1062,6 +1209,8 @@ func layout_changed() -> void:
 	if cleanliness != null: cleanliness.call("layout_changed")
 	for guest in people:
 		match guest.state:
+			"arriving", "waiting_room":
+				if party(guest.party_id).has("arrival_bay"): _set_route(guest, [])
 			"to_cabin", "returning": _set_outdoor(guest, _door(layout.find_object(party(guest.party_id).cabin_id)))
 			"to_facility", "queueing":
 				var ticket := _ticket(guest.id)
@@ -1098,7 +1247,7 @@ func inspect() -> Dictionary:
 				if ticket.facility_id == record.id:
 					if ticket.status == "queued": queue.append(ticket.person_id)
 					else: occupants.append(ticket.person_id)
-			facility_view.append({"id": record.id, "facility_id": record.id, "kind": record.kind, "capacity": 2, "occupants": occupants, "queue": queue})
+			facility_view.append({"id": record.id, "facility_id": record.id, "kind": record.kind, "capacity": ResortServices.capacity(KINDS.find_key(record.kind)), "occupants": occupants, "queue": queue})
 	var clean: Dictionary = cleanliness.call("inspect") if cleanliness != null else {"mess": [], "staff": [], "cleanliness": 100.0, "hired_count": 0}
 	var operations: Dictionary = ledger.call("inspect", clock) if ledger != null else {"room_income": total_room_income, "activity_income": total_activity_income, "income": total_room_income + total_activity_income, "wages": 0, "net": total_room_income + total_activity_income}
 	return {"clock": clock, "people": population, "parties": groups, "facilities": facility_view, "cleanliness": clean, "operations": operations, "selected_person_id": 0, "following": false}
@@ -1132,6 +1281,16 @@ func restore(data: Dictionary) -> bool:
 	candidate.assets = assets
 	candidate.bookings.configure(layout)
 	if not candidate._decode_snapshot(data): return false
+	# Older saves may contain pairs created before the couple composition rule.
+	# Keep their identity, booking and progress, and update the second profile.
+	for group in candidate.parties:
+		var members := candidate._members(group)
+		if members.size() == 2 and VARIANT_GENDER[members[0].profile.variant] == VARIANT_GENDER[members[1].profile.variant]:
+			var guest: Dictionary = members[1] if members[1].role == 1 else members[0]
+			var variant := "male" if VARIANT_GENDER[guest.profile.variant] == "female" else "female"
+			var names: Array = GuestProfiles.MALE_NAMES if variant == "male" else GuestProfiles.FEMALE_NAMES
+			guest.profile.variant = variant
+			guest.profile.name = names[posmod(int(guest.id), names.size())]
 	# Nothing in the visible controller or attached services changes until all
 	# identities, finances, routes and internal reservations have been checked.
 	for key in ["clock", "people", "parties", "bookings", "population_cap", "arrivals_enabled", "total_room_income", "total_activity_income",
@@ -1227,6 +1386,13 @@ func _decode_snapshot(data: Dictionary) -> bool:
 		if party(booking.party_id).is_empty(): return false
 	for guest in people:
 		if not _valid_motion(guest): return false
+	var parking := {}
+	for group in parties:
+		if group.has("return_walk_at") and float(group.return_walk_at) < departure_time(group): return false
+		if _parking_claimed(group):
+			var bay := int(group.arrival_bay)
+			if parking.has(bay): return false
+			parking[bay] = true
 	for group in parties:
 		for receipt in group.receipts:
 			var owner := person(int(receipt.person_id))
@@ -1257,6 +1423,8 @@ func _decode_snapshot(data: Dictionary) -> bool:
 	return true
 
 func _valid_party(group: Dictionary, ids: Dictionary, receipt_ids: Dictionary) -> bool:
+	if group.has("arrival_bay") and not Bookings.integral(group.arrival_bay, ArrivalTraffic.BUS, ArrivalTraffic.BAY_COUNT - 1): return false
+	if group.has("desk_started") and (not group.has("arrival_bay") or not _number(group.desk_started, 0, clock)): return false
 	for key in ["id", "nights", "initial_budget", "budget", "paid_nights", "room_spent", "activity_spent", "rate"]:
 		if not Bookings.integral(group.get(key), 0, 1000000000): return false
 	if group.id < 1 or group.id >= _next_party_id or ids.has(int(group.id)): return false
@@ -1267,6 +1435,7 @@ func _valid_party(group: Dictionary, ids: Dictionary, receipt_ids: Dictionary) -
 	if not group.get("checkout_requested") is bool or not group.get("legacy") is bool or not group.get("departure_reason") is String: return false
 	if not _history_valid(group.get("history")): return false
 	if not _number(group.get("created_at"), 0, clock) or not _number(group.get("next_night"), 0, clock + 4 * DAY_SECONDS): return false
+	if group.has("return_walk_at") and (int(group.get("arrival_bay", -1)) < 0 or group.get("state") != "departed" or not _number(group.return_walk_at, float(group.created_at), clock + 600.0)): return false
 	if not group.get("member_ids") is Array or group.member_ids.size() not in [1, 2]: return false
 	var members := {}
 	for id in group.member_ids:
@@ -1282,10 +1451,10 @@ func _valid_party(group: Dictionary, ids: Dictionary, receipt_ids: Dictionary) -
 	var amount := int(group.get("legacy_activity_spent", 0))
 	if not Bookings.integral(group.get("legacy_activity_spent", 0), 0, 1000000000) or (not group.legacy and amount != 0): return false
 	for receipt in group.receipts:
-		if not receipt is Dictionary or not _valid_event(receipt) or receipt.kind not in PRICES or receipt.get("party_id") != group.id: return false
+		if not receipt is Dictionary or not _valid_event(receipt) or not KINDS.has(receipt.kind) or receipt.get("party_id") != group.id: return false
 		if not Bookings.integral(receipt.get("person_id"), 1, 1000000000): return false
 		if not _activity_event_identity(receipt): return false
-		if not _has_id(group.member_ids, int(receipt.person_id)) or receipt.amount != PRICES[receipt.kind] or receipt_ids.has(receipt.id): return false
+		if not _has_id(group.member_ids, int(receipt.person_id)) or not ResortEconomy.valid_guest_charge(receipt) or receipt_ids.has(receipt.id): return false
 		receipt_ids[receipt.id] = true
 		amount += int(receipt.amount)
 	return amount == group.activity_spent
@@ -1313,13 +1482,13 @@ func _valid_person(guest: Dictionary, ids: Dictionary) -> bool:
 		if not guest.get(key) is bool: return false
 	for key in ["facility_id", "last_facility_id"]:
 		if not Bookings.integral(guest.get(key), -1, 1000000000) or guest[key] == 0: return false
-	if not Bookings.integral(guest.get("slot"), -1, 1): return false
+	if not Bookings.integral(guest.get("slot"), -1, ResortServices.capacity(guest.activity) - 1): return false
 	if not Bookings.integral(guest.get("exit_prefix", 0), 0, 4096): return false
 	if guest.state in FACILITY_STATES:
 		if guest.activity not in KINDS or layout.find_object(int(guest.facility_id)).get("kind") != KINDS[guest.activity]: return false
-		if guest.state in IN_FACILITY and int(guest.slot) not in [0, 1]: return false
+		if guest.state in IN_FACILITY and int(guest.slot) < 0: return false
 	elif guest.facility_id != -1 or guest.slot != -1 or guest.session_paid: return false
-	if guest.state in ["sitting", "eating", "lying", "volleyball"] and not guest.session_paid: return false
+	if guest.state in ["sitting", "eating", "lying", "volleyball", "using_facility"] and not guest.session_paid: return false
 	if guest.session_paid and guest.visit_sequence < 1: return false
 	if guest.state in ["arriving", "waiting_room", "departing", "departed"] and group.state not in ["waiting_room", "checkout", "departing", "departed"]: return false
 	if not guest.get("motion") is Dictionary or not _points_valid(guest.get("approach")): return false
@@ -1386,9 +1555,24 @@ func _valid_motion(guest: Dictionary) -> bool:
 			if guest.state not in ["to_facility", "queueing"] or index != motion.route.size() - 1 or not _point_valid(guest.get("outdoor_target")): return false
 			var target := Vector2(guest.outdoor_target[0], guest.outdoor_target[1])
 			if not target.is_equal_approx(point) or point.distance_to(point.round()) > 0.708: return false
-		if index > 0 and point.distance_to(motion.route[index - 1]) > 1.001: return false
-	if motion.index < motion.route.size() and motion.position.distance_to(motion.route[motion.index]) > 1.01: return false
+		if index > 0 and not _outdoor_step_open(graph, motion.route[index - 1], point): return false
+	if motion.index < motion.route.size():
+		var target: Vector2 = motion.route[motion.index]
+		if motion.index > 0:
+			var previous: Vector2 = motion.route[motion.index - 1]
+			if target.distance_to(previous) > 1.001:
+				var on_step := Geometry2D.get_closest_point_to_segment(motion.position, previous, target)
+				return motion.position.distance_to(on_step) <= 0.01
+		if motion.position.distance_to(target) > 1.01: return false
 	return true
+
+func _outdoor_step_open(graph: AStarGrid2D, start: Vector2, end: Vector2) -> bool:
+	var offset := end - start
+	if offset.length() <= 1.001: return true
+	if not start.is_equal_approx(start.round()) or not end.is_equal_approx(end.round()):
+		return false
+	if not offset.abs().is_equal_approx(Vector2.ONE): return false
+	return _open(graph, Vector2i(end.x, start.y)) and _open(graph, Vector2i(start.x, end.y))
 
 func _valid_local_ticket(ticket: Dictionary, ids: Dictionary, occupied: Dictionary, queue_points: Dictionary) -> bool:
 	for key in ["person_id", "party_id", "facility_id", "partner_id"]:
@@ -1397,7 +1581,7 @@ func _valid_local_ticket(ticket: Dictionary, ids: Dictionary, occupied: Dictiona
 	ids[int(ticket.person_id)] = true
 	var guest := person(int(ticket.person_id))
 	if guest.is_empty() or guest.party_id != ticket.party_id or guest.facility_id != ticket.facility_id or guest.activity != ticket.get("activity") or guest.state not in FACILITY_STATES: return false
-	if not Bookings.integral(ticket.get("slot"), -1, 1): return false
+	if not Bookings.integral(ticket.get("slot"), -1, ResortServices.capacity(guest.activity) - 1): return false
 	if ticket.status == "queued":
 		if ticket.slot != -1 or ticket.get("arrived") != false or ticket.get("admitted") != false: return false
 	else:
@@ -1420,7 +1604,7 @@ func _valid_local_ticket(ticket: Dictionary, ids: Dictionary, occupied: Dictiona
 
 func _valid_event(event: Dictionary) -> bool:
 	if not event.get("id") is String or event.id.is_empty() or event.id.length() > 160: return false
-	if event.get("kind") not in ["room", "meal", "sunbathe", "volleyball", "wage"]: return false
+	if event.get("kind") != "wage" and not ResortEconomy.DEFAULT_PRICES.has(event.get("kind")): return false
 	if not Bookings.integral(event.get("amount"), -1000000000, 1000000000) or not _number(event.get("time"), 0, clock): return false
 	if (event.kind == "wage" and event.amount >= 0) or (event.kind != "wage" and event.amount <= 0): return false
 	for key in ["party_id", "person_id", "staff_id"]:
@@ -1444,8 +1628,9 @@ func _pending_event_matches_money(event: Dictionary) -> bool:
 		if pieces.size() != 4 or not pieces[3].is_valid_int() or pieces[3].length() > 1: return false
 		var night := int(pieces[3])
 		if night < 1 or night > 3 or event.id != "resort:room:%d:%d" % [int(event.party_id), night]: return false
-		return (night <= int(group.paid_nights) and event.amount == group.rate) if not group.is_empty() else event.amount == Bookings.NIGHTLY_RATE
-	if not _activity_event_identity(event) or event.amount != PRICES.get(event.kind): return false
+		if not ResortEconomy.valid_guest_charge(event): return false
+		return group.is_empty() or (night <= int(group.paid_nights) and event.amount == group.rate)
+	if not _activity_event_identity(event) or not ResortEconomy.valid_guest_charge(event): return false
 	if group.is_empty(): return true # Retired parties retain aggregate lifetime totals.
 	for receipt in group.receipts:
 		if receipt.id == event.id:
@@ -1457,11 +1642,12 @@ func _valid_definition(value: Dictionary) -> bool:
 	if not value.get("members") is Array or value.members.size() not in [1, 2]: return false
 	for profile in value.members:
 		if not _valid_profile(profile): return false
+	if value.members.size() == 2 and VARIANT_GENDER[value.members[0].variant] == VARIANT_GENDER[value.members[1].variant]: return false
 	return true
 
 func _valid_profile(profile: Variant) -> bool:
 	if not profile is Dictionary or not profile.get("name") is String or profile.name.is_empty() or profile.name.length() > 80: return false
-	if profile.get("variant") not in ["female", "male"] or not profile.get("interests") is Array or profile.interests.size() < 1 or profile.interests.size() > 8: return false
+	if profile.get("variant") not in VARIANT_GENDER or not profile.get("interests") is Array or profile.interests.size() < 1 or profile.interests.size() > 8: return false
 	for interest in profile.interests:
 		if not interest is String or interest.length() > 80: return false
 	return _needs_valid(profile.get("initial_needs")) and _json_safe(profile)
@@ -1502,7 +1688,7 @@ func _has_id(ids: Array, id: int) -> bool:
 	return false
 
 func _point_valid(value: Variant) -> bool:
-	return value is Array and value.size() == 2 and _number(value[0], -0.5, ResortLayout.MAP_SIZE.x - 0.5) and _number(value[1], -0.5, ResortLayout.MAP_SIZE.y - 0.5)
+	return value is Array and value.size() == 2 and _number(value[0], -0.5, ResortLayout.MAP_SIZE.x - 0.5) and _number(value[1], ResortLayout.INLAND_START - 0.5, ResortLayout.WALKABLE_END - 0.5)
 
 func _points_valid(value: Variant) -> bool:
 	if not value is Array or value.size() > 4096: return false
@@ -1623,7 +1809,7 @@ func import_legacy(data: Dictionary) -> bool:
 			if guest.state == "leaving_activity": guest.exit_prefix = guest.approach.size()
 			var point := candidate._local_queue_point(layout.find_object(old.facility_id))
 			if not is_finite(point.x): return false
-			var arrived: bool = guest.state in ["sitting", "eating", "lying", "volleyball", "leaving_activity"]
+			var arrived: bool = guest.state in ["sitting", "eating", "lying", "volleyball", "using_facility", "leaving_activity"]
 			candidate._local_tickets.append({"person_id": guest.id, "party_id": 1, "facility_id": old.facility_id, "activity": guest.activity, "slot": role,
 				"status": "active" if arrived else "reserved", "queue_position": point, "partner_id": (2 if role == 0 else 1) if old.party_size == 2 else 0,
 				"arrived": arrived, "admitted": arrived, "requested_at": old.clock, "reserved_at": old.clock, "arrived_at": old.clock if arrived else 0.0})

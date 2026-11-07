@@ -1,36 +1,44 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_kfpoj"]
-[ext_resource type="Texture2D" path="res://assets/structures/volleyball-v1.png" id="2_md5p2"]
-[ext_resource type="Texture2D" path="res://assets/structures/volleyball-markings-v1.png" id="3_hnsfn"]
-[ext_resource type="Texture2D" path="res://assets/structures/volleyball-net-v1.png" id="4_ugum3"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_md5p2"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-v1.png" id="2_hnsfn"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-markings-v1.png" id="3_ugum3"]
+[ext_resource type="Texture2D" path="res://assets/structures/volleyball-net-v1.png" id="4_kgiwf"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="5_xxqiw"]
 
-[node name="Volleyball" type="Node2D" unique_id=1113324372]
+[node name="Volleyball" type="Node2D" unique_id=329881243]
 y_sort_enabled = true
-script = ExtResource("1_kfpoj")
+script = ExtResource("1_md5p2")
 object_id = 1
 kind = "volleyball"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=2094614878]
+[node name="Art" type="Sprite2D" parent="." unique_id=1919645503]
 visible = false
 texture_filter = 1
 position = Vector2(-194, -116)
-texture = ExtResource("2_md5p2")
+texture = ExtResource("2_hnsfn")
 centered = false
 
-[node name="Markings" type="Node2D" parent="." unique_id=442294519]
+[node name="Markings" type="Node2D" parent="." unique_id=701811786]
 position = Vector2(0, -200)
 
-[node name="Art" type="Sprite2D" parent="Markings" unique_id=1491604941]
+[node name="Art" type="Sprite2D" parent="Markings" unique_id=1324722284]
 texture_filter = 1
 position = Vector2(-194, 84)
-texture = ExtResource("3_hnsfn")
+texture = ExtResource("3_ugum3")
 centered = false
 
-[node name="Net" type="Node2D" parent="." unique_id=1480853985]
+[node name="Net" type="Node2D" parent="." unique_id=1927884101]
 
-[node name="Art" type="Sprite2D" parent="Net" unique_id=1631398173]
+[node name="Art" type="Sprite2D" parent="Net" unique_id=1158325063]
 texture_filter = 1
 position = Vector2(-194, -116)
-texture = ExtResource("4_ugum3")
+texture = ExtResource("4_kgiwf")
 centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=244416354]
+script = ExtResource("5_xxqiw")
+facility_kind = "volleyball"
+art_to_local = Transform2D(1, 0, 0, 1, -194, -116)
+plot_origin = Vector2(-48, -88)
+phase_offset = 0.379

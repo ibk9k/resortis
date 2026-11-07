@@ -1,0 +1,15 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_rn5j2"]
+[ext_resource type="Texture2D" path="res://assets/structures/dolphin_statue-v1.png" id="2_dlgq8"]
+
+[node name="DolphinStatue" type="Node2D" unique_id=2071805370]
+script = ExtResource("1_rn5j2")
+object_id = 1
+kind = "dolphin_statue"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1992618609]
+texture_filter = 1
+position = Vector2(-45, -80)
+texture = ExtResource("2_dlgq8")
+centered = false

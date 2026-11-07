@@ -1,21 +1,90 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_4ov6v"]
-[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_uyqp0"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_uyqp0"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/reception.png" id="2_16pc1"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_lej71"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_16pc1"]
-atlas = ExtResource("2_uyqp0")
-region = Rect2(1062, 59, 438, 450)
+[sub_resource type="AtlasTexture" id="AtlasTexture_2a1ml"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(0, 0, 477, 498)
 filter_clip = true
 
-[node name="Reception" type="Node2D" unique_id=1259266752]
-script = ExtResource("1_4ov6v")
+[sub_resource type="AtlasTexture" id="AtlasTexture_mtolq"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(477, 0, 477, 498)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ahsj3"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(954, 0, 477, 498)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x712x"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(0, 498, 477, 498)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wd1la"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(477, 498, 477, 498)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bwo6t"]
+atlas = ExtResource("2_16pc1")
+region = Rect2(954, 498, 477, 498)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_hvfa6"]
+animations = [{
+"frames": [{
+"duration": 0.66,
+"texture": SubResource("AtlasTexture_2a1ml")
+}, {
+"duration": 0.42,
+"texture": SubResource("AtlasTexture_mtolq")
+}, {
+"duration": 0.43,
+"texture": SubResource("AtlasTexture_ahsj3")
+}, {
+"duration": 0.45,
+"texture": SubResource("AtlasTexture_x712x")
+}, {
+"duration": 0.8,
+"texture": SubResource("AtlasTexture_wd1la")
+}, {
+"duration": 0.51,
+"texture": SubResource("AtlasTexture_bwo6t")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="Reception" type="Node2D" unique_id=368006821]
+script = ExtResource("1_uyqp0")
 object_id = 1
 kind = "reception"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=60254805]
+[node name="Art" type="Sprite2D" parent="." unique_id=304533979]
+visible = false
 texture_filter = 1
-position = Vector2(-115.295654, -178.89337)
-scale = Vector2(0.5288791, 0.5288791)
-texture = SubResource("AtlasTexture_16pc1")
+position = Vector2(-110.80481, -198.53494)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_2a1ml")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1345116245]
+script = ExtResource("3_lej71")
+facility_kind = "reception"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -110.80481, -198.53494)
+plot_origin = Vector2(-16, -56)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=336124978]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-110.80481, -198.53494)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_hvfa6")
+animation = &"work"
 centered = false

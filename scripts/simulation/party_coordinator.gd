@@ -5,10 +5,11 @@ extends RefCounted
 
 const FREE_STATES := ["deciding"]
 const INVITABLE_STATES := ["deciding", "to_facility", "queueing", "approaching_activity", "waiting_partner"]
-const SHARED_ACTIVITIES := ["sunbathe", "volleyball", "stroll"]
+const SHARED_ACTIVITIES := ["sunbathe", "volleyball", "pickleball", "stroll"]
 const INTERESTS := {
 	"sunbathe": ["sunbathe", "sunbathing"],
 	"volleyball": ["volleyball"],
+	"pickleball": ["pickleball", "volleyball", "sport", "sports"],
 	"stroll": ["stroll", "beach walks", "beach walk"]
 }
 
@@ -31,7 +32,7 @@ static func should_join(person: Dictionary, partner: Dictionary, intent: Diction
 	var rest := _need(person, "rest")
 	var enjoyment := _need(person, "enjoyment")
 	if hunger <= 40.0 or rest <= 35.0: return false
-	if activity == "volleyball": return rest >= 50.0 and _need(partner, "rest") >= 50.0 and _likes(person, activity)
+	if activity in ResortServices.PAIRED: return rest >= 50.0 and _need(partner, "rest") >= 50.0 and _likes(person, activity)
 	if activity == "sunbathe": return _likes(person, activity) or (rest < 65.0 and enjoyment < 65.0)
 	return _likes(person, activity) or enjoyment < 45.0
 

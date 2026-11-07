@@ -2,6 +2,8 @@ class_name StructureModels
 extends Node3D
 ## All physical vertices, including feet, poles and trim, stay in the catalogue
 ## XZ reservation. Height is independent of the floor; posts cannot lean.
+const FacilityModels = preload("res://mockups/facilities/concept_models.gd")
+
 var kind := "bench"
 func build(id: String) -> void:
  kind = id
@@ -10,6 +12,38 @@ func build(id: String) -> void:
   "bench": _bench()
   "hedge": _planter()
   "volleyball": _court()
+  "dolphin_statue": _dolphin_statue()
+  _:
+   if id in ResortServices.EXPANSION:
+    var model := FacilityModels.new()
+    model.build(id)
+    var size := ResortCatalog.footprint(id)
+    model.position = Vector3(size.x - 1, 0.0, size.y - 1) * 0.5
+    add_child(model)
+
+func _dolphin_statue() -> void:
+ var p := ModelPrimitives
+ p.box(self, Vector3(0.5, 0.08, 0), Vector3(1.73, 0.16, 0.86), "345950")
+ p.box(self, Vector3(0.5, 0.24, 0), Vector3(1.48, 0.25, 0.68), "4b7668")
+ p.box(self, Vector3(0.5, 0.39, 0), Vector3(1.56, 0.08, 0.76), "7aa18a")
+ p.box(self, Vector3(0.5, 0.26, 0.349), Vector3(0.44, 0.14, 0.026), "b97d3c")
+ for x in [0.33, 0.67]:
+  p.ball(self, Vector3(x, 0.26, 0.367), Vector3.ONE * 0.036, "f3c879")
+ var swell := p.ball(self, Vector3(0.17, 0.67, 0), Vector3(0.60, 0.65, 0.56), "3d8071")
+ swell.rotation.z = -0.36
+ p.ball(self, Vector3(-0.01, 0.85, 0), Vector3(0.36, 0.68, 0.39), "62a38e").rotation.z = 0.54
+ p.ball(self, Vector3(-0.19, 1.03, 0), Vector3(0.19, 0.30, 0.28), "83bd9c")
+ var body := p.ball(self, Vector3(0.49, 1.40, 0), Vector3(1.17, 0.48, 0.47), "be8246")
+ body.rotation.z = 0.57
+ p.ball(self, Vector3(0.85, 1.61, 0), Vector3(0.59, 0.43, 0.41), "cc9353").rotation.z = 0.28
+ p.ball(self, Vector3(0.65, 1.30, 0), Vector3(0.77, 0.20, 0.36), "e0aa66").rotation.z = 0.57
+ p.ball(self, Vector3(1.12, 1.56, 0), Vector3(0.44, 0.145, 0.235), "d09b5c").rotation.z = 0.08
+ p.ball(self, Vector3(0.07, 1.10, 0), Vector3(0.57, 0.22, 0.24), "ae713b").rotation.z = 0.54
+ p.ball(self, Vector3(0.40, 1.68, 0), Vector3(0.17, 0.45, 0.13), "a76838").rotation.z = 0.53
+ for side in [-1, 1]:
+  p.ball(self, Vector3(-0.13, 1.02, side * 0.20), Vector3(0.24, 0.10, 0.44), "b77a42").rotation.y = side * 0.50
+  p.ball(self, Vector3(0.57, 1.28, side * 0.20), Vector3(0.49, 0.12, 0.23), "9f6234").rotation.z = 0.39
+  p.ball(self, Vector3(0.97, 1.65, side * 0.184), Vector3.ONE * 0.065, "553322")
 func _bench() -> void:
  var p := ModelPrimitives
  # Two tiles long along +X, one deep along +Z, with inset feet and arms.

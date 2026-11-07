@@ -1,6 +1,14 @@
 extends SceneTree
 func _initialize() -> void: _bake.call_deferred()
 func _bake() -> void:
+ var only := ""
+ var expansion := "--expansion" in OS.get_cmdline_user_args()
+ for arg in OS.get_cmdline_user_args():
+  if arg.begins_with("--only="): only = arg.trim_prefix("--only=")
+ if not only.is_empty() and only not in GroundRegistration.MODELED:
+  push_error("Unknown modeled structure: " + only)
+  quit(1)
+  return
  DirAccess.make_dir_recursive_absolute("res://assets/structures")
  var viewport := SubViewport.new()
  viewport.size = Vector2i(768,640)
@@ -10,7 +18,11 @@ func _bake() -> void:
  root.add_child(viewport)
  ModelPrimitives.camera(viewport,32.0*sqrt(2.0),Vector3.ZERO)
  var records: Dictionary = {}
+ if expansion or not only.is_empty():
+  records = JSON.parse_string(FileAccess.get_file_as_string("res://assets/registration/structures.json"))
  for kind: String in GroundRegistration.MODELED:
+  if not only.is_empty() and kind != only: continue
+  if expansion and kind not in ResortServices.EXPANSION: continue
   var model := StructureModels.new()
   model.build(kind)
   viewport.add_child(model)
@@ -23,7 +35,8 @@ func _bake() -> void:
   var file := "res://assets/structures/%s-v1.png" % kind
   cropped.save_png(file)
   var origin := Vector2(384,320)-Vector2(rect.position)
-  records[kind] = {"file":file.trim_prefix("res://"),"origin":[origin.x,origin.y],"source":"scripts/content/structure_models.gd","density":32.0*sqrt(2.0)}
+  var source := "mockups/facilities/concept_models.gd" if kind in ResortServices.EXPANSION else "scripts/content/structure_models.gd"
+  records[kind] = {"file":file.trim_prefix("res://"),"origin":[origin.x,origin.y],"source":source,"density":32.0*sqrt(2.0)}
   if kind == "volleyball":
    for layer in ["Net","Markings"]:
     model.get_node("Net").visible = layer == "Net"

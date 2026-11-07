@@ -56,6 +56,7 @@ func _run() -> void:
 		expect(actor.position == IsometricGrid.project(person.position), "Staff root uses the canonical logical projection")
 		var sprite: AnimatedSprite2D = actor.get_child(0)
 		expect(sprite.offset == -Art.ROOT and sprite.scale == Vector2.ONE * Art.SCALE and not sprite.is_playing(), "Staff poses have a uniform scale and an externally owned pose clock")
+		expect(sprite.texture_filter == CanvasItem.TEXTURE_FILTER_LINEAR, "Staff use the same sharp linear sampling as guests")
 	service.advance(1.0, 1.0)
 	view.refresh()
 	var walking := false
@@ -64,6 +65,17 @@ func _run() -> void:
 		if person.moving:
 			walking = true
 			expect(sprite.animation.begins_with("walk_"), "Actual traveled motion selects the complete walking sheet")
+			var walking_pose := sprite.animation
+			var walking_frame := sprite.frame
+			for cleaner: Dictionary in service.staff:
+				if cleaner.id != person.id: continue
+				var motion: GuestMotion = cleaner.motion
+				motion.moving = false
+				view.refresh()
+				expect(sprite.animation == walking_pose and sprite.frame == walking_frame,
+					"A walking cleaner holds their pose between moves without flashing the idle broom")
+				motion.moving = true
+				break
 	expect(walking, "A real claimed job is walking through the view")
 	var cleaned := false
 	for tick in 1200:

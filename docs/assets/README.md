@@ -11,15 +11,32 @@ Original environment raster art was authored with the built-in image-generation 
 | `assets/atlases/buildings-v2.png` | Two cabin views, reception, café, sunbathing furniture | [Original buildings](buildings-sheet-prompt-v1.md), [spacing revision](atlas-spacing-fix-prompts.md) |
 | `assets/atlases/props-v2.png` | Palms, round flowerbed, lantern, bin, rocks | [Original props](props-sheet-prompt-v1.md), [spacing revision](atlas-spacing-fix-prompts.md) |
 | `assets/atlases/terrain-v1.png` | Grass, sand, paving and water material swatches | [Terrain](terrain-atlas-prompt-v1.md) |
+| `assets/atlases/grass-wang.png`, `assets/atlases/sand-wang.png` | Sixteen Wang variants per material with matching painted edges | Regenerate with `tools/bake_terrain_wang.gd` and reimport |
 | `assets/atlases/beach-v2.png` | Fishing pier; its old net image is unused | [Original beach facilities](beach-sheet-prompt-v1.md), [earlier net attempt](volleyball-net-correction-prompt-v2.md) |
 | `assets/atlases/pool-v3.png` | Standalone pool with registered rectangular ground plane | [Pool correction](pool-grid-correction-prompt-v3.md) |
-| `scripts/content/structure_models.gd` → `assets/structures/` | Upright volleyball net, bench and rectangular planter; exact XZ geometry | Native editable Godot mesh construction; `tools/bake_structure_models.gd` |
+| `scripts/content/structure_models.gd` → `assets/structures/` | Upright volleyball net, bench, rectangular planter and bronze dolphin statue | Native editable Godot mesh construction; `tools/bake_structure_models.gd` |
 | `scripts/actors/holiday_guest_model.gd` → `scenes/assets/holiday_guest_model.tscn` | One volumetric character with articulated limbs and an AnimationPlayer walk clip | Native editable Godot model; no raster-parts rig |
 | `scripts/actors/guest_appearance.gd` | Sculpted face, layered eyes, swept bob, woven hat, clothing seams/pockets and smooth limb profiles | Native model art, separate from gait; `capture_npc_appearance.gd` and `capture_npc_in_game.gd` provide actual-scale review |
 | `assets/characters/frames-v2/` | Eight directions × sixteen walk poses, plus eight neutral idles | `tools/bake_guest_walk.gd`; `assets/registration/guest-frames.json` |
 | `scripts/content/cabin_interior.gd` → `assets/interiors/` | Exact floor/rear-wall, bed, desk and foreground partitions of both original cabin images | `tools/bake_cabin_layers.gd`; source/authoring hashes in `assets/registration/cabin-layers.json` |
+| `tools/bake_facility_layers.gd` → `assets/interiors/` | Sunbed base/canopy partition and traced wooden café stool supports | Re-run the bake and Godot import after changing the buildings atlas or layer masks |
+| `mockups/facilities/concept_models.gd` → `assets/structures/` | Eight editable inland facility models rendered at the registered world scale | Run `tools/bake_structure_models.gd -- --expansion`, import, then run `tools/bake_assets.gd -- --expansion` |
 
 Earlier atlas versions, `guest-walk-*-v2.png`, guest-parts PNGs and the old `frames/` folder are retained experiments. The full-body sheets repeated poses; the flat articulated cutouts produced an unacceptable crossing gait. Neither supplies current animation. Their prompts and diagnostic pose guides remain for provenance.
+
+## Facility ambience
+
+Plan the occupied facility before generating the art. Record its employee or guest actions, props, idle environmental motion, access routes, contact points, and foreground objects. Give each pose and prop clearance in the source design. Keep the artwork, motion sources, and registration data together, and regenerate the complete placeable scene. Review the empty and occupied loops at gameplay zoom.
+
+`FacilityAmbience` attaches to each placeable venue and is packed into its reusable scene. It registers the environmental effects against the structure art and masks the animated pool surface and waterfall against the original painting. Independent asset scenes play their own preview. The playable resort passes its simulation clock to every facility so pause, speed, layout edits, and loading stay in sync.
+
+To regenerate the placeable scenes, run `tools/bake_assets.gd -- --ambience` to pack the affected scenes, then `tools/bake_map.gd -- --fresh --bake` to refresh the editor map. Run `tests/facility_ambience_checks.gd -- --fresh --capture-ambience` with a renderer for an in-game contact sheet and motion frames.
+
+The six staffed venues use new building paintings in `assets/staffed-venues/masters/` and complete six-pose paintings in `assets/facility-staff/masters/`. `assets/staffed-venues/workstations.json` records each painted floor, employee anchor, service opening, foreground, guest fixtures, and environmental effect origins. The bake composites the working pose with the measured scenery into every full venue key. `FacilityStaff` times the keys on the resort clock. Existing visits keep their logical approach coordinates and register the drawn guest against the new chair, mat, or service point.
+
+The ice cream vendor stands at ground level behind the wheeled stall. The counter covers her lower body, and the open service window keeps her face, arms, scoop, and cone readable. Guests stand along the front of the cart.
+
+After editing a staff master, run `tools/bake_illustrated_attendants.gd` headless. After editing the building masters, measurements, or staff poses, run `tools/bake_staffed_venues.gd` headless and reimport the generated atlases. Pack the staffed scenes with `tools/bake_assets.gd -- --staff` and refresh the map with `tools/bake_map.gd -- --fresh --bake`. Use `tests/facility_ambience_checks.gd -- --fresh --capture-staff` with a renderer to review the six workstations.
 
 ## Ground registration and depth
 

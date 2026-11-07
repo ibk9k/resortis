@@ -8,6 +8,33 @@
 		],
 		"source": "scripts/content/structure_models.gd"
 	},
+	"dolphin_statue": {
+		"density": 45.254833995939,
+		"file": "assets/structures/dolphin_statue-v1.png",
+		"origin": [
+			29.0,
+			72.0
+		],
+		"source": "scripts/content/structure_models.gd"
+	},
+	"gear": {
+		"density": 45.254833995939,
+		"file": "assets/structures/gear-v1.png",
+		"origin": [
+			80.0,
+			105.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
+	"gym": {
+		"density": 45.254833995939,
+		"file": "assets/structures/gym-v1.png",
+		"origin": [
+			182.0,
+			125.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
 	"hedge": {
 		"density": 45.254833995939,
 		"file": "assets/structures/hedge-v1.png",
@@ -17,6 +44,51 @@
 		],
 		"source": "scripts/content/structure_models.gd"
 	},
+	"ice_cream": {
+		"density": 45.254833995939,
+		"file": "assets/structures/ice_cream-v1.png",
+		"origin": [
+			38.0,
+			85.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
+	"massage": {
+		"density": 45.254833995939,
+		"file": "assets/structures/massage-v1.png",
+		"origin": [
+			111.0,
+			114.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
+	"pickleball": {
+		"density": 45.254833995939,
+		"file": "assets/structures/pickleball-v1.png",
+		"origin": [
+			186.0,
+			42.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
+	"restaurant": {
+		"density": 45.254833995939,
+		"file": "assets/structures/restaurant-v1.png",
+		"origin": [
+			240.0,
+			98.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
+	"sauna": {
+		"density": 45.254833995939,
+		"file": "assets/structures/sauna-v1.png",
+		"origin": [
+			122.0,
+			114.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
+	},
 	"volleyball": {
 		"density": 45.254833995939,
 		"file": "assets/structures/volleyball-v1.png",
@@ -25,5 +97,14 @@
 			28.0
 		],
 		"source": "scripts/content/structure_models.gd"
+	},
+	"yoga": {
+		"density": 45.254833995939,
+		"file": "assets/structures/yoga-v1.png",
+		"origin": [
+			112.0,
+			112.0
+		],
+		"source": "mockups/facilities/concept_models.gd"
 	}
 }

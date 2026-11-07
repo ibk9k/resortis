@@ -5,6 +5,7 @@ var spin := 0.0
 var shadow: Node2D
 var ball_offset := Vector2.ZERO
 var contacts: Dictionary = {}
+var pickleball := false
 func present(stay: GuestStay) -> void:
 	visible = stay.state == "playing_volleyball" and stay.party_size == 2
 	if not visible: return
@@ -23,12 +24,21 @@ func present_rally(left_slot: Dictionary, right_slot: Dictionary, elapsed: float
 	var b: Array=contacts[right_variant].volleyball[right_slot.facing][0]
 	var start := IsometricGrid.project(left)+(Vector2(a[0],a[1])-GuestActivityPose.ROOT)*ResortAssets.GUEST_SCALE
 	var end := IsometricGrid.project(right)+(Vector2(b[0],b[1])-GuestActivityPose.ROOT)*ResortAssets.GUEST_SCALE
-	ball_offset=start.lerp(end,flight)-position+Vector2(0,-sin(flight*PI)*60.0)
+	pickleball = left_slot.get("paddle", false)
+	if pickleball:
+		start += Vector2(9, float(left_slot.offset) - 5)
+		end += Vector2(-9, float(right_slot.offset) - 5)
+	ball_offset=start.lerp(end,flight)-position+Vector2(0,-sin(flight*PI)*(37.0 if pickleball else 60.0))
 	spin = elapsed*4
 	queue_redraw()
 func _draw() -> void:
 	_shadow_ellipse(Vector2.ZERO,Vector2(5,2),Color(0,0,0,0.17))
 	var center := ball_offset
+	if pickleball:
+		draw_circle(center, 2.9, Color("536b32"))
+		draw_circle(center + Vector2(-0.2, -0.25), 2.3, Color("e0ed71"))
+		draw_circle(center + Vector2(0.5, 0.6), 0.55, Color("8c9c49"))
+		return
 	draw_circle(center,4.8,Color("634e35"))
 	draw_circle(center+Vector2(-0.4,-0.5),4.1,Color("fff0ca"))
 	draw_arc(center,3.2,spin,spin+2.3,12,Color("348fc3"),2)

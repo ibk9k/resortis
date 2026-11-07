@@ -41,6 +41,10 @@ func _ready() -> void:
 		_build_objects()
 
 func _build_objects() -> void:
+	var count := 0
+	for definition: Dictionary in ResortCatalog.DEFINITIONS.values():
+		count += definition.frames.size()
+	var row_height := minf(232.0, 936.0 / ceili(count / 4.0))
 	var index := 0
 	for kind: String in ResortCatalog.DEFINITIONS:
 		var def := ResortCatalog.definition(kind)
@@ -64,12 +68,13 @@ func _build_objects() -> void:
 			for x in [-1.5,guide.size.x+0.5]:
 				for y in [-1.5,guide.size.y+0.5]:
 					bounds = bounds.expand(IsometricGrid.project(Vector2(x,y)))
-			var factor := minf(350.0 / maxf(bounds.size.x, 1), 170.0 / maxf(bounds.size.y, 1))
+			var factor := minf(350.0 / maxf(bounds.size.x, 1), (row_height - 48.0) / maxf(bounds.size.y, 1))
+			var row_top := 62.0 + floori(index / 4.0) * row_height
 			unit.scale = Vector2.ONE * factor
-			unit.position = Vector2((index % 4) * 400 + 200, (index / 4) * 232 + 150) - bounds.get_center() * factor
+			unit.position = Vector2((index % 4) * 400 + 200, row_top + (row_height + 20.0) * 0.5) - bounds.get_center() * factor
 			add_child(unit)
 			var label := Label.new()
-			label.position = Vector2((index % 4) * 400 + 18, (index / 4) * 232 + 62)
+			label.position = Vector2((index % 4) * 400 + 18, row_top)
 			label.add_theme_font_size_override("font_size", 17)
 			label.text = "%s · view %d · %d × %d" % [def.name, orientation, guide.size.x, guide.size.y]
 			add_child(label)

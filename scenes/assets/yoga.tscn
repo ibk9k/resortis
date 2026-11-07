@@ -1,0 +1,107 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_vvb82"]
+[ext_resource type="Texture2D" path="res://assets/staffed-venues/frames/yoga.png" id="2_fm3oj"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_jlysd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bix2s"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(0, 0, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5650"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(488, 0, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fwg65"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(976, 0, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o3h63"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(488, 0, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r0v1x"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(0, 415, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_75emi"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(488, 415, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_460gb"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(976, 415, 488, 415)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pbhhx"]
+atlas = ExtResource("2_fm3oj")
+region = Rect2(488, 415, 488, 415)
+filter_clip = true
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1qlxo"]
+animations = [{
+"frames": [{
+"duration": 0.56,
+"texture": SubResource("AtlasTexture_bix2s")
+}, {
+"duration": 0.44,
+"texture": SubResource("AtlasTexture_j5650")
+}, {
+"duration": 0.92,
+"texture": SubResource("AtlasTexture_fwg65")
+}, {
+"duration": 0.44,
+"texture": SubResource("AtlasTexture_o3h63")
+}, {
+"duration": 0.6,
+"texture": SubResource("AtlasTexture_r0v1x")
+}, {
+"duration": 0.44,
+"texture": SubResource("AtlasTexture_75emi")
+}, {
+"duration": 0.92,
+"texture": SubResource("AtlasTexture_460gb")
+}, {
+"duration": 0.44,
+"texture": SubResource("AtlasTexture_pbhhx")
+}],
+"loop": 1,
+"name": &"work",
+"speed": 1.0
+}]
+
+[node name="Yoga" type="Node2D" unique_id=1549158361]
+script = ExtResource("1_vvb82")
+object_id = 1
+kind = "yoga"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=1484972681]
+visible = false
+texture_filter = 1
+position = Vector2(-112.5328, -66.25192)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_bix2s")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1312590869]
+script = ExtResource("3_jlysd")
+facility_kind = "yoga"
+art_to_local = Transform2D(0.5, 0, 0, 0.5, -112.5328, -66.25192)
+model_origin = Vector2(0, 80)
+plot_origin = Vector2(-32, 16)
+phase_offset = 0.379
+
+[node name="OccupiedVenue" type="AnimatedSprite2D" parent="Ambience" unique_id=429124760]
+show_behind_parent = true
+texture_filter = 1
+position = Vector2(-112.5328, -66.25192)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_1qlxo")
+animation = &"work"
+centered = false

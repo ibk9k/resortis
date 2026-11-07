@@ -50,9 +50,9 @@ func restore(data: Dictionary) -> bool:
 		for n in point:
 			if not (n is float or n is int) or not is_finite(float(n)): return false
 		points.append(Vector2(point[0],point[1]))
-		if not Rect2(Vector2(-0.5,-0.5),Vector2(ResortLayout.MAP_SIZE)).has_point(points[-1]): return false
+		if not ResortLayout.POINT_BOUNDS.has_point(points[-1]): return false
 	position = Vector2(data.position[0],data.position[1])
-	if not Rect2(Vector2(-0.5,-0.5),Vector2(ResortLayout.MAP_SIZE)).has_point(position): return false
+	if not ResortLayout.POINT_BOUNDS.has_point(position): return false
 	direction = Vector2(data.direction[0],data.direction[1])
 	distance = data.distance
 	route = points

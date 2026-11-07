@@ -39,7 +39,9 @@ func _run() -> void:
 				report.rally_people[str(person.id)]=true
 			if not report.paired_wait_resume and person.state=="waiting_partner":
 				var claim: Dictionary=runtime.facilities.call("ticket",int(person.id))
-				if int(claim.get("partner_id",0))>0 and float(runtime.simulation.get("clock"))>float(claim.arrived_at)+22:
+				# The focused arrival regression covers waits beyond the lone timeout.
+				# Here the natural route only needs to produce a real paired wait.
+				if int(claim.get("partner_id",0))>0:
 					var resumed := LivingResortRuntime.new()
 					resumed.configure(map,ResortAssets.new())
 					report.paired_wait_resume=resumed.restore(JSON.parse_string(JSON.stringify(runtime.capture())))

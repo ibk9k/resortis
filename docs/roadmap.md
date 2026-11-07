@@ -28,13 +28,13 @@ Pass when guests can complete a stay, use the services that meet their needs, pa
 
 ## 3. Management and progression
 
-Janitor daily wages and an explained operating income/expense summary are implemented. Add construction cash, other upkeep/pricing, overall appeal, guest reviews/reputation, milestone unlocks, purchasable parcels and the recovery loan/guidance design. Implement the optional mission board with mostly untimed goals, occasional optional timed challenges, and cash/decoration-variant rewards before expanding its catalogue.
+Resort cash, catalogue and path purchases, daily upkeep and janitor wages, editable guest prices, and the profit-and-loss statement with receipts are implemented. See [ADR 0013](adr/0013-resort-cash-and-prices.md). The [challenge board](missions.md) has three untimed goals and one optional timed challenge with cash rewards and a bronze dolphin statue. Add overall appeal, guest reviews/reputation, milestone unlocks, purchasable parcels and the recovery loan/guidance design.
 
 Pass when construction, staffing, and pricing create understandable consequences, successful operations enable growth, and a zero-cash/zero-arrivals resort has a viable recovery path. Mission types and rewards must have explicit criteria and completion behavior.
 
 ## 4. Creative tools and durable saves
 
-Add the agreed any-save mode switching, pre-change backup, preset/granular powers, live-simulation overrides, day skipping, lighting control, and extra tools. Complete autosave/manual-slot behavior and restoration of remembered finite cash, including deliberate grants, when unlimited funds are disabled.
+Local autosave and six separate manual slots are implemented, including backup recovery and validated in-game loading. Add the agreed any-save mode switching, pre-change backup, preset/granular powers, live-simulation overrides, day skipping, lighting control, and extra tools. Restore remembered finite cash, including deliberate grants, when unlimited funds are disabled.
 
 Pass when saves round-trip meaningful state, mode switching retains the edited resort, direct Creative changes leave no orphaned bookings/jobs/queues, and day skipping processes events consistently with normal simulation.
 
@@ -45,6 +45,8 @@ Bring the agreed small coastal resort to representative quality: reception, one 
 Pass when the user can play and diagnose the resort through the interface, construction and observation are enjoyable, the presentation meets the agreed art target, and meaningful regression checks pass. Collect findings before enlarging the catalogue.
 
 ## 6. Initial game catalogue and scale
+
+The starter now includes eight operating inland venues and 22 additional buildable rows. See [the layout and venue capacities](map-design.md).
 
 Expand content, progression, missions, decoration variety, and the initially requested beach volleyball/fishing. Profile representative 100-200-guest scenes and higher simulation speeds; set measured budgets and choose optimization work from the results.
 

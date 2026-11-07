@@ -1,66 +1,84 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_ddlgk"]
-[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_ljs0d"]
-[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-0.png" id="3_umera"]
-[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-1.png" id="4_ih3o7"]
-[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-2.png" id="5_eed5p"]
-[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-3.png" id="6_1xk87"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_umera"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_ih3o7"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-0.png" id="3_eed5p"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-1.png" id="4_1xk87"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-2.png" id="5_kkvs8"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-3.png" id="6_2a1wq"]
+[ext_resource type="Texture2D" path="res://assets/interiors/cabin-0-4.png" id="7_ow7bm"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="8_0grwo"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_kkvs8"]
-atlas = ExtResource("2_ljs0d")
+[sub_resource type="AtlasTexture" id="AtlasTexture_lrypb"]
+atlas = ExtResource("2_ih3o7")
 region = Rect2(44, 71, 455, 421)
 filter_clip = true
 
-[node name="Cabin0" type="Node2D" unique_id=1572671324]
+[node name="Cabin0" type="Node2D" unique_id=1299577069]
 y_sort_enabled = true
-script = ExtResource("1_ddlgk")
+script = ExtResource("1_umera")
 object_id = 1
 
-[node name="Art" type="Sprite2D" parent="." unique_id=1594271563]
-visible = false
+[node name="Art" type="Sprite2D" parent="." unique_id=23177019]
 texture_filter = 1
 position = Vector2(-92.009415, -113.849014)
 scale = Vector2(0.40443698, 0.40443698)
-texture = SubResource("AtlasTexture_kkvs8")
+texture = SubResource("AtlasTexture_lrypb")
 centered = false
 
-[node name="FloorAndRearWalls" type="Node2D" parent="." unique_id=2142062600]
-position = Vector2(0, -63.68)
+[node name="FloorAndRearWalls" type="Node2D" parent="." unique_id=996852666]
+position = Vector2(0, -32)
 
-[node name="Art" type="Sprite2D" parent="FloorAndRearWalls" unique_id=386807918]
+[node name="Art" type="Sprite2D" parent="FloorAndRearWalls" unique_id=1419113650]
 texture_filter = 1
-position = Vector2(-92.009415, -50.169014)
+position = Vector2(-92.009415, -81.849014)
 scale = Vector2(0.40443698, 0.40443698)
-texture = ExtResource("3_umera")
+texture = ExtResource("3_eed5p")
 centered = false
 
-[node name="Bed" type="Node2D" parent="." unique_id=1816716029]
-position = Vector2(-28.8, 1.5999985)
+[node name="Bed" type="Node2D" parent="." unique_id=684455108]
+position = Vector2(0, -16)
 
-[node name="Art" type="Sprite2D" parent="Bed" unique_id=1368532370]
+[node name="Art" type="Sprite2D" parent="Bed" unique_id=719381986]
 texture_filter = 1
-position = Vector2(-63.209415, -115.44901)
+position = Vector2(-92.009415, -97.849014)
 scale = Vector2(0.40443698, 0.40443698)
-texture = ExtResource("4_ih3o7")
+texture = ExtResource("4_1xk87")
 centered = false
 
-[node name="Desk" type="Node2D" parent="." unique_id=170778160]
+[node name="Desk" type="Node2D" parent="." unique_id=1884506400]
 position = Vector2(57.600002, 9.599998)
 
-[node name="Art" type="Sprite2D" parent="Desk" unique_id=1841163639]
+[node name="Art" type="Sprite2D" parent="Desk" unique_id=499439310]
 texture_filter = 1
 position = Vector2(-149.60942, -123.44901)
 scale = Vector2(0.40443698, 0.40443698)
-texture = ExtResource("5_eed5p")
+texture = ExtResource("5_kkvs8")
 centered = false
 
-[node name="FrontEdge" type="Node2D" parent="." unique_id=1408248171]
-position = Vector2(0, 62.4)
+[node name="FrontEdge" type="Node2D" parent="." unique_id=617325440]
+position = Vector2(0, 12.799999)
 
-[node name="Art" type="Sprite2D" parent="FrontEdge" unique_id=108067170]
+[node name="Art" type="Sprite2D" parent="FrontEdge" unique_id=1829041398]
 texture_filter = 1
-position = Vector2(-92.009415, -176.24902)
+position = Vector2(-92.009415, -126.64902)
 scale = Vector2(0.40443698, 0.40443698)
-texture = ExtResource("6_1xk87")
+texture = ExtResource("6_2a1wq")
 centered = false
+
+[node name="Stairs" type="Node2D" parent="." unique_id=155898081]
+position = Vector2(0, 9.599998)
+
+[node name="Art" type="Sprite2D" parent="Stairs" unique_id=708875287]
+texture_filter = 1
+position = Vector2(-92.009415, -123.44901)
+scale = Vector2(0.40443698, 0.40443698)
+texture = ExtResource("7_ow7bm")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1417685779]
+script = ExtResource("8_0grwo")
+facility_kind = "cabin"
+art_to_local = Transform2D(0.40443698, 0, 0, 0.40443698, -109.80464, -142.56404)
+plot_origin = Vector2(0, -48)
+phase_offset = 0.379

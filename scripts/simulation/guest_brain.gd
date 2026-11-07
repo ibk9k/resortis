@@ -12,8 +12,8 @@ const WARNING_AFTER := 18.0
 const WARNING_GRACE := 30.0
 const HISTORY_LIMIT := 12
 const EPSILON := 0.000000001
-const ACTIVITIES := ["meal", "sunbathe", "volleyball", "rest", "stroll"]
-const COMMITTED_STATES := ["to_cabin", "entering", "sleeping", "exiting", "to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "leaving_activity", "strolling", "waiting_partner", "returning"]
+const ACTIVITIES := ["meal", "sunbathe", "volleyball", "rest", "stroll"] + ResortServices.EXPANSION
+const COMMITTED_STATES := ["to_cabin", "entering", "sleeping", "exiting", "to_facility", "queueing", "approaching_activity", "sitting", "eating", "lying", "volleyball", "using_facility", "leaving_activity", "strolling", "waiting_partner", "returning"]
 
 static func advance(person: Dictionary, delta: float, cleanliness_score: float = 100.0) -> void:
 	if not is_finite(delta) or delta <= 0.0 or person.get("state", "") == "departed": return
@@ -65,6 +65,9 @@ static func choose(person: Dictionary, party: Dictionary, available: Array[Dicti
 	var spending_money := maxi(0, budget - reserve) if reserve >= 0 else 0
 	var offers := _offers(available, spending_money)
 	var meal := _best_facility("meal", offers, person, needs)
+	for service in ["restaurant", "ice_cream"]:
+		var food := _best_facility(service, offers, person, needs)
+		if not food.is_empty() and (meal.is_empty() or _better(food, meal)): meal = food
 	var needs_meal := needs[0] <= URGENT_HUNGER
 	var needs_rest := needs[1] <= URGENT_REST
 	if needs_rest and (not needs_meal or needs[1] / URGENT_REST < needs[0] / URGENT_HUNGER):
@@ -78,7 +81,10 @@ static func choose(person: Dictionary, party: Dictionary, available: Array[Dicti
 	var best := {"activity": "stroll", "facility_id": -1, "score": 10.0 + maxf(0.0, 70.0 - needs[2]) * 0.65 + (24.0 if _likes(person, "stroll") else 0.0) - _repeat_penalty(person, "stroll")}
 	var rest_score := -12.0 + maxf(0.0, 70.0 - needs[1]) * 1.05 + (8.0 if _likes(person, "rest") and needs[1] < 80.0 else 0.0) - _repeat_penalty(person, "rest")
 	if rest_score > float(best.score): best = {"activity": "rest", "facility_id": -1, "score": rest_score}
-	for option in [meal, _best_facility("sunbathe", offers, person, needs), _best_facility("volleyball", offers, person, needs)]:
+	var options := [meal]
+	for service in ["sunbathe", "volleyball", "gym", "sauna", "yoga", "massage", "gear", "pickleball"]:
+		options.append(_best_facility(service, offers, person, needs))
+	for option in options:
 		if not option.is_empty() and _better(option, best): best = option
 	if int(best.facility_id) >= 0: return _facility_intent(best, person, false)
 	if best.activity == "rest": return _intent("rest", -1, "Taking a quiet break in the cabin to recover some rest.")
@@ -87,11 +93,22 @@ static func choose(person: Dictionary, party: Dictionary, available: Array[Dicti
 	return _intent("stroll", -1, "Enjoying a free walk along the beach.")
 
 static func _rates(person: Dictionary) -> Array[float]:
+	var activity: String = person.get("activity", "")
 	match String(person.get("state", "")):
-		"eating": return [4.5, -0.07, 0.65 if _likes(person, "meal") else 0.25]
+		"using_facility":
+			match activity:
+				"ice_cream": return [2.6, -0.1, 1.45]
+				"gym": return [-0.28, -0.52, 2.6]
+				"sauna": return [-0.18, 1.25, 1.65]
+				"yoga": return [-0.17, 0.7, 1.95]
+				"massage": return [-0.12, 1.7, 1.8]
+				"gear": return [-0.17, -0.12, 2.1]
+		"eating":
+			if activity == "restaurant": return [5.4, -0.07, 1.2]
+			return [4.5, -0.07, 0.65 if _likes(person, "meal") else 0.25]
 		"sleeping": return [-0.12, 2.4, -0.02]
 		"lying": return [-0.16, 0.5, 2.8 if _likes(person, "sunbathe") else 1.9]
-		"volleyball": return [-0.28, -0.45, 3.5 if _likes(person, "volleyball") else 2.3]
+		"volleyball": return [-0.28, -0.45, 3.5 if _likes(person, activity) else 2.3]
 		"strolling": return [-0.22, -0.16, 1.1 if _likes(person, "stroll") else 0.65]
 		"queueing", "waiting_room", "waiting_partner": return [-0.2, -0.12, -0.25]
 		"to_cabin", "entering", "exiting", "to_facility", "approaching_activity", "leaving_activity", "returning", "departing": return [-0.22, -0.15, -0.1]
@@ -207,7 +224,7 @@ static func _offers(available: Array[Dictionary], spending_money: int) -> Array[
 		if not _integer(entry.get("queue", 0)) or float(entry.get("queue", 0)) < 0.0: continue
 		var distance: Variant = entry.get("distance", 0.0)
 		if not (distance is int or distance is float) or not is_finite(float(distance)) or float(distance) < 0.0: continue
-		var activity: String = {"cafe": "meal", "sunbeds": "sunbathe", "volleyball": "volleyball"}.get(entry.get("kind", ""), "")
+		var activity: String = String(ResortServices.KINDS.find_key(entry.get("kind", ""))) if entry.get("kind", "") in ResortServices.KINDS.values() else ""
 		if activity.is_empty(): continue
 		var waiting: Variant=entry.get("waiting_players",0)
 		if not _integer(waiting) or waiting<0: continue
@@ -223,7 +240,12 @@ static func _best_facility(activity: String, offers: Array[Dictionary], person: 
 			"meal": score = maxf(0.0, 75.0 - needs[0]) * 1.05 + (10.0 if _likes(person, activity) else 0.0)
 			"sunbathe": score = 5.0 + maxf(0.0, 90.0 - needs[2]) * 0.7 + maxf(0.0, 80.0 - needs[1]) * 0.25 + (24.0 if _likes(person, activity) else 0.0) + (6.0 if _likes(person, "rest") else 0.0)
 			"volleyball": score = 5.0 + maxf(0.0, 90.0 - needs[2]) * 0.8 + (28.0 if _likes(person, activity) else 0.0) - maxf(0.0, 55.0 - needs[1]) * 1.1 - maxf(0.0, 50.0 - needs[0]) * 0.5
-		if activity=="volleyball" and offer.waiting_players>0 and needs[0]>40 and needs[1]>=45 and (needs[2]<75 or _likes(person,activity)):
+			"restaurant": score = maxf(0.0, 82.0 - needs[0]) * 1.12 + (14.0 if _likes(person, activity) else 4.0)
+			"ice_cream": score = maxf(0.0, 75.0 - needs[0]) * (0.98 if needs[0] > 32.0 else 0.80) + maxf(0.0, 70.0 - needs[2]) * 0.34
+			"gym", "pickleball": score = 10.0 + maxf(0.0, 90.0 - needs[2]) * 0.80 + (22.0 if _likes(person, activity) else 0.0) - maxf(0.0, 60.0 - needs[1]) * 1.1
+			"sauna", "yoga", "massage": score = 12.0 + maxf(0.0, 80.0 - needs[1]) * 0.70 + maxf(0.0, 80.0 - needs[2]) * 0.35 + (18.0 if _likes(person, activity) else 0.0)
+			"gear": score = 14.0 + maxf(0.0, 85.0 - needs[2]) * 0.63 + (20.0 if _likes(person, activity) else 0.0)
+		if activity in ResortServices.PAIRED and offer.waiting_players>0 and needs[0]>40 and needs[1]>=45 and (needs[2]<75 or _likes(person,activity)):
 			score+=36.0
 		score -= float(offer.price) * 0.35 + float(offer.distance) * 0.6 + float(offer.queue) * 6.0 + _repeat_penalty(person, activity)
 		var candidate := offer.duplicate()
@@ -249,7 +271,15 @@ static func _likes(person: Dictionary, activity: String) -> bool:
 		"volleyball": ["volleyball", "sport", "sports"],
 		"rest": ["quiet time", "quiet rest", "rest", "relaxation"],
 		"stroll": ["beach walks", "beach", "walking", "stroll"],
-	}.get(activity, [])
+		"restaurant": ["meal", "good food", "food", "dining"],
+		"ice_cream": ["ice cream", "food"],
+		"gym": ["gym", "fitness", "sport", "sports", "volleyball"],
+		"sauna": ["sauna", "quiet time", "rest"],
+		"yoga": ["yoga", "rest", "sunbathe"],
+		"massage": ["massage", "quiet rest", "relaxation", "sunbathe"],
+		"gear": ["surfing", "beach", "beach walks", "stroll"],
+		"pickleball": ["pickleball", "sport", "sports", "volleyball"],
+	}.get(activity, [activity])
 	for interest in interests:
 		if interest is String and String(interest).strip_edges().to_lower() in aliases: return true
 	return false
@@ -260,7 +290,8 @@ static func _facility_intent(option: Dictionary, person: Dictionary, urgent: boo
 		"meal": reason = "Hungry; heading to the café for a meal." if urgent else "Taking time for a satisfying café meal."
 		"sunbathe": reason = "Sunbathing is a favourite; heading for a lounger." if _likes(person, "sunbathe") else "Relaxing on a lounger to enjoy the beach and recover some rest."
 		"volleyball": reason = "Ready for a game; volleyball is a favourite." if _likes(person, "volleyball") else "Looking for an available volleyball game."
-	if option.activity=="volleyball" and int(option.get("waiting_players",0))>0: reason="Joining a visitor who is looking for a volleyball game."
+	if option.activity in ResortServices.EXPANSION: reason = "Heading to the %s." % ResortServices.label(option.activity).to_lower()
+	if option.activity in ResortServices.PAIRED and int(option.get("waiting_players",0))>0: reason = "Joining another visitor at the court."
 	if int(option.get("queue", 0)) > 0: reason += " There is a short queue."
 	return _intent(String(option.activity), int(option.facility_id), reason)
 

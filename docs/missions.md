@@ -1,6 +1,17 @@
 # Side missions
 
-Status: board format and reward types agreed; individual missions and numerical balancing remain to be designed.
+Open **Manage → Challenges**. Three goals track ordinary resort activity. Beach Rush starts when the player chooses **Start challenge**. Complete a goal and select **Claim reward** on the board.
+
+| Challenge | Goal | Reward |
+| --- | --- | --- |
+| A place to stay | Collect payment for 4 cabin nights | $160 |
+| Lunch service | Serve 5 paid meals at the café or bistro | $120 |
+| Rally club | Admit 4 paying volleyball players | Bronze dolphin statue |
+| Beach rush | Admit 2 paying sunbed guests within 180 simulation seconds of starting | $180 |
+
+The untimed goals count individually recorded payments already in the resort journal, including earlier saves. Beach Rush starts from zero on each attempt and follows the simulation clock, so pausing stops the timer. An unsuccessful attempt can be retried. A completed goal waits on the board until claimed. Each reward can be claimed once per resort save.
+
+Cash rewards appear under **Operating results → Receipts** and as a separate income line on the statement. The bronze dolphin statue stays unlocked in **Garden** and is free to place on valid grass or sand. The board also offers a **Place statue** shortcut. Saves retain active attempts, completed progress and reward claims.
 
 ## Agreed direction
 
@@ -11,7 +22,7 @@ Status: board format and reward types agreed; individual missions and numerical 
 
 Mission completion and rewards remain distinct from reputation based on guest reviews. The board should give players useful goals while allowing them to choose their building and management priorities.
 
-## Mission families to develop
+## Future mission families
 
 These are illustrative candidates, not additional agreed features or final criteria:
 
@@ -24,8 +35,8 @@ These are illustrative candidates, not additional agreed features or final crite
 | Leisure | Serve guests interested in a particular facility |
 | Beach activity | Complete an optional challenge using a beach facility |
 
-Use existing resort activities and the approved facility catalogue for the first missions. Define exact conditions, progress display, reward, repeatability, and any failure/expiry behavior before implementation. Timed challenges should follow simulation time consistently with pause and fast-forward; detailed timing is a working design rule to validate.
+Define exact conditions, progress, rewards and expiry for future missions when the relevant gameplay is available.
 
 ## Integration
 
-Mission definitions can use the content catalogue described in the technical plan. Progress and claimed rewards belong in saved state. Normal completion and Creative instant completion should use the same completion rules so reloads or repeated button presses do not grant the same one-off reward repeatedly. Repeatable mission behavior remains to be specified separately.
+The board counts validated payment receipts. The timed start and all reward claims are stored with the live resort. Loading validates that claimed cash has exactly one matching receipt and that placed statues have an earned unlock. Future Creative completion can use the same claim boundary.

@@ -3,6 +3,14 @@ extends RefCounted
 ## Static, shared art and placement definitions. Never stores placed state.
 
 const DEFINITIONS := {
+	"gym": {"name": "Indoor fitness studio", "category": "Leisure", "size": Vector2i(8, 6), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(4, 6), "description": "A cutaway studio with treadmill workouts and free weights.", "access": true},
+	"sauna": {"name": "Cedar sauna", "category": "Leisure", "size": Vector2i(6, 4), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(3, 4), "description": "A warm cedar room with tiered benches and a stone heater.", "access": true},
+	"ice_cream": {"name": "Ice cream cart", "category": "Resort", "size": Vector2i(3, 2), "terrain": ["grass", "sand"], "atlas": "modeled", "frames": [0], "door": Vector2i(1, 2), "description": "A mint-green cart serving a quick treat.", "access": true},
+	"restaurant": {"name": "Seaside bistro", "category": "Resort", "size": Vector2i(10, 8), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(5, 8), "description": "A terracotta terrace serving full meals at seated tables.", "access": true},
+	"yoga": {"name": "Yoga pavilion", "category": "Leisure", "size": Vector2i(6, 4), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(3, 4), "description": "A shaded deck for a quiet stretch and some recovery.", "access": true},
+	"massage": {"name": "Massage cabana", "category": "Leisure", "size": Vector2i(5, 4), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(2, 4), "description": "A linen-screened cabana with two treatment tables.", "access": true},
+	"gear": {"name": "Beach gear kiosk", "category": "Beach", "size": Vector2i(4, 3), "terrain": ["grass", "sand"], "atlas": "modeled", "frames": [0], "door": Vector2i(2, 3), "description": "Rent a surfboard or pick up a beach towel.", "access": true},
+	"pickleball": {"name": "Pickleball court", "category": "Leisure", "size": Vector2i(11, 6), "terrain": ["grass"], "atlas": "modeled", "frames": [0], "door": Vector2i(5, 6), "description": "Two guests play across the net on a full outdoor court.", "access": true},
 	"cabin": {"name": "Garden cabin", "category": "Stay", "size": Vector2i(4, 4), "terrain": ["grass"], "atlas": "buildings", "frames": [0, 1], "door": Vector2i(4, 2), "doors": [Vector2i(4, 2), Vector2i(2, 4)], "description": "A furnished retreat with its own bathroom. Each facing has its own entrance.", "access": true},
 	"reception": {"name": "Reception", "category": "Resort", "size": Vector2i(5, 4), "terrain": ["grass"], "atlas": "buildings", "frames": [2], "door": Vector2i(2, 4), "description": "The arrival point, opening onto the garden paths.", "access": true},
 	"cafe": {"name": "Coastal café", "category": "Resort", "size": Vector2i(4, 4), "terrain": ["grass"], "atlas": "buildings", "frames": [3], "door": Vector2i(2, 4), "description": "Food and drinks in a compact timber pavilion.", "access": true},
@@ -17,7 +25,8 @@ const DEFINITIONS := {
 	"bench": {"name": "Garden bench", "category": "Garden", "size": Vector2i(2, 1), "terrain": ["grass", "sand"], "atlas": "props", "frames": [4], "width": 94.0, "description": "A place to rest beside the promenade."},
 	"lantern": {"name": "Lantern post", "category": "Garden", "size": Vector2i(1, 1), "terrain": ["grass", "sand"], "atlas": "props", "frames": [5], "width": 35.0, "description": "Warm light along the garden paths."},
 	"bin": {"name": "Waste bin", "category": "Garden", "size": Vector2i(1, 1), "terrain": ["grass", "sand"], "atlas": "props", "frames": [6], "width": 29.0, "description": "A practical detail for the working resort."},
-	"rocks": {"name": "Coastal rocks", "category": "Garden", "size": Vector2i(2, 1), "terrain": ["grass", "sand", "wet_sand"], "atlas": "props", "frames": [7], "width": 109.0, "description": "Low weathered rocks soften the coastline."}
+	"rocks": {"name": "Coastal rocks", "category": "Garden", "size": Vector2i(2, 1), "terrain": ["grass", "sand", "wet_sand"], "atlas": "props", "frames": [7], "width": 109.0, "description": "Low weathered rocks soften the coastline."},
+	"dolphin_statue": {"name": "Bronze dolphin statue", "category": "Garden", "size": Vector2i(2, 1), "terrain": ["grass", "sand"], "frames": [0], "description": "A leaping bronze dolphin on a sea-green plinth. Earned on the Challenges board."}
 }
 
 static func definition(id: String) -> Dictionary:

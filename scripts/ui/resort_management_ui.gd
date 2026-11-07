@@ -4,6 +4,8 @@ extends CanvasLayer
 ## rows survive refreshes, retaining focus and each section's scroll position.
 
 signal action_requested(action: String, id: int)
+signal price_requested(service: String, price: int)
+signal challenge_requested(action: String, id: String)
 
 const INK := Color("fff1cf")
 const SECONDARY := Color("b9cbb4")
@@ -12,12 +14,12 @@ const PANEL := Color("16352f")
 const INSET := Color("102822")
 const MINT := Color("8cdbb0")
 const WARNING := Color("f9b5a5")
-const SECTIONS := ["guests", "facilities", "staff", "operations"]
+const SECTIONS := ["guests", "facilities", "staff", "operations", "challenges"]
 const STATE_NAMES := {"arriving": "Arriving", "waiting_room": "Waiting for a cabin", "to_cabin": "Walking to the cabin",
 	"entering": "Entering the cabin", "sleeping": "Resting in the cabin", "exiting": "Leaving the cabin",
 	"deciding": "Choosing what to do", "to_facility": "Walking to a facility", "queueing": "Waiting in line",
-	"approaching_activity": "Taking a place", "sitting": "Seated at the café", "eating": "Enjoying a meal",
-	"lying": "Sunbathing", "volleyball": "Playing volleyball", "leaving_activity": "Leaving a facility",
+	"approaching_activity": "Taking a place", "sitting": "Seated for a meal", "eating": "Enjoying a meal",
+	"lying": "Sunbathing", "volleyball": "Playing a court match", "using_facility": "Using a facility", "leaving_activity": "Leaving a facility",
 	"strolling": "Walking along the beach", "waiting_partner": "Waiting for a partner", "returning": "Returning to the cabin",
 	"departing": "Checking out", "departed": "Stay completed"}
 
@@ -61,6 +63,18 @@ var _mess_summary: Label
 var _operations_day: Label
 var _operation_cells: Dictionary = {}
 var _daily_list: VBoxContainer
+var _cash_summary: Label
+var _finance_views := {}
+var _finance_tabs := {}
+var _prices := {}
+var _price_status: Label
+var _receipt_list: VBoxContainer
+var _receipt_rows: Array = []
+var _receipt_position: Label
+var _receipt_back: Button
+var _receipt_next: Button
+var _receipt_page := 0
+var _challenge_rows := {}
 
 func build() -> void:
 	if is_instance_valid(root): return
@@ -89,7 +103,7 @@ func build() -> void:
 	navigation.add_theme_constant_override("h_separation", 6)
 	navigation.add_theme_constant_override("v_separation", 6)
 	column.add_child(navigation)
-	var captions := ["Guests", "Facilities", "Staff", "Results"]
+	var captions := ["Guests", "Facilities", "Staff", "Results", "Challenges"]
 	for index in SECTIONS.size():
 		var section: String = SECTIONS[index]
 		var button := _button(captions[index], navigation, "Operating results" if section == "operations" else captions[index])
@@ -110,6 +124,7 @@ func build() -> void:
 	_build_facilities(_sections.facilities)
 	_build_staff(_sections.staff)
 	_build_operations(_sections.operations)
+	_build_challenges(_sections.challenges)
 	root.resized.connect(_fit_panel)
 	# Wrapped text is measured again after its first container layout. Refit
 	# when that minimum settles so an initially narrow label cannot leave the
@@ -130,6 +145,7 @@ func refresh(view: Dictionary) -> void:
 	_refresh_facilities()
 	_refresh_staff()
 	_refresh_operations()
+	_refresh_challenges()
 
 func show_section(section: String) -> void:
 	if section not in SECTIONS: return
@@ -314,7 +330,7 @@ func _build_facilities(page: VBoxContainer) -> void:
 	_facility_summary = _text(page, "")
 	var scroll := _scroll(page, "FacilitiesScroll")
 	_facility_list = _column(scroll)
-	_facility_empty = _text(_facility_list, "Build a café, sunbeds or a volleyball court to offer more things to do.", 16, SECONDARY)
+	_facility_empty = _text(_facility_list, "Build a venue to give guests more things to do.", 16, SECONDARY)
 
 func _refresh_facilities() -> void:
 	var live_ids: Array = []
@@ -355,7 +371,7 @@ func _refresh_facilities() -> void:
 		if not facility.get("reachable", true): issue = "Path blocked. Reconnect the entrance so guests can visit."
 		elif queued >= int(facility.get("queue_limit", 4)): issue = "The queue is full. New visitors will choose something else."
 		elif not facility.get("available", true): issue = "No safe waiting space. Leave clear ground by the entrance."
-		elif facility.get("kind") == "volleyball" and (facility.get("active", []) as Array).is_empty() and not (facility.get("reserved", []) as Array).is_empty():
+		elif facility.get("kind") in ResortServices.PAIRED and (facility.get("active", []) as Array).is_empty() and not (facility.get("reserved", []) as Array).is_empty():
 			issue = "Waiting for both players to reach opposite sides of the net. No fee is taken until play can begin."
 		fields.issue.text = issue
 		fields.issue.visible = not issue.is_empty()
@@ -416,7 +432,7 @@ func _refresh_staff() -> void:
 		var fields: Dictionary = _staff_rows[id]
 		fields.title.text = "%s · Janitor" % cleaner.get("name", "Janitor")
 		var state: String = cleaner.get("state", "idle")
-		fields.status.text = "%s · %s / day · %d tasks completed" % [{"walking": "Walking to a mess", "cleaning": "Cleaning", "idle": "Ready for work"}.get(state, "Ready for work"),
+		fields.status.text = "%s · %s / day · %d tasks completed" % [{"walking": "Walking to a mess", "cleaning": "Cleaning", "returning": "Returning to standby", "idle": "Ready for work"}.get(state, "Ready for work"),
 			_money(int(cleaner.get("daily_wage", wage))), int(cleaner.get("cleaned_count", 0))]
 		fields.reason.text = String(cleaner.get("reason", ""))
 		fields.progress.visible = state == "cleaning"
@@ -431,10 +447,19 @@ func _refresh_staff() -> void:
 	_mess_summary.text = "\n".join(tasks) if not tasks.is_empty() else "The resort is clean. Janitors will look for the next mess."
 
 func _build_operations(page: VBoxContainer) -> void:
-	_operations_day = _text(page, "Operating results", 18)
+	_operations_day = _text(page, "Resort finances", 18)
+	_cash_summary = _text(page, "", 15, GOLD)
+	var tabs := HFlowContainer.new()
+	page.add_child(tabs)
+	for name: String in ["Statement", "Receipts", "Prices"]:
+		var button := _button(name, tabs)
+		button.toggle_mode = true
+		button.pressed.connect(_show_finance_view.bind(name))
+		_finance_tabs[name] = button
 	var scroll := _scroll(page, "OperationsScroll")
+	_finance_views["Statement"] = scroll
 	var body := _column(scroll)
-	_text(body, "Guest income and janitor wages. Building costs are not included.", 15, SECONDARY)
+	_text(body, "Profit and loss", 18)
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 14)
@@ -444,7 +469,9 @@ func _build_operations(page: VBoxContainer) -> void:
 		var label := _label(caption, 14, SECONDARY)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		grid.add_child(label)
-	var captions := {"room_income": "Rooms", "meal_income": "Meals", "sunbathe_income": "Sunbeds", "volleyball_income": "Volleyball", "legacy_income": "Earlier activities", "income": "Total income", "wages": "Janitor wages", "net": "Net result"}
+	var captions := {"room_income": "Rooms", "meal_income": "Meals", "sunbathe_income": "Sunbeds", "volleyball_income": "Volleyball", "facility_income": "Other facilities",
+		"legacy_income": "Earlier activities", "reward_income": "Challenge rewards", "income": "Total income", "wages": "Janitor wages", "upkeep": "Daily upkeep",
+		"construction": "Construction after refunds", "expenses": "Total expenses", "net": "Profit / loss"}
 	for key: String in captions:
 		var title := _label(captions[key], 15)
 		if key == "legacy_income": title.tooltip_text = "Activity income brought forward from an older save. Its original activity categories and dates were not recorded."
@@ -460,25 +487,114 @@ func _build_operations(page: VBoxContainer) -> void:
 		_operation_cells[key] = {"title": title, "today": today, "total": total}
 	body.add_child(HSeparator.new())
 	_text(body, "Daily history", 18)
-	_text(body, "Days with recorded income or wages, plus today. Each day lasts 180 simulation seconds.", 14, SECONDARY)
+	_text(body, "Days with recorded transactions, plus today.", 14, SECONDARY)
 	_daily_list = _column(body)
+	_build_receipts(page)
+	_build_prices(page)
+	_show_finance_view("Statement")
+
+func _show_finance_view(selected: String) -> void:
+	for name: String in _finance_views:
+		_finance_views[name].visible = name == selected
+		_finance_tabs[name].set_pressed_no_signal(name == selected)
+
+func _build_receipts(page: VBoxContainer) -> void:
+	var section := _column(page)
+	section.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_finance_views["Receipts"] = section
+	var navigation := HBoxContainer.new()
+	section.add_child(navigation)
+	_receipt_back = _button("Newer", navigation)
+	_receipt_back.pressed.connect(func() -> void: action_requested.emit("receipt_page", _receipt_page - 1))
+	_receipt_position = _text(navigation, "", 14, SECONDARY)
+	_receipt_position.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_receipt_next = _button("Older", navigation)
+	_receipt_next.pressed.connect(func() -> void: action_requested.emit("receipt_page", _receipt_page + 1))
+	_receipt_list = _column(_scroll(section, "ReceiptScroll"))
+
+func _build_prices(page: VBoxContainer) -> void:
+	var scroll := _scroll(page, "PriceScroll")
+	_finance_views["Prices"] = scroll
+	var body := _column(scroll)
+	_text(body, "Guest prices", 18)
+	_text(body, "Prices apply to all locations of each type. Booked room rates stay fixed. Activity prices apply when guests are admitted.", 15, SECONDARY)
+	for service: String in ResortEconomy.DEFAULT_PRICES:
+		var row := HBoxContainer.new()
+		body.add_child(row)
+		_text(row, ResortServices.label(service) + (" / night" if service == "room" else " / guest"), 15)
+		var input := SpinBox.new()
+		input.name = "Price" + service.capitalize()
+		input.min_value = 1
+		input.max_value = ResortEconomy.MAX_PRICE
+		input.step = 1
+		input.prefix = "$"
+		row.add_child(input)
+		var apply := _button("Apply", row)
+		apply.name = "Apply" + service.capitalize()
+		apply.pressed.connect(func() -> void:
+			price_requested.emit(service, int(input.value))
+			_price_status.text = "Price saved at %s." % _money(int(input.value))
+		)
+		_prices[service] = {"input": input, "published": 0}
+	_price_status = _text(body, "", 14, MINT)
+
+func _refresh_receipts(operations: Dictionary) -> void:
+	_receipt_page = int(operations.get("receipt_page", 0))
+	var pages := int(operations.get("receipt_pages", 1))
+	_receipt_position.text = "Page %d of %d" % [_receipt_page + 1, pages]
+	_receipt_back.disabled = _receipt_page == 0
+	_receipt_next.disabled = _receipt_page >= pages - 1
+	var receipts: Array = operations.get("receipts", [])
+	if receipts == _receipt_rows and _receipt_list.get_child_count() > 0: return
+	_receipt_rows = receipts
+	for child in _receipt_list.get_children():
+		_receipt_list.remove_child(child)
+		child.queue_free()
+	if receipts.is_empty():
+		_text(_receipt_list, "Purchases, guest payments, upkeep and wages will appear here.", 15, SECONDARY)
+	for event: Dictionary in receipts:
+		var title: String = {"room": "Cabin night", "meal": "Café meal", "sunbathe": "Sunbed", "volleyball": "Volleyball",
+			"legacy_income": "Earlier activities", "wage": "Janitor wage", "construction": "Purchase", "refund": "Purchase refund", "upkeep": "Daily upkeep"}.get(event.kind, ResortServices.label(event.kind))
+		if event.kind == "reward":
+			var challenge := ResortChallenges.challenge_for_receipt(event.id)
+			title = "Challenge reward · " + ResortChallenges.GOALS[challenge].name
+		if event.has("item"):
+			title += " · %s × %d" % [ResortEconomy.item_name(event.item), event.quantity]
+		var row := HBoxContainer.new()
+		_receipt_list.add_child(row)
+		var detail := _column(row)
+		_text(detail, title, 15)
+		var day := 1 + floori(float(event.time) / OperatingLedger.DAY_SECONDS)
+		var identity := "Day %d · %s" % [day, event.id]
+		_text(detail, identity, 12, SECONDARY)
+		var amount := int(event.amount)
+		row.add_child(_label(_money(amount) if amount < 0 else "+" + _money(amount), 15, WARNING if amount < 0 else MINT))
 
 func _refresh_operations() -> void:
 	var operations: Dictionary = _view.get("operations", {})
 	var day := int(operations.get("day", 1))
-	_operations_day.text = "Operating results · Day %d" % day
+	_operations_day.text = "Resort finances · Day %d" % day
+	_cash_summary.text = "Cash %s  ·  Opening cash %s" % [_money(int(operations.get("cash", ResortEconomy.OPENING_CASH))), _money(int(operations.get("opening_cash", ResortEconomy.OPENING_CASH)))]
+	var prices: Dictionary = _view.get("prices", ResortEconomy.DEFAULT_PRICES)
+	for service: String in _prices:
+		var published := int(prices[service])
+		if _prices[service].published != published:
+			_prices[service].input.set_value_no_signal(published)
+			_prices[service].published = published
+	_refresh_receipts(operations)
 	var today: Dictionary = {}
 	var live_ids: Array = []
 	var days: Array = operations.get("days", [])
 	for entry: Dictionary in days:
 		if int(entry.get("day", 0)) == day: today = entry
 	for key: String in _operation_cells:
-		var total_key: String = {"income": "income_total", "wages": "wages_total", "net": "net_total"}.get(key, key)
+		var total_key: String = key + "_total" if key in ["income", "wages", "upkeep", "construction", "expenses", "net"] else key
 		var today_key := "today_" + key
 		var current := int(operations.get(today_key, today.get(key, 0)))
 		var total := int(operations.get(total_key, 0))
-		_operation_cells[key].today.text = _money(-current if key == "wages" else current)
-		_operation_cells[key].total.text = _money(-total if key == "wages" else total)
+		var expense := key in ["wages", "upkeep", "construction", "expenses"]
+		_operation_cells[key].today.text = _money(-current if expense else current)
+		_operation_cells[key].total.text = _money(-total if expense else total)
 		if key == "net":
 			_operation_cells[key].today.add_theme_color_override("font_color", WARNING if current < 0 else MINT)
 			_operation_cells[key].total.add_theme_color_override("font_color", WARNING if total < 0 else MINT)
@@ -492,9 +608,77 @@ func _refresh_operations() -> void:
 			var label := _text(_daily_list, "", 15)
 			_day_rows[number] = {"root": label}
 		var label: Label = _day_rows[number].root
-		label.text = "Day %d%s\nIncome %s · Wages %s · Net %s" % [number, " · today" if number == day else "", _money(int(entry.get("income", 0))), _money(int(entry.get("wages", 0))), _money(int(entry.get("net", 0)))]
+		label.text = "Day %d%s\nIncome %s · Expenses %s · Net %s" % [number, " · today" if number == day else "", _money(int(entry.get("income", 0))), _money(int(entry.get("expenses", 0))), _money(int(entry.get("net", 0)))]
 		if label.get_index() != live_ids.size() - 1: _daily_list.move_child(label, live_ids.size() - 1)
 	_prune(_day_rows, live_ids)
+
+func _build_challenges(page: VBoxContainer) -> void:
+	_text(page, "Resort challenges", 18)
+	_text(page, "Track goals as you play and claim rewards here.", 15, SECONDARY)
+	var body := _column(_scroll(page, "ChallengesScroll"))
+	body.add_theme_constant_override("separation", 4)
+	for id: String in ResortChallenges.GOALS:
+		var goal: Dictionary = ResortChallenges.GOALS[id]
+		if body.get_child_count() > 0: body.add_child(HSeparator.new())
+		var heading := HBoxContainer.new()
+		body.add_child(heading)
+		var words := _column(heading)
+		words.add_theme_constant_override("separation", 2)
+		_text(words, goal.name, 17)
+		_text(words, goal.description, 15, SECONDARY)
+		var reward := _money(goal.cash) + " cash" if goal.cash > 0 else "Bronze dolphin statue"
+		_text(words, reward, 14, GOLD)
+		if id == ResortChallenges.STATUE_CHALLENGE:
+			var icon := TextureRect.new()
+			icon.texture = load("res://assets/structures/dolphin_statue-v1.png") as Texture2D
+			icon.custom_minimum_size = Vector2(70, 66)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			heading.add_child(icon)
+		var bar := ProgressBar.new()
+		bar.max_value = goal.target
+		bar.show_percentage = false
+		bar.custom_minimum_size.y = 5
+		body.add_child(bar)
+		var footer := HBoxContainer.new()
+		body.add_child(footer)
+		var status := _text(footer, "0 / %d" % goal.target, 14, SECONDARY)
+		var button := _button("Claim reward", footer)
+		button.custom_minimum_size.y = 30
+		button.name = "Challenge" + id.to_pascal_case()
+		button.hide()
+		button.pressed.connect(func() -> void: challenge_requested.emit(_challenge_rows[id].action, id))
+		_challenge_rows[id] = {"bar": bar, "status": status, "button": button, "action": ""}
+
+func _refresh_challenges() -> void:
+	for goal: Dictionary in _view.get("challenges", []):
+		var row: Dictionary = _challenge_rows[goal.id]
+		row.bar.value = goal.progress
+		var text := "%d / %d" % [goal.progress, goal.target]
+		var button := ""
+		var action := ""
+		match goal.state:
+			"ready", "expired":
+				text = "Ready to start · 3 minutes" if goal.state == "ready" else "Time ran out · " + text
+				button = "Start challenge" if goal.state == "ready" else "Try again"
+				action = "start"
+			"timed":
+				var seconds := ceili(float(goal.remaining))
+				text += " · %d:%02d left" % [floori(seconds / 60.0), seconds % 60]
+			"complete":
+				text += " · Ready to claim"
+				button = "Claim reward"
+				action = "claim"
+			"claimed":
+				text = "Reward claimed"
+				if not goal.decoration.is_empty():
+					button = "Place statue"
+					action = "place"
+		row.status.text = text
+		row.button.text = button
+		row.button.visible = not action.is_empty()
+		row.action = action
 
 func _theme() -> Theme:
 	var theme := Theme.new()

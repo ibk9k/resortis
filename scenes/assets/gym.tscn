@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_7i7ww"]
+[ext_resource type="Texture2D" path="res://assets/structures/gym-v1.png" id="2_gneo4"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_hkmw7"]
+
+[node name="Gym" type="Node2D" unique_id=1954731338]
+script = ExtResource("1_7i7ww")
+object_id = 1
+kind = "gym"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=2004292089]
+texture_filter = 1
+position = Vector2(-214, -109)
+texture = ExtResource("2_gneo4")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=987677272]
+script = ExtResource("3_hkmw7")
+facility_kind = "gym"
+art_to_local = Transform2D(1, 0, 0, 1, -214, -109)
+model_origin = Vector2(0, 112)
+plot_origin = Vector2(-32, 16)
+phase_offset = 0.379

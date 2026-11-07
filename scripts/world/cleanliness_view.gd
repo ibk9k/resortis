@@ -2,6 +2,8 @@ class_name CleanlinessView
 extends Node2D
 ## Pure presentation: logical ground roots share the world's Y-sort traversal.
 const Art = preload("res://assets/staff/janitor_art.gd")
+# One cycle is two painted steps. Staff have a longer cadence than guests.
+const WALK_CYCLE_DISTANCE := 0.78
 var system: RefCounted
 var library: ResortAssets
 var staff_nodes: Dictionary = {}
@@ -68,7 +70,7 @@ func refresh() -> void:
 			sprite.centered = false
 			sprite.offset = -Art.ROOT
 			sprite.scale = Vector2.ONE * Art.SCALE
-			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			sprite.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 			actor.add_child(sprite)
 			add_child(actor)
 			staff_nodes[id] = actor
@@ -76,11 +78,11 @@ func refresh() -> void:
 		actor.position = IsometricGrid.project(cleaner.position)
 		var sprite: AnimatedSprite2D = actor.get_child(0)
 		var facing := ResortWalker.facing_for(IsometricGrid.project(cleaner.direction))
-		var kind := "clean" if cleaner.state == "cleaning" else ("walk" if cleaner.moving else "idle")
+		var kind := "clean" if cleaner.state == "cleaning" else ("walk" if cleaner.state in ["walking", "returning"] else "idle")
 		sprite.animation = "%s_%s" % [kind, facing]
 		sprite.pause()
 		if kind == "walk":
-			var phase := fposmod(float(cleaner.distance) / ResortWalker.STRIDE_DISTANCE, 1.0)
+			var phase := fposmod(float(cleaner.distance) / WALK_CYCLE_DISTANCE, 1.0)
 			sprite.set_frame_and_progress(floori(phase * 16), 0.0)
 		elif kind == "clean": sprite.set_frame_and_progress(floori(fposmod(float(cleaner.activity_elapsed) / 1.2, 1.0) * 4), 0.0)
 		else: sprite.set_frame_and_progress(0, 0.0)

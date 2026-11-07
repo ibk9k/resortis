@@ -1,6 +1,6 @@
 # Living resort slice
 
-Implemented from the user's nine-change, six-worker plan approved on 2026-11-01. The approved illustrated guests and their distance-driven walking are preserved. This is the first concurrent management slice, with construction cash/pricing/progression still ahead.
+Implemented from the user's nine-change, six-worker plan approved on 2026-11-01. The approved illustrated guests and their distance-driven walking are preserved. The [resort economy](adr/0013-resort-cash-and-prices.md) adds construction cash, upkeep, prices and a full journal to this slice.
 
 ## Play and inspect
 
@@ -10,11 +10,13 @@ The starter has four cabins: four resident parties, at most eight resident peopl
 
 ## Guest and facility rules
 
-- First party: Maya and Leo, two nights, $480 shared budget. Later profiles vary names, male/female appearance, interests, budget and 1–3 nights; arrivals are 20–29 simulation seconds apart.
-- One resort day is 180 simulation seconds. A room costs $60 per cabin/night, shared by the couple. Activity spending cannot touch remaining booked-night reserves. Nightly charges/release wait for physical reunion/checkout.
+- First party: Maya and Leo, two nights, $480 shared budget. Couples consist of one male and one female guest. Later profiles vary names, appearance, interests, budget and 1–3 nights; arrivals are 20–29 simulation seconds apart. On loading an older save, an existing couple with matching appearances has its second guest's appearance and name updated while retaining the booking and progress.
+
+New guest appearances must be registered with a gender in `ResortSimulation.VARIANT_GENDER`. Couple validation uses that mapping so two different appearances of the same gender cannot form a couple.
+- One resort day is 180 simulation seconds. The top bar shows the current day and a 24-hour clock, with midnight at the daily accounting boundary. Lighting is controlled separately. A room starts at $60 per cabin/night, shared by the couple. A booking keeps the advertised rate at the time of reservation. Activity spending cannot touch remaining booked-night reserves. Nightly charges/release wait for physical reunion/checkout.
 - Hunger, rest and enjoyment recover in actual activities, rather than while merely walking toward them. Choices consider urgency, interests, price/reserve, reachability and queues. Couples may accept invitations or choose separate leisure, then reunite at their own cabin for nights/checkout.
 - Café, sunbed sets and courts each have two physical places and up to four safe FIFO waiters. Queue timeout 55s, reservation timeout 90s, unpaired court timeout 22s; paid sessions are bounded at 60s. Exiting people hold furniture until physically clear. Queue stations must leave all entrances connected.
-- Meals cost $12, sunbathing $8 and volleyball $10 **per admitted person**. Guests reach the actual fixture before charging. Court players both arrive and can both afford their fees before either is charged. Cross-party matches use opposite court slots and the same rally clock.
+- The default prices are $12 for meals, $8 for sunbathing and $10 for volleyball **per admitted person**. Guests reach the actual fixture before paying the current activity price. Court players both arrive and can both afford their fees before either is charged. Cross-party matches use opposite court slots and the same rally clock.
 - Guests can notice another visitor seeking a game. A lone court wait remains 22s; after an opponent commits, their bounded 90s reservation supplies time to walk there. The facility service owns that timeout and restores the complete pair before validating deadlines. See the [solo placement/volleyball follow-up](guest-pose-and-volleyball-fixes.md).
 - Ordinary seated preparation is 3s, eating 12s, reclining 18s and a rally 20s. These are reversible prototype tuning values, not a finished balance.
 
@@ -28,13 +30,15 @@ Hire up to three janitors, with no upfront fee. Each costs $30 at each completed
 
 Janitors claim the nearest reachable unclaimed mess, walk at 1.2 tiles/s, reach within .5 tiles, then sweep litter for 4.5s or spills for 6s. Claims are exclusive and survive valid saves; blocked edits are rejected. New illustrated cap/overalls/broom art is isolated under `assets/staff/`; original alpha masters and exact ImageGen prompts are retained there. Foot registration uses filled shoe patches so a thin broom outline cannot raise the body above the ground.
 
+A cleaner starts a new trip from their actual sweeping position. Nearby litter within broom reach can be swept in place, and longer routes can exit from either safe end of the occupied step. When there is no job to claim, cleaners spread out to reachable standby posts near active facilities, away from arrivals and doorways. A new job can interrupt that walk. The Staff panel shows the return, and an in-progress return survives saving and loading. Older routes to the original arrival posts redirect on the next simulation tick.
+
 ## State, editing and money
 
 `LivingResortRuntime` owns configured population/facilities/cleanliness/ledger references. The population advances them once on the shared fixed step. Presentation reads that state; panels emit actions and never maintain separate gameplay values. Stable person/party/staff/transaction identities are independent of scene nodes.
 
 Schema 4 stores the complete envelope with the layout: RNG, clock/remainder, routes/distance, bookings, deadlines, needs/mood/warnings, paid visits, queues/held claims, dirt, jobs/cleaning progress, staff and the deduplicated ledger. Restore stages every service, validates bidirectional ownership and exact money/receipt metadata, then swaps atomically. Malformed loads leave the open map/runtime unchanged. Normal Save retains the prior-copy backup.
 
-Schemas 1/2 layout-only and schema-3 solo/couple stays migrate in memory. Old positions, route phase, budgets, paid nights and deadlines persist. Historic aggregate activity income is labelled **Earlier activities** rather than fabricated as specific meals. Migration never charges again or overwrites the source file automatically. No autosave is introduced.
+Schemas 1/2 layout-only and schema-3 solo/couple stays migrate in memory. Old positions, route phase, budgets, paid nights and deadlines persist. Historic aggregate activity income is labelled **Earlier activities** rather than fabricated as specific meals. The **Saves** menu offers six manual slots and a separate autosave. The previous single-file save can still be loaded and stays available after migration.
 
 Cabins remain reserved through physical checkout. Committed facilities, queues, all current customers and staff constrain moving/removal, path edits, placement and undo/redo. Valid unrelated edits replan routes without resetting distance phase. Rejected edits preserve history.
 
@@ -46,4 +50,4 @@ Final source review accepts 774 hashes after actual catalogue, walk, activity, s
 
 `tests/living_mood_checks.gd` isolates the combined dirt boundary with a fully validated saved fixture: a checked-in outdoor walker waits on an open beach patch with eight pre-existing reachable spills and healthy needs. Real runtime score produces a warning after 18s. Three actually hired janitors walk/clean six marks; while the guest remains at the same position, mood rises 24.9→64.5 and the warning clears within grace. W6 independently reran and accepted this controlled integration fixture. A separate 1200s natural sample accumulated 16 marks without the severe dirt-only warning and is retained as `artifacts/living-mood-natural-probe.json`.
 
-No maintenance/wear, fishing/swimming gameplay, new building catalogue, construction-cash economy/loans, pricing controls, reputation/missions/progression, thirst/hygiene, full Creative powers, autosave or manual-slot UI are included. The janitor uniform is one illustrated type reused across hires. Small-crowd measurements do not establish the later 100–200-person target.
+Maintenance/wear, fishing/swimming gameplay, a new building catalogue, recovery loans, reputation/missions/progression, thirst/hygiene and full Creative powers are future work. The janitor uniform is one illustrated type reused across hires. Small-crowd measurements cover the current slice.

@@ -1,0 +1,24 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_k8qhq"]
+[ext_resource type="Texture2D" path="res://assets/structures/pickleball-v1.png" id="2_s53dv"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="3_bp2nj"]
+
+[node name="Pickleball" type="Node2D" unique_id=1807498149]
+script = ExtResource("1_k8qhq")
+object_id = 1
+kind = "pickleball"
+
+[node name="Art" type="Sprite2D" parent="." unique_id=219323396]
+texture_filter = 1
+position = Vector2(-266, -26)
+texture = ExtResource("2_s53dv")
+centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=881553316]
+script = ExtResource("3_bp2nj")
+facility_kind = "pickleball"
+art_to_local = Transform2D(1, 0, 0, 1, -266, -26)
+model_origin = Vector2(0, 136)
+plot_origin = Vector2(-80, 16)
+phase_offset = 0.379

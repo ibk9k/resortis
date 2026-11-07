@@ -17,6 +17,9 @@ var walked_distance := 0.0
 var facing := "se"
 var variant := "female"
 var library: ResortAssets
+var paddle_hand := Vector2(INF, INF)
+var paddle_angle := 0.0
+static var _activity_contacts: Dictionary = {}
 const STRIDE_DISTANCE := (0.46/0.6)*(220.0*ResortAssets.GUEST_SCALE)/(32.0*sqrt(2.0))
 
 func configure(id: int, start: Vector2i, navigation: AStarGrid2D, targets: Array[Vector2i], assets: ResortAssets) -> void:
@@ -75,6 +78,9 @@ func advance(delta: float) -> void:
 	present(logical_position, walked_distance, Vector2.ZERO, moving)
 
 func present(point: Vector2, distance: float, heading: Vector2, moving: bool) -> void:
+	if paddle_hand.is_finite():
+		paddle_hand = Vector2(INF, INF)
+		queue_redraw()
 	sprite.sprite_frames = library.people_frames(variant)
 	sprite.scale=Vector2.ONE*ResortAssets.GUEST_SCALE
 	sprite.offset = -ResortAssets.GUEST_ROOT
@@ -94,6 +100,11 @@ func present(point: Vector2, distance: float, heading: Vector2, moving: bool) ->
 	_update_position()
 
 func present_activity(slot: Dictionary, time: float) -> void:
+	if slot.pose in ["standing", "treadmill"]:
+		var treadmill: bool = slot.pose == "treadmill"
+		present(slot.position, time * 1.4, Vector2.UP, treadmill)
+		sprite.position = slot.get("render_offset", Vector2(0, slot.offset))
+		return
 	logical_position = slot.position
 	sprite.scale=Vector2.ONE*ResortAssets.GUEST_SCALE
 	sprite.sprite_frames = library.activity_frames(variant)
@@ -105,13 +116,37 @@ func present_activity(slot: Dictionary, time: float) -> void:
 		var head := Vector2(194,316) if variant=="female" else Vector2(166,294)
 		if slot.facing=="sw": head.x=GuestActivityPose.CANVAS.x-head.x
 		sprite.position=slot.head_offset-(head-GuestActivityPose.ROOT)*sprite.scale
+	# Fit each complete illustration to its supporting furniture.
+	if slot.pose == "lying":
+		sprite.scale *= 0.86
+		sprite.position += Vector2(4.5, -8.5) if variant == "female" else Vector2(6, -7)
+	elif slot.pose == "sleeping":
+		sprite.position += Vector2(-2 if slot.facing == "se" else 2, -1)
+	elif slot.pose in ["sitting", "eating"] and slot.has("seat_offset"):
+		var contact := Vector2(310, 403) if variant == "female" else Vector2(300, 374)
+		sprite.position = slot.seat_offset - (contact - GuestActivityPose.ROOT) * sprite.scale
 	sprite.pause()
 	sprite.animation = slot.pose+"_"+slot.facing
 	var period: float = {"sitting":4.0,"eating":1.8,"lying":4.0,"sleeping":6.0,"volleyball":4.0}[slot.pose]
 	var count: int = GuestActivityPose.FRAMES[slot.pose]
 	var phase := fposmod(time/period,1.0)
 	sprite.set_frame_and_progress(int(phase*count),fposmod(phase*count,1.0))
+	if slot.get("paddle", false):
+		if _activity_contacts.is_empty():
+			_activity_contacts = JSON.parse_string(FileAccess.get_file_as_string("res://assets/registration/illustrated-guests.json")).contacts
+		var contact: Array = _activity_contacts[variant].volleyball[slot.facing][sprite.frame]
+		paddle_hand = sprite.position + (Vector2(contact[0], contact[1]) - GuestActivityPose.ROOT) * sprite.scale
+		paddle_angle = (-0.52 if slot.facing == "se" else PI + 0.52) + sin(phase * TAU) * 0.48
+		queue_redraw()
 	_update_position()
+
+func _draw() -> void:
+	if not paddle_hand.is_finite(): return
+	draw_set_transform(paddle_hand, paddle_angle)
+	draw_line(Vector2.ZERO, Vector2(6, 0), Color("553b30"), 2.0, true)
+	var outline := PackedVector2Array([Vector2(5, -2), Vector2(7, -3.5), Vector2(11, -3.5), Vector2(13, -2), Vector2(13, 2), Vector2(11, 3.5), Vector2(7, 3.5), Vector2(5, 2)])
+	draw_colored_polygon(outline, Color("1e4245"))
+	draw_rect(Rect2(7, -2, 4.5, 4.0), Color("52b8a9"))
 
 func _choose_route() -> void:
 	if destinations.is_empty():

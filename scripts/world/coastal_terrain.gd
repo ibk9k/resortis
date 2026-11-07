@@ -15,9 +15,10 @@ func build(source: ResortLayout) -> void:
 		child.free()
 	materials.clear()
 	var texture := load("res://assets/atlases/terrain-v1.png") as Texture2D
-	_patch("InlandLawn", Rect2(-64, -64, 192, 85), Vector2.ZERO, Color(0.81, 0.92, 0.76), texture)
-	_patch("BroadDryBeach", Rect2(-64, 21, 192, 19), Vector2(0.5, 0), Color(1.0, 0.97, 0.88), texture)
-	_patch("WetSand", Rect2(-64, 37.7, 192, 3), Vector2(0.5, 0), Color(0.71, 0.81, 0.78), texture)
+	var inland_start := ResortLayout.BACKDROP_REAR_EDGE + 0.5
+	_patch("InlandLawn", Rect2(-64, inland_start, 192, 21 - inland_start), Vector2.ZERO, Color(0.81, 0.92, 0.76), texture, "grass")
+	_patch("BroadDryBeach", Rect2(-64, 21, 192, 19), Vector2(0.5, 0), Color(1.0, 0.97, 0.88), texture, "sand")
+	_patch("WetSand", Rect2(-64, 37.7, 192, 3), Vector2(0.5, 0), Color(0.71, 0.81, 0.78), texture, "sand")
 	var ocean := Polygon2D.new()
 	ocean.name = "AnimatedShoreAndOcean"
 	ocean.polygon = IsometricGrid.footprint_polygon(Vector2(-64, 37), Vector2i(192, 100))
@@ -40,12 +41,15 @@ func build(source: ResortLayout) -> void:
 	add_child(path_node)
 	queue_redraw()
 
-func _patch(label: String, rect: Rect2, quadrant: Vector2, tint: Color, texture: Texture2D) -> void:
+func _patch(label: String, rect: Rect2, quadrant: Vector2, tint: Color, texture: Texture2D, wang_set: String) -> void:
 	var patch := Polygon2D.new()
 	patch.name = label
 	var p := rect.position - Vector2(0.5, 0.5)
 	patch.polygon = PackedVector2Array([IsometricGrid.project(p), IsometricGrid.project(p + Vector2(rect.size.x, 0)), IsometricGrid.project(p + rect.size), IsometricGrid.project(p + Vector2(0, rect.size.y))])
-	patch.material = _material(quadrant, tint, texture)
+	var material := _material(quadrant, tint, texture)
+	material.set_shader_parameter("wang_atlas", load("res://assets/atlases/%s-wang.png" % wang_set))
+	material.set_shader_parameter("wang_enabled", true)
+	patch.material = material
 	add_child(patch)
 
 func _material(quadrant: Vector2, tint: Color, texture: Texture2D) -> ShaderMaterial:
@@ -67,9 +71,9 @@ func _draw() -> void:
 	if layout == null or not show_grid:
 		return
 	for x in range(0, ResortLayout.MAP_SIZE.x + 1):
-		draw_line(IsometricGrid.project(Vector2(x - 0.5, -0.5)), IsometricGrid.project(Vector2(x - 0.5, 39.5)), Color(0.10, 0.24, 0.18, 0.20), 1.0)
-	for y in range(0, 41):
+		draw_line(IsometricGrid.project(Vector2(x - 0.5, ResortLayout.INLAND_START - 0.5)), IsometricGrid.project(Vector2(x - 0.5, 39.5)), Color(0.10, 0.24, 0.18, 0.20), 1.0)
+	for y in range(ResortLayout.INLAND_START, 41):
 		draw_line(IsometricGrid.project(Vector2(-0.5, y - 0.5)), IsometricGrid.project(Vector2(43.5, y - 0.5)), Color(0.10, 0.24, 0.18, 0.20), 1.0)
-	var boundary := IsometricGrid.footprint_polygon(Vector2.ZERO, Vector2i(44, 40))
+	var boundary := IsometricGrid.footprint_polygon(Vector2(0, ResortLayout.INLAND_START), Vector2i(44, 40 - ResortLayout.INLAND_START))
 	boundary.append(boundary[0])
 	draw_polyline(boundary, Color(0.96, 0.88, 0.64, 0.70), 2.0)

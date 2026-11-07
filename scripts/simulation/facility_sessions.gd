@@ -3,7 +3,6 @@ extends RefCounted
 ## Owns claims and admission, never people, routes in motion, payments or files.
 ## A cancelled occupant keeps its claim until its controller walks it clear.
 
-const CAPACITY := 2
 const QUEUE_LIMIT := 4
 const QUEUE_TIMEOUT := 55.0
 const RESERVATION_TIMEOUT := 90.0
@@ -15,10 +14,9 @@ const EXPIRED_LIMIT := 64
 const MAX_ID := 1000000000
 const MAX_TIME := 1000000000000.0
 const EPSILON := 0.000001
-const KINDS := {"meal": "cafe", "sunbathe": "sunbeds", "volleyball": "volleyball"}
-const POSES := {"meal": "eating", "sunbathe": "lying", "volleyball": "volleyball"}
-const PRICES := {"meal": 12, "sunbathe": 8, "volleyball": 10}
-const INSIDE_STATES := ["approaching_activity", "sitting", "eating", "lying", "volleyball", "waiting_partner", "leaving_activity"]
+const KINDS := ResortServices.KINDS
+const POSES := ResortServices.POSES
+const INSIDE_STATES := ["approaching_activity", "sitting", "eating", "lying", "volleyball", "using_facility", "waiting_partner", "leaving_activity"]
 const DIRECTIONS := [Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0), Vector2i(0, -1)]
 const TICKET_FIELDS := ["person_id", "party_id", "facility_id", "activity", "status", "slot", "queue_position", "partner_id", "preferred_partner_id", "sequence", "arrived", "admitted", "claim_held", "requested_at", "reserved_at", "arrived_at", "active_at", "expired_at", "match_id", "reason"]
 
@@ -98,7 +96,7 @@ func confirm_arrival(person_id: int, clock: float) -> bool:
 	if entry.arrived: return true
 	entry.arrived = true
 	entry.arrived_at = _clock
-	if entry.activity == "volleyball":
+	if entry.activity in ResortServices.PAIRED:
 		_pair_courts()
 	else:
 		_admit(entry)
@@ -107,7 +105,7 @@ func confirm_arrival(person_id: int, clock: float) -> bool:
 func ready(person_id: int) -> bool:
 	var entry := _find(person_id)
 	if entry.is_empty() or entry.status != "active" or not entry.claim_held or not entry.arrived or not entry.admitted: return false
-	if entry.activity != "volleyball": return true
+	if entry.activity not in ResortServices.PAIRED: return true
 	var other := _find(int(entry.partner_id))
 	return not other.is_empty() and other.status == "active" and other.arrived and other.admitted and other.claim_held and other.partner_id == person_id and other.facility_id == entry.facility_id and other.slot != entry.slot and other.match_id == entry.match_id
 
@@ -135,7 +133,7 @@ func advance(delta: float, clock: float, people: Array = []) -> void:
 		for entry in _tickets:
 			if entry.status != "expired" and (not _people.has(int(entry.person_id)) or _people[int(entry.person_id)].get("state") == "departed"):
 				_expire(int(entry.person_id), _clock, "The visitor is no longer using this facility.")
-			elif entry.activity == "volleyball" and entry.status == "active" and _people[int(entry.person_id)].get("state") in ["leaving_activity", "returning", "departing"]:
+			elif entry.activity in ResortServices.PAIRED and entry.status == "active" and _people[int(entry.person_id)].get("state") in ["leaving_activity", "returning", "departing"]:
 				_expire(int(entry.person_id), clock, "A player is leaving; the rally has ended.")
 	_process_time(clock)
 	_clear_exits()
@@ -144,7 +142,7 @@ func advance(delta: float, clock: float, people: Array = []) -> void:
 
 func slot(person_id: int) -> Dictionary:
 	var entry := _find(person_id)
-	if entry.is_empty() or not entry.claim_held or entry.slot not in [0, 1] or assets == null: return {}
+	if entry.is_empty() or not entry.claim_held or entry.slot < 0 or entry.slot >= ResortServices.capacity(entry.activity) or assets == null: return {}
 	var record := layout.find_object(int(entry.facility_id))
 	if record.get("kind") != KINDS.get(entry.activity): return {}
 	return GuestActivitySlots.slot(record, POSES[entry.activity], int(entry.slot), assets)
@@ -152,7 +150,7 @@ func slot(person_id: int) -> Dictionary:
 func route(person_id: int, leaving: bool = false) -> Array[Vector2]:
 	var points: Array[Vector2] = []
 	var entry := _find(person_id)
-	if entry.is_empty() or not entry.claim_held or entry.slot not in [0, 1] or assets == null: return points
+	if entry.is_empty() or not entry.claim_held or entry.slot < 0 or entry.slot >= ResortServices.capacity(entry.activity) or assets == null: return points
 	var record := layout.find_object(int(entry.facility_id))
 	if record.get("kind") != KINDS.get(entry.activity): return points
 	points = GuestActivitySlots.approach(record, POSES[entry.activity], int(entry.slot), assets)
@@ -186,13 +184,14 @@ func inspect() -> Array:
 					if entry.claim_held: exiting.append(int(entry.person_id))
 		var reachable := _reachable(record)
 		var available := reachable and queue.size() < QUEUE_LIMIT and is_finite(_waiting_point(record).x)
-		var activity: String = {"cafe": "meal", "sunbeds": "sunbathe", "volleyball": "volleyball"}[record.kind]
+		var activity: String = KINDS.find_key(record.kind)
+		var capacity := ResortServices.capacity(activity)
 		result.append({"id": record.id, "facility_id": record.id, "name": ResortCatalog.definition(record.kind).name,
-			"kind": record.kind, "activity": activity, "price": PRICES[activity], "capacity": CAPACITY,
+			"kind": record.kind, "activity": activity, "price": layout.price(activity), "capacity": capacity,
 			"occupants": occupants, "occupancy": occupants.size(), "active": active, "reserved": reserved, "exiting": exiting,
 			"queue": queue, "queue_count": queue.size(), "queue_limit": QUEUE_LIMIT, "waiting_positions": positions,
-			"reachable": reachable, "available": available, "immediate_vacancy": CAPACITY - occupants.size(),
-			"available_now": available and occupants.size() < CAPACITY and queue.is_empty(), "session_started_at": started})
+			"reachable": reachable, "available": available, "immediate_vacancy": capacity - occupants.size(),
+			"available_now": available and occupants.size() < capacity and queue.is_empty(), "session_started_at": started})
 	return result
 
 func protects(object_id: int) -> bool:
@@ -238,7 +237,7 @@ func capture() -> Dictionary:
 func restore(data: Dictionary) -> bool:
 	if layout == null or assets == null or not _integer(data.get("version"), 1, 1): return false
 	if not _number(data.get("clock"), 0.0, MAX_TIME) or not _integer(data.get("next_sequence"), 1, 9007199254740991): return false
-	if not data.get("tickets") is Array or data.tickets.size() > layout.objects.size() * (CAPACITY + QUEUE_LIMIT) + EXPIRED_LIMIT: return false
+	if not data.get("tickets") is Array or data.tickets.size() > layout.objects.size() * (ResortServices.MAX_CAPACITY + QUEUE_LIMIT) + EXPIRED_LIMIT: return false
 	var decoded: Array[Dictionary] = []
 	var ids: Dictionary = {}
 	var claims: Dictionary = {}
@@ -273,9 +272,9 @@ func restore(data: Dictionary) -> bool:
 	for entry in decoded:
 		if entry.status!="expired" and _deadline(entry,ids)<=float(data.clock)+EPSILON: return false
 		if entry.status == "queued":
-			for index in CAPACITY:
+			for index in ResortServices.capacity(entry.activity):
 				if not claims.has("%d:%d" % [entry.facility_id, index]): return false
-		if entry.activity != "volleyball" or entry.status == "expired": continue
+		if entry.activity not in ResortServices.PAIRED or entry.status == "expired": continue
 		if entry.partner_id == 0:
 			if entry.status == "active" or not entry.match_id.is_empty(): return false
 			if entry.status == "reserved":
@@ -284,7 +283,7 @@ func restore(data: Dictionary) -> bool:
 			continue
 		var other: Dictionary = ids.get(entry.partner_id, {})
 		if other.is_empty() or other.get("status") not in ["reserved", "active"]: return false
-		if other.get("activity") != "volleyball" or other.facility_id != entry.facility_id or other.slot == entry.slot or other.partner_id != entry.person_id: return false
+		if other.get("activity") != entry.activity or other.facility_id != entry.facility_id or other.slot == entry.slot or other.partner_id != entry.person_id: return false
 		if entry.match_id != _match_id(entry, other) or other.match_id != entry.match_id: return false
 		if entry.status == "active" and (other.status != "active" or not other.arrived or not other.admitted or absf(float(other.active_at) - float(entry.active_at)) > EPSILON): return false
 		if entry.status == "reserved" and other.status == "reserved" and entry.arrived and other.arrived: return false
@@ -310,15 +309,16 @@ func _valid_ticket(entry: Dictionary, clock: float) -> bool:
 		if not _integer(entry.get(key), 1, MAX_ID): return false
 	for key in ["partner_id", "preferred_partner_id"]:
 		if not _integer(entry.get(key), 0, MAX_ID) or entry[key] == entry.person_id: return false
-	if not _integer(entry.get("sequence"), 1, 9007199254740990) or not _integer(entry.get("slot"), -1, 1): return false
+	if not _integer(entry.get("sequence"), 1, 9007199254740990): return false
 	if entry.get("activity") not in KINDS or entry.get("status") not in ["queued", "reserved", "active", "expired"]: return false
+	if not _integer(entry.get("slot"), -1, ResortServices.capacity(entry.activity) - 1): return false
 	for key in ["arrived", "admitted", "claim_held"]:
 		if not entry.get(key) is bool: return false
 	for key in ["requested_at", "reserved_at", "arrived_at", "active_at", "expired_at"]:
 		if not _number(entry.get(key), 0.0, clock): return false
 	if not entry.get("match_id") is String or entry.match_id.length() > 120 or not entry.get("reason") is String or entry.reason.length() > 240: return false
 	if not entry.get("queue_position") is Array or entry.queue_position.size() != 2: return false
-	if not _integer(entry.queue_position[0], 0, ResortLayout.MAP_SIZE.x - 1) or not _integer(entry.queue_position[1], 0, ResortLayout.MAP_SIZE.y - 1): return false
+	if not _integer(entry.queue_position[0], 0, ResortLayout.MAP_SIZE.x - 1) or not _integer(entry.queue_position[1], ResortLayout.INLAND_START, ResortLayout.WALKABLE_END - 1): return false
 	var point := Vector2(entry.queue_position[0], entry.queue_position[1])
 	var record := layout.find_object(int(entry.facility_id))
 	# Free expired tickets are bounded historical notifications; their object
@@ -326,7 +326,7 @@ func _valid_ticket(entry: Dictionary, clock: float) -> bool:
 	if entry.status != "expired" or entry.claim_held:
 		if record.get("kind") != KINDS[entry.activity] or not _reachable(record): return false
 		if not _station_allowed(layout, _navigation(), Vector2i(point)) or not _connected(_navigation(), Vector2i(point)): return false
-	if entry.claim_held and int(entry.slot) not in [0, 1]: return false
+	if entry.claim_held and int(entry.slot) < 0: return false
 	if entry.status == "queued":
 		if entry.slot != -1 or entry.claim_held or entry.arrived or entry.admitted or entry.partner_id != 0 or not entry.match_id.is_empty(): return false
 		if entry.reserved_at != 0 or entry.arrived_at != 0 or entry.active_at != 0: return false
@@ -341,13 +341,13 @@ func _valid_ticket(entry: Dictionary, clock: float) -> bool:
 		if entry.active_at < entry.arrived_at: return false
 	elif entry.active_at != 0: return false
 	if entry.status == "active" and (not entry.arrived or not entry.admitted): return false
-	if entry.status == "reserved" and (entry.admitted or (entry.arrived and entry.activity != "volleyball")): return false
+	if entry.status == "reserved" and (entry.admitted or (entry.arrived and entry.activity not in ResortServices.PAIRED)): return false
 	if entry.status == "expired":
 		if entry.expired_at < entry.requested_at or entry.partner_id != 0 or not entry.match_id.is_empty() or entry.reason.is_empty(): return false
 		if entry.expired_at < maxf(float(entry.reserved_at), maxf(float(entry.arrived_at), float(entry.active_at))): return false
 	elif entry.expired_at != 0 or not entry.reason.is_empty(): return false
-	if entry.activity != "volleyball" and (entry.partner_id != 0 or not entry.match_id.is_empty()): return false
-	if entry.activity != "volleyball" and entry.admitted and entry.active_at != entry.arrived_at: return false
+	if entry.activity not in ResortServices.PAIRED and (entry.partner_id != 0 or not entry.match_id.is_empty()): return false
+	if entry.activity not in ResortServices.PAIRED and entry.admitted and entry.active_at != entry.arrived_at: return false
 	return true
 
 func _find(person_id: int) -> Dictionary:
@@ -365,7 +365,8 @@ func _vacant_slot(facility_id: int) -> int:
 	var used: Dictionary = {}
 	for entry in _tickets:
 		if entry.facility_id == facility_id and entry.claim_held: used[int(entry.slot)] = true
-	for index in CAPACITY:
+	var activity: String = KINDS.find_key(layout.find_object(facility_id).kind)
+	for index in ResortServices.capacity(activity):
 		if not used.has(index): return index
 	return -1
 
@@ -382,7 +383,7 @@ func _promote() -> void:
 
 func _pair_courts() -> void:
 	for entry in _tickets:
-		if entry.activity != "volleyball" or entry.status != "reserved" or entry.partner_id > 0: continue
+		if entry.activity not in ResortServices.PAIRED or entry.status != "reserved" or entry.partner_id > 0: continue
 		for other in _tickets:
 			if other.person_id == entry.person_id or other.facility_id != entry.facility_id or other.status != "reserved" or other.partner_id > 0: continue
 			# With two places, FIFO admission selects the pair. A companion hint
@@ -393,7 +394,7 @@ func _pair_courts() -> void:
 			other.match_id = entry.match_id
 			break
 	for entry in _tickets:
-		if entry.activity != "volleyball" or entry.status != "reserved" or not entry.arrived or entry.partner_id == 0: continue
+		if entry.activity not in ResortServices.PAIRED or entry.status != "reserved" or not entry.arrived or entry.partner_id == 0: continue
 		var other := _find(int(entry.partner_id))
 		if not other.is_empty() and other.status == "reserved" and other.arrived:
 			_admit(entry)

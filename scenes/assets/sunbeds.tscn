@@ -1,39 +1,47 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_6j5vf"]
-[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_e1o2m"]
-[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-base.png" id="3_10uhr"]
-[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-canopy.png" id="4_ic1qh"]
+[ext_resource type="Script" path="res://scripts/world/placed_object.gd" id="1_e1o2m"]
+[ext_resource type="Texture2D" path="res://assets/atlases/buildings-v2.png" id="2_10uhr"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-base.png" id="3_ic1qh"]
+[ext_resource type="Texture2D" path="res://assets/interiors/sunbeds-canopy.png" id="4_rnqti"]
+[ext_resource type="Script" path="res://scripts/world/facility_ambience.gd" id="5_tyjia"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_rnqti"]
-atlas = ExtResource("2_e1o2m")
+[sub_resource type="AtlasTexture" id="AtlasTexture_2wwt7"]
+atlas = ExtResource("2_10uhr")
 region = Rect2(1082, 579, 421, 378)
 filter_clip = true
 
-[node name="Sunbeds" type="Node2D" unique_id=29353235]
-script = ExtResource("1_6j5vf")
+[node name="Sunbeds" type="Node2D" unique_id=332468606]
+script = ExtResource("1_e1o2m")
 object_id = 1
 kind = "sunbeds"
 
-[node name="Art" type="Sprite2D" parent="." unique_id=60523785]
+[node name="Art" type="Sprite2D" parent="." unique_id=1921286289]
 visible = false
 texture_filter = 1
 position = Vector2(-74.63858, -90.41728)
 scale = Vector2(0.3545776, 0.3545776)
-texture = SubResource("AtlasTexture_rnqti")
+texture = SubResource("AtlasTexture_2wwt7")
 centered = false
 
-[node name="Base" type="Sprite2D" parent="." unique_id=545048261]
+[node name="Base" type="Sprite2D" parent="." unique_id=1725628399]
 texture_filter = 1
 position = Vector2(-74.63858, -90.41728)
 scale = Vector2(0.3545776, 0.3545776)
-texture = ExtResource("3_10uhr")
+texture = ExtResource("3_ic1qh")
 centered = false
 
-[node name="Canopy" type="Sprite2D" parent="." unique_id=2056327624]
+[node name="Canopy" type="Sprite2D" parent="." unique_id=2043815026]
 z_index = 2
 texture_filter = 1
 position = Vector2(-74.63858, -90.41728)
 scale = Vector2(0.3545776, 0.3545776)
-texture = ExtResource("4_ic1qh")
+texture = ExtResource("4_rnqti")
 centered = false
+
+[node name="Ambience" type="Node2D" parent="." unique_id=1193358947]
+script = ExtResource("5_tyjia")
+facility_kind = "sunbeds"
+art_to_local = Transform2D(0.3545776, 0, 0, 0.3545776, -458.29153, -295.7177)
+plot_origin = Vector2(0, -32)
+phase_offset = 0.379

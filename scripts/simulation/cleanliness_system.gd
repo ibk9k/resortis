@@ -10,11 +10,15 @@ const MAX_MESS := 32
 const MAX_MESS_PER_FACILITY := 8
 const STEP := 1.0 / 30.0
 const CLEAN_SECONDS := {"litter": 4.5, "spill": 6.0}
-const DIRT_CHANCE := {"meal": 0.65, "sunbathe": 0.35, "volleyball": 0.40}
-const FACILITY_KIND := {"meal": "cafe", "sunbathe": "sunbeds", "volleyball": "volleyball"}
+const DIRT_CHANCE := {"meal": 0.65, "sunbathe": 0.35, "volleyball": 0.40, "gym": 0.34, "sauna": 0.32, "ice_cream": 0.45, "restaurant": 0.65, "yoga": 0.18, "massage": 0.21, "gear": 0.30, "pickleball": 0.40}
+const FACILITY_KIND := ResortServices.KINDS
 const SCORE_RADIUS := 4.5
 const EPS := 0.000001
+# Allow accumulated rounding when a saved root is partway through a step.
+const ROUTE_EPS := 0.0001
 const NAMES := ["Rina", "Ada", "Noor"]
+const ARRIVAL_SPAWN_OFFSETS := [Vector2i(-2, 0), Vector2i(-1, 1), Vector2i(-3, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]
+const STANDBY_CLEARANCE := 128.0
 
 var layout: ResortLayout
 var assets: ResortAssets
@@ -31,6 +35,8 @@ var _events: Array[Dictionary] = []
 var _recent_visits: Array[String] = []
 var _graph: AStarGrid2D
 var _revision := -1
+var _standby_revision := -1
+var _standby_points: Array[Vector2] = []
 
 func configure(map: ResortLayout, library: ResortAssets) -> void:
 	layout = map
@@ -47,6 +53,7 @@ func configure(map: ResortLayout, library: ResortAssets) -> void:
 	total_wages = 0
 	_rng.seed = 194731
 	_revision = -1
+	_standby_revision = -1
 	_navigation()
 
 func advance(delta: float, clock: float) -> void:
@@ -85,7 +92,7 @@ func on_activity_finished(person_id: int, facility_id: int, activity: String, cl
 	var candidates := _mess_candidates(facility)
 	if candidates.is_empty(): return
 	var point: Vector2 = candidates[_rng.randi_range(0, candidates.size() - 1)]
-	var kind := "spill" if activity == "meal" and _rng.randf() < 0.40 else "litter"
+	var kind := "spill" if activity in ResortServices.FOOD and _rng.randf() < 0.40 else "litter"
 	mess.append({"id": _next_mess_id, "kind": kind, "position": point, "facility_id": facility_id,
 		"created_at": clock, "claimed_by": 0, "style": _rng.randi_range(0, 3)})
 	_next_mess_id += 1
@@ -119,6 +126,8 @@ func dismiss(staff_id: int) -> bool:
 		if staff[index].id != staff_id: continue
 		_release_claim(staff[index])
 		staff.remove_at(index)
+		for cleaner in staff:
+			if cleaner.state == "returning": _release_claim(cleaner)
 		return true
 	return false
 
@@ -147,8 +156,7 @@ func access_survives(candidate: ResortLayout) -> bool:
 		if not _reachable(graph, dirt.position): return false
 	for cleaner in staff:
 		var motion: GuestMotion = cleaner.motion
-		# Both endpoints of an occupied edge remain open. A path edit cannot
-		# strand a person by deleting the tile just behind a fractional root.
+		# An occupied edge or corner stays open around a fractional root.
 		if not _position_open(graph, motion.position) or not _reachable(graph, motion.position): return false
 		if cleaner.state == "cleaning" and not _position_open(graph, cleaner.stand_position): return false
 	return true
@@ -170,6 +178,8 @@ func layout_changed() -> void:
 		if cleaner.state == "walking" and not _remaining_route_open(motion, graph):
 			var dirt := _mess(cleaner.target_mess_id)
 			if dirt.is_empty() or not _set_job_route(cleaner, dirt): _release_claim(cleaner)
+		elif cleaner.state == "returning" and (not _remaining_route_open(motion, graph) or cleaner.stand_position != _standby_point(cleaner)):
+			_release_claim(cleaner)
 
 func capture() -> Dictionary:
 	var saved_mess: Array[Dictionary] = []
@@ -224,22 +234,20 @@ func _advance_staff(cleaner: Dictionary, delta: float) -> void:
 	var remaining := delta
 	for transition in 8:
 		if remaining <= EPS: break
-		if cleaner.state == "idle":
-			if not _claim_job(cleaner): break
+		if cleaner.state == "returning" and cleaner.stand_position != _standby_point(cleaner):
+			_release_claim(cleaner)
+		if cleaner.state in ["idle", "returning"] and not _claim_job(cleaner):
+			if cleaner.state == "idle" and not _start_standby_walk(cleaner): break
+			remaining -= _advance_walk(motion, remaining)
+			if not motion.finished(): break
+			_release_claim(cleaner)
+			continue
 		var dirt := _mess(cleaner.target_mess_id)
 		if dirt.is_empty() or dirt.claimed_by != cleaner.id:
 			_release_claim(cleaner)
 			continue
 		if cleaner.state == "walking":
-			var travel := _motion_seconds(motion)
-			var amount := minf(remaining, travel)
-			if travel <= EPS and not motion.route.is_empty():
-				motion.distance += motion.position.distance_to(motion.route[-1])
-				motion.position = motion.route[-1]
-				motion.index = motion.route.size()
-				motion.delay = 0.0
-			else: motion.advance(amount)
-			remaining -= amount
+			remaining -= _advance_walk(motion, remaining)
 			if not motion.finished(): break
 			if motion.position.distance_to(dirt.position) > 0.5 + EPS:
 				_release_claim(cleaner)
@@ -266,10 +274,83 @@ func _advance_staff(cleaner: Dictionary, delta: float) -> void:
 			cleaner.cleaned_count += 1
 			_release_claim(cleaner)
 
+func _advance_walk(motion: GuestMotion, delta: float) -> float:
+	var travel := _motion_seconds(motion)
+	var amount := minf(delta, travel)
+	if travel <= EPS and not motion.route.is_empty():
+		motion.distance += motion.position.distance_to(motion.route[-1])
+		motion.position = motion.route[-1]
+		motion.index = motion.route.size()
+		motion.delay = 0.0
+	else:
+		motion.advance(amount)
+	return amount
+
+func _start_standby_walk(cleaner: Dictionary) -> bool:
+	var motion: GuestMotion = cleaner.motion
+	var point := _standby_point(cleaner)
+	if not point.is_finite() or motion.position.distance_to(point) <= ROUTE_EPS: return false
+	var route := _route_to(motion.position, point)
+	if route.is_empty(): return false
+	cleaner.state = "returning"
+	cleaner.stand_position = point
+	cleaner.reason = "Walking back to standby."
+	motion.set_route(route)
+	motion.delay = 0.0
+	return true
+
+func _standby_point(cleaner: Dictionary) -> Vector2:
+	var slot := staff.find(cleaner)
+	var points := _available_standby_points()
+	return points[slot] if slot >= 0 and slot < points.size() else Vector2.INF
+
+func _available_standby_points() -> Array[Vector2]:
+	if _standby_revision == layout.revision: return _standby_points
+	_standby_revision = layout.revision
+	_standby_points.clear()
+	var graph := _navigation()
+	var entrances: Array[Vector2i] = [ResortLayout.ARRIVAL]
+	var services: Array[Vector2i] = []
+	for record in layout.objects:
+		if not ResortCatalog.definition(record.kind).get("access", false): continue
+		var entrance := Vector2i(record.position) + ResortCatalog.entrance(record.kind, record.orientation)
+		entrances.append(entrance)
+		if record.kind in FACILITY_KIND.values(): services.append(entrance)
+	var candidates := {}
+	var screen_arrival := IsometricGrid.project(Vector2(ResortLayout.ARRIVAL))
+	for entrance in services:
+		for y in range(entrance.y - 3, entrance.y + 4):
+			for x in range(entrance.x - 3, entrance.x + 4):
+				var cell := Vector2i(x, y)
+				if candidates.has(cell) or cell.distance_squared_to(entrance) > 12: continue
+				var screen := IsometricGrid.project(Vector2(cell))
+				if screen.distance_to(screen_arrival) < STANDBY_CLEARANCE: continue
+				if entrances.any(func(door: Vector2i) -> bool: return cell.distance_squared_to(door) < 4):
+					continue
+				if _reachable(graph, Vector2(cell)): candidates[cell] = screen
+	# Start near a working facility, then cover the greatest gaps between posts.
+	var screens: Array[Vector2] = []
+	for slot in MAX_STAFF:
+		var best := Vector2.INF
+		var separation := STANDBY_CLEARANCE - 0.001
+		for cell: Vector2i in candidates:
+			var screen: Vector2 = candidates[cell]
+			var distance := INF
+			for other in screens:
+				distance = minf(distance, screen.distance_to(other))
+			if distance <= separation: continue
+			best = Vector2(cell)
+			separation = distance
+		if not best.is_finite(): break
+		_standby_points.append(best)
+		screens.append(candidates[Vector2i(best)])
+	return _standby_points
+
 func _claim_job(cleaner: Dictionary) -> bool:
 	var motion: GuestMotion = cleaner.motion
 	if not _position_open(_navigation(), motion.position): return false
 	var best: Dictionary = {}
+	var best_route: Array[Vector2] = []
 	var best_distance := INF
 	for dirt in mess:
 		if dirt.claimed_by != 0: continue
@@ -278,11 +359,13 @@ func _claim_job(cleaner: Dictionary) -> bool:
 		var length := _route_length(motion.position, route)
 		if length < best_distance:
 			best = dirt
+			best_route = route
 			best_distance = length
 	if best.is_empty():
-		cleaner.reason = "No reachable mess needs cleaning."
+		if cleaner.state == "idle":
+			cleaner.reason = "On standby. Waiting for litter or spills." if mess.is_empty() else "No unclaimed cleanup job within reach."
 		return false
-	if not _set_job_route(cleaner, best): return false
+	_set_job_route(cleaner, best, best_route)
 	best.claimed_by = cleaner.id
 	cleaner.target_mess_id = best.id
 	cleaner.state = "walking"
@@ -290,17 +373,19 @@ func _claim_job(cleaner: Dictionary) -> bool:
 	cleaner.reason = "Walking to a claimed cleanup job."
 	return true
 
-func _set_job_route(cleaner: Dictionary, dirt: Dictionary) -> bool:
+func _set_job_route(cleaner: Dictionary, dirt: Dictionary, route: Array[Vector2] = []) -> bool:
 	var motion: GuestMotion = cleaner.motion
-	var route := _route_to(motion.position, dirt.position)
+	if route.is_empty(): route = _route_to(motion.position, dirt.position)
 	if route.is_empty(): return false
 	var prior: Vector2 = route[-2] if route.size() > 1 else motion.position
 	var heading: Vector2 = dirt.position - prior
 	var stand: Vector2 = dirt.position
 	if heading.length() > 0.4: stand -= heading.normalized() * 0.4
+	elif route.size() == 1: stand = prior
 	route[-1] = stand
 	cleaner.stand_position = stand
 	motion.set_route(route)
+	motion.delay = 0.0
 	return true
 
 func _release_claim(cleaner: Dictionary) -> void:
@@ -329,7 +414,7 @@ func _staff(id: int) -> Dictionary:
 
 func _navigation() -> AStarGrid2D:
 	if layout != null and (_graph == null or _revision != layout.revision):
-		_graph = layout.navigation()
+		_graph = layout.navigation(-1, true)
 		_revision = layout.revision
 	return _graph
 
@@ -359,7 +444,7 @@ func _protected_entrance(cell: Vector2i) -> bool:
 
 func _hire_point() -> Vector2:
 	var graph := _navigation()
-	for offset in [Vector2i(-2, 0), Vector2i(-1, 1), Vector2i(-3, 0), Vector2i(0, 1), Vector2i(-1, 0), Vector2i(1, 0)]:
+	for offset: Vector2i in ARRIVAL_SPAWN_OFFSETS:
 		var point := Vector2(ResortLayout.ARRIVAL + offset)
 		if not _reachable(graph, point): continue
 		var occupied := false
@@ -369,13 +454,25 @@ func _hire_point() -> Vector2:
 	return Vector2(INF, INF)
 
 func _route_to(start: Vector2, end: Vector2) -> Array[Vector2]:
-	var route: Array[Vector2] = []
+	var best_route: Array[Vector2] = []
 	var graph := _navigation()
-	if not _position_open(graph, start) or not _position_open(graph, end): return route
-	var cells := graph.get_id_path(Vector2i(start.round()), Vector2i(end.round()))
-	if cells.is_empty(): return route
-	for cell in cells: route.append(Vector2(cell))
-	return route
+	if not _position_open(graph, start) or not _position_open(graph, end): return best_route
+	var best_distance := INF
+	# A broom stance can end between tile centres. Route through either
+	# reachable end of the occupied edge instead of stepping back to round().
+	for x in range(floori(start.x + EPS), ceili(start.x - EPS) + 1):
+		for y in range(floori(start.y + EPS), ceili(start.y - EPS) + 1):
+			var cell := Vector2i(x, y)
+			if not _route_step_open(graph, start, Vector2(cell)): continue
+			var route: Array[Vector2] = []
+			for point in graph.get_id_path(cell, Vector2i(end.round())):
+				route.append(Vector2(point))
+			if route.is_empty(): continue
+			var distance := _route_length(start, route)
+			if distance >= best_distance: continue
+			best_distance = distance
+			best_route = route
+	return best_route
 
 static func _route_length(start: Vector2, points: Array[Vector2]) -> float:
 	var length := 0.0
@@ -405,12 +502,16 @@ static func _remaining_route_open(motion: GuestMotion, graph: AStarGrid2D) -> bo
 	var previous := motion.position
 	for index in range(motion.index, motion.route.size()):
 		var point := motion.route[index]
-		var offset := point - previous
-		if absf(offset.x) > EPS and absf(offset.y) > EPS: return false
-		if offset.length() > 1.001: return false
-		if not _position_open(graph, previous) or not _position_open(graph, point): return false
+		if not _route_step_open(graph, previous, point): return false
 		previous = point
 	return true
+
+static func _route_step_open(graph: AStarGrid2D, from: Vector2, to: Vector2) -> bool:
+	var offset := (to - from).abs()
+	if maxf(offset.x, offset.y) > 1.001: return false
+	if not _position_open(graph, from) or not _position_open(graph, to): return false
+	if offset.x <= ROUTE_EPS or offset.y <= ROUTE_EPS: return true
+	return absf(offset.x - offset.y) <= ROUTE_EPS and _position_open(graph, Vector2(from.x, to.y)) and _position_open(graph, Vector2(to.x, from.y))
 
 static func _encode(point: Vector2) -> Array:
 	return [point.x, point.y]
@@ -422,7 +523,7 @@ static func _integer(value: Variant, minimum: int = 0, maximum: int = 9007199254
 	return _number(value, minimum, maximum) and float(value) == floor(float(value))
 
 static func _point(value: Variant) -> bool:
-	return value is Array and value.size() == 2 and _number(value[0], -0.5, ResortLayout.MAP_SIZE.x - 0.5) and _number(value[1], -0.5, ResortLayout.MAP_SIZE.y - 0.5)
+	return value is Array and value.size() == 2 and _number(value[0], -0.5, ResortLayout.MAP_SIZE.x - 0.5) and _number(value[1], ResortLayout.INLAND_START - 0.5, ResortLayout.WALKABLE_END - 0.5)
 
 static func _int64_string(value: Variant) -> bool:
 	if not value is String or not value.is_valid_int(): return false
@@ -468,7 +569,7 @@ func _decode_snapshot(data: Dictionary) -> bool:
 	for entry: Variant in data.staff:
 		if not entry is Dictionary or not _integer(entry.get("id"), 1, int(data.next_staff_id) - 1) or staff_ids.has(int(entry.id)): return false
 		if not entry.get("name") is String or entry.name.is_empty() or not entry.get("reason") is String: return false
-		if entry.get("state") not in ["idle", "walking", "cleaning"] or not entry.get("moving") is bool or not entry.get("motion") is Dictionary: return false
+		if entry.get("state") not in ["idle", "walking", "cleaning", "returning"] or not entry.get("moving") is bool or not entry.get("motion") is Dictionary: return false
 		if not _integer(entry.get("target_mess_id")) or not _point(entry.get("stand_position")): return false
 		if not _number(entry.get("activity_elapsed"), 0, 6.0) or not _number(entry.get("hired_at"), 0, data.clock): return false
 		if not _integer(entry.get("last_wage_day"), 0, int(data.wage_day)) or entry.last_wage_day != data.wage_day: return false
@@ -482,6 +583,12 @@ func _decode_snapshot(data: Dictionary) -> bool:
 		if not _position_open(graph, stand): return false
 		if entry.state == "idle":
 			if entry.target_mess_id != 0 or not motion.route.is_empty() or entry.activity_elapsed != 0 or entry.moving or stand.distance_to(motion.position) > EPS: return false
+		elif entry.state == "returning":
+			if entry.target_mess_id != 0 or entry.activity_elapsed != 0 or motion.route.is_empty() or motion.finished() or motion.route[-1].distance_to(stand) > EPS: return false
+			if stand != stand.round(): return false
+			# Prior saves can still be walking to the old arrival posts. The
+			# first simulation tick sends them to the new distributed posts.
+			if not _available_standby_points().has(stand) and not ARRIVAL_SPAWN_OFFSETS.has(Vector2i(stand) - ResortLayout.ARRIVAL): return false
 		else:
 			if not dirt_ids.has(int(entry.target_mess_id)): return false
 			var dirt: Dictionary = dirt_ids[int(entry.target_mess_id)]

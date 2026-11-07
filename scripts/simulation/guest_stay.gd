@@ -373,7 +373,7 @@ func restore(data: Dictionary) -> bool:
 	if data.after_exit not in ["cafe", "checkout"] or data.clock < 0 or data.distance < 0: return false
 	if data.accommodation_spent != data.paid_nights * data.booking_rate or data.revenue != data.accommodation_spent + data.activity_spent or data.budget + data.revenue != 240*size or data.activity_spent < 0: return false
 	var point := Vector2(data.position[0], data.position[1])
-	if not Rect2(Vector2(-0.5, -0.5), Vector2(ResortLayout.MAP_SIZE)).has_point(point): return false
+	if not ResortLayout.POINT_BOUNDS.has_point(point): return false
 	var graph := layout.navigation()
 	var interior: bool = data.state in ["entering", "resting", "exiting", "overnight"]
 	if data.state in ["to_cabin", "returning", "entering", "exiting", "to_cafe", "to_beach", "departing", "to_court"] and (points.is_empty() or (data.route_index >= points.size() and (size==1 or partner.finished()))): return false

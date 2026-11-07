@@ -23,7 +23,7 @@ func _run() -> void:
    var basis := item.sprite.transform
    if absf(basis.y.x) > 0.00001 or absf(basis.x.y) > 0.00001 or absf(absf(basis.x.x)-absf(basis.y.y)) > 0.00001:
     failures.append("%s/%d warps upright art: %s" % [kind,facing,basis])
-   if BASES.has(kind):
+   if BASES.has(kind) and kind not in FacilityStaff.KINDS:
     var tex := item.sprite.texture as AtlasTexture
     if tex != null:
      var fp := ResortCatalog.footprint(kind,facing)
